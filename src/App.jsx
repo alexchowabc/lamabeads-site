@@ -44,7 +44,7 @@ const createProductMedia = (product) => [
     src,
     poster: src,
     label: index === 0 ? 'Ảnh chính' : `Ảnh chi tiết ${index + 1}`,
-    description: index === 0 ? 'Góc nhìn tổng thể của sản phẩm.' : 'Góc cận để kiểm tra vân, chất liệu và độ bóng.',
+    description: index === 0 ? 'Góc nhìn tổng thể của sản phẩm.' : 'Góc cận để xem rõ vân, chất liệu và độ bóng.',
   })),
   ...(product.videos || []).map((video, index) => ({
     type: 'video',
@@ -52,7 +52,7 @@ const createProductMedia = (product) => [
     poster: video.poster || product.previewImage,
     label: video.label || `Video ${index + 1}`,
     duration: video.duration || '',
-    description: video.description || 'Video kiểm tra chuyển động, độ bóng và cảm giác khi đeo.',
+    description: video.description || 'Video giúp xem rõ độ bóng, chuyển động và cảm giác khi đeo.',
   })),
 ]
 
@@ -65,9 +65,9 @@ const getProductMediaStats = (product) => {
     videoCount,
     summary: [
       imageCount ? `${imageCount} ảnh` : '',
-      videoCount ? `${videoCount} video` : 'video theo yêu cầu',
+      videoCount ? `${videoCount} video` : 'gửi video khi cần',
     ].filter(Boolean).join(' · '),
-    videoLabel: videoCount ? `${videoCount} video cận cảnh` : 'Video cận cảnh khi yêu cầu',
+    videoLabel: videoCount ? `${videoCount} video cận cảnh` : 'Gửi video cận cảnh khi cần',
   }
 }
 
@@ -517,7 +517,7 @@ function HomePage({ products, onExplore, onSelect }) {
           </div>
         </div>
         <p className="collection-note reveal-up">
-          Một lựa chọn ngắn để cảm nhận chất liệu, màu sắc và nhịp thẩm mỹ trước khi vào trang bộ sưu tập đầy đủ.
+          Một vài mẫu nổi bật để bạn cảm nhận chất liệu, màu sắc và tinh thần của Lama Beads trước khi xem toàn bộ bộ sưu tập.
         </p>
         <div
           className="product-grid reveal-stagger parallax-layer"
@@ -624,10 +624,10 @@ function ProductDepthScene({ onExplore }) {
         </div>
         <div className="depth-copy">
           <p className="section-kicker">Lama Beads</p>
-          <h1>Đi sâu vào từng hạt ngọc</h1>
+          <h1>Ngắm sâu từng lớp vân</h1>
           <p>
-            Một hành trình chậm từ bề mặt chuỗi hạt xanh đến lớp vân trong lòng đá,
-            nơi ánh sáng, độ bóng và sắc vàng nhỏ tạo nên cảm giác riêng của từng món.
+            Từ bề mặt hạt đến những lớp vân bên trong, mỗi chuyển động nhỏ của ánh sáng
+            đều làm hiện rõ chất đá, độ bóng và cảm giác riêng của từng món.
           </p>
           <div className="hero-actions reveal-stagger">
             <button className="button primary" onClick={onExplore}>
@@ -649,11 +649,11 @@ function NotFoundPage({ onNavigate }) {
     <section className="section not-found-page">
       <div className="section-heading reveal-up">
         <div>
-          <p className="section-kicker">Không tồn tại</p>
-          <h2>Trang này hiện chưa có</h2>
+          <p className="section-kicker">Không tìm thấy</p>
+          <h2>Trang này chưa sẵn sàng</h2>
         </div>
       </div>
-      <p className="collection-note reveal-up">Vui lòng quay lại trang chủ hoặc xem bộ sưu tập.</p>
+      <p className="collection-note reveal-up">Bạn có thể quay về trang chủ hoặc xem lại bộ sưu tập hiện có.</p>
       <div className="section-cta-row">
         <button className="button primary" onClick={() => onNavigate('/')}>
           Trang chủ
@@ -772,9 +772,9 @@ function Collection({
   const activeFilterCount = [query, selectedCategory !== ALL_FILTER, selectedOrigin !== ALL_FILTER]
     .filter(Boolean).length
   const collectionStats = [
-    ['Sản phẩm', `${totalCount} mẫu`],
-    ['Đang xem', `${products.length} mẫu`],
-    ['Tư liệu', 'Ảnh thật · video theo yêu cầu'],
+    ['Tổng mẫu', `${totalCount} mẫu`],
+    ['Hiển thị', `${products.length} mẫu`],
+    ['Ảnh/Video', 'Ảnh thật · gửi video khi cần'],
   ]
 
   return (
@@ -789,7 +789,8 @@ function Collection({
         </button>
       </div>
       <p className="collection-note reveal-up">
-        Lọc theo nhu cầu của bạn, chọn một sản phẩm để xem chi tiết kết cấu, chất liệu và hướng dẫn phối.
+        Dùng bộ lọc để tìm nhanh mẫu hợp chất liệu, nguồn gốc hoặc phong cách bạn đang tìm.
+        Chọn một sản phẩm để xem ảnh cận, chất liệu và gợi ý bảo quản.
       </p>
       <div className="collection-summary reveal-up" aria-label="Tóm tắt bộ sưu tập">
         {collectionStats.map(([label, value]) => (
@@ -809,10 +810,10 @@ function Collection({
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
-        <div className="filter-group" aria-label="Lọc theo loại sản phẩm">
+        <div className="filter-group" aria-label="Lọc theo dòng sản phẩm">
           <span className="filter-label">
             <Filter size={16} />
-            Loại
+            Dòng sản phẩm
           </span>
           <div className="filter-chips">
             {categories.map((category) => (
@@ -856,11 +857,11 @@ function Collection({
         </label>
       </div>
       <p className="collection-result-count">
-        Đang hiển thị {products.length} / {totalCount} sản phẩm
+        Đang hiển thị {products.length} / {totalCount} mẫu
       </p>
       {products.length === 0 ? (
         <div className="empty-state">
-          <p>Chưa có sản phẩm phù hợp với bộ lọc hiện tại.</p>
+          <p>Chưa có mẫu nào khớp với bộ lọc này.</p>
           <button className="button secondary" onClick={onClearSearch}>
             Xem lại bộ sưu tập
           </button>
@@ -1019,9 +1020,9 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
     [Shield, 'Bảo quản', product.care],
   ]
   const assurances = [
-    [BadgeCheck, 'Kiểm tra trước khi tư vấn', product.inspection],
-    [Camera, 'Ảnh và video theo yêu cầu', 'Khi bạn chọn mẫu, Lama Beads có thể gửi thêm góc quay cận cảnh để kiểm tra vân, bề mặt và độ bóng.'],
-    [PackageCheck, 'Đóng gói & bảo quản', 'Mỗi mẫu được tư vấn cách giữ dây, hạt và phụ kiện để dùng lâu hơn.'],
+    [BadgeCheck, 'Xem kỹ trước khi chọn', product.inspection],
+    [Camera, 'Có thể gửi thêm ảnh và video', 'Nếu bạn muốn xem rõ hơn, Lama Beads có thể gửi thêm góc quay cận cảnh để nhìn vân, bề mặt và độ bóng.'],
+    [PackageCheck, 'Đóng gói & bảo quản', 'Mỗi mẫu đều có gợi ý bảo quản riêng để dây, hạt và phụ kiện bền hơn khi sử dụng.'],
   ]
 
   return (
@@ -1063,7 +1064,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
               isDarkAsset(activeMedia.src) || isDarkAsset(activeMedia.poster) ? 'dark-source' : ''
             }`}
           >
-            <div className="media-toolbar" aria-label="Thông tin tư liệu sản phẩm">
+            <div className="media-toolbar" aria-label="Thông tin hình ảnh sản phẩm">
               <span>
                 <Images size={15} />
                 {mediaStats.imageCount} ảnh
@@ -1120,10 +1121,10 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
           <div className="detail-media-note">
             <Camera size={19} />
             <div>
-              <strong>Ảnh và video kiểm tra trước khi chọn mẫu</strong>
+              <strong>Xem kỹ bằng ảnh và video trước khi chọn</strong>
               <p>
-                Khi bạn quan tâm một sản phẩm, Lama Beads có thể gửi thêm video xoay chậm,
-                ảnh ánh sáng tự nhiên và góc cận vân để bạn kiểm tra kỹ hơn.
+                Nếu bạn quan tâm một mẫu, Lama Beads có thể gửi thêm video xoay chậm,
+                ảnh dưới ánh sáng tự nhiên và góc cận vân để bạn yên tâm hơn trước khi quyết định.
               </p>
             </div>
           </div>
@@ -1172,7 +1173,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
         data-parallax-rotate-axis="x"
       >
         <div className="related">
-          <h3>Sản phẩm liên quan</h3>
+          <h3>Có thể bạn cũng thích</h3>
           <div className="related-grid">
             {relatedProducts.map((item, index) => (
               <RelatedCard key={item.id} item={item} onSelect={onSelect} depthIndex={index} />
@@ -1214,16 +1215,16 @@ function RelatedCard({ item, onSelect, depthIndex = 0 }) {
 function TrustBand() {
   const values = [
     {
-      title: 'Lựa chọn nguyên liệu',
-      description: 'Hạt được đánh giá theo độ sâu vân, độ ổn định bề mặt và năng lượng tự nhiên.',
+      title: 'Chọn hạt kỹ lưỡng',
+      description: 'Từng hạt được chọn theo độ sâu của vân, bề mặt, màu sắc và cảm giác khi cầm trên tay.',
     },
     {
-      title: 'Gia công thủ công',
-      description: 'Dây, móc, lớp phủ và kết cấu được hoàn thiện để giữ form và độ bền lâu.',
+      title: 'Hoàn thiện thủ công',
+      description: 'Dây, móc và chi tiết phối được hoàn thiện cẩn thận để giữ dáng và bền hơn khi đeo.',
     },
     {
-      title: 'Tư vấn cá nhân',
-      description: 'Nhận gợi ý phối và bảo quản theo phong cách, tuổi thọ, và mục đích sử dụng.',
+      title: 'Tư vấn theo từng người',
+      description: 'Gợi ý mẫu, cách phối và cách bảo quản dựa trên phong cách, cổ tay và mục đích sử dụng.',
     },
   ]
 
@@ -1231,8 +1232,8 @@ function TrustBand() {
     <section className="trust-band section reveal-stagger" id="trust">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">Quy trình của chúng tôi</p>
-          <h2>Làm cầu nối giữa truyền thống và thẩm mỹ hôm nay</h2>
+          <p className="section-kicker">Cách chúng tôi chọn hạt</p>
+          <h1>Giữ tinh thần truyền thống trong cách đeo hiện đại</h1>
         </div>
       </div>
       <div className="trust-grid">
@@ -1299,20 +1300,20 @@ function StoryBand() {
         data-parallax-rotate-axis="y"
       >
         <p className="section-kicker">Câu chuyện & chế tác</p>
-        <h2>Tôn trọng truyền thống. Gìn giữ năng lượng.</h2>
+        <h2>Tôn trọng chất liệu. Giữ lại cảm giác riêng.</h2>
         <p>
-          Lama Beads chọn lọc các hạt thiên châu, bồ đề và đá tự nhiên theo cảm giác chất liệu, sắc vân và sự phù hợp khi phối thành chuỗi.
+          Lama Beads chọn thiên châu, bồ đề và đá tự nhiên theo chất hạt, sắc vân và sự hài hòa khi phối thành chuỗi.
           Mỗi món hướng đến vẻ đẹp tĩnh, bền và có thể đồng hành lâu dài.
         </p>
         <div className="story-highlights">
           <p>
-            <span>Kho nguyên liệu</span> Tây Tạng, Nepal, Bhutan
+            <span>Nguồn hạt</span> Tây Tạng, Nepal, Bhutan
           </p>
           <p>
-            <span>Quy trình</span> Chọn lọc, làm sạch, tạo độ sáng và sắp xếp theo chiều tay
+            <span>Quy trình</span> Chọn hạt, làm sạch, hoàn thiện bề mặt và sắp lại theo dáng đeo
           </p>
           <p>
-            <span>Tư vấn</span> Cá nhân hóa theo phong cách đeo và mục đích sử dụng
+            <span>Tư vấn</span> Gợi ý theo phong cách, cổ tay và mục đích sử dụng
           </p>
         </div>
         <a className="button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
@@ -1325,28 +1326,28 @@ function StoryBand() {
 
 function ContactBand() {
   const contactCards = [
-    [MapPin, 'Nguồn hàng', contact.regions, null],
+    [MapPin, 'Nguồn hạt', contact.regions, null],
     [Mail, 'Email', contact.email, `mailto:${contact.email}`],
-    [MessageCircle, 'Tư vấn nhanh', 'Zalo / WhatsApp', contact.zalo],
+    [MessageCircle, 'Nhắn tư vấn', 'Zalo / WhatsApp', contact.zalo],
     [Clock3, 'Giờ làm việc', '09:00 - 18:00', null],
   ]
   const consultationSteps = [
-    'Gửi ảnh hoặc mô tả phong cách bạn thích.',
-    'Lama Beads gợi ý mẫu, kích thước và ý nghĩa phù hợp.',
-    'Nhận thêm ảnh hoặc video cận cảnh trước khi chốt mẫu.',
+    'Gửi ảnh mẫu bạn thích hoặc mô tả phong cách đang tìm.',
+    'Lama Beads gợi ý mẫu, kích thước và ý nghĩa hợp với bạn.',
+    'Xem thêm ảnh hoặc video cận cảnh trước khi quyết định.',
   ]
 
   return (
     <section className="contact-page section reveal-up" id="contact">
       <div className="contact-hero">
         <p className="section-kicker">Liên hệ</p>
-        <h1>Chọn mẫu bằng mắt, rồi kiểm tra bằng ảnh và video thật.</h1>
+        <h1>Xem kỹ bằng ảnh và video thật trước khi chọn.</h1>
         <p>
-          Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc ý nghĩa cần tìm,
-          gửi yêu cầu để Lama Beads tư vấn theo chất liệu, nguồn gốc và cách đeo.
+          Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc ý nghĩa mình đang tìm,
+          cứ gửi yêu cầu để Lama Beads gợi ý theo chất liệu, nguồn hạt và cách đeo.
         </p>
         <a className="button primary contact-cta" href={contact.zalo} target="_blank" rel="noreferrer">
-          Gửi yêu cầu tư vấn <MessageCircle size={18} />
+          Gửi yêu cầu <MessageCircle size={18} />
         </a>
       </div>
       <div className="contact-card-grid">
@@ -1375,7 +1376,7 @@ function ContactBand() {
       <div className="consultation-flow">
         <div>
           <p className="section-kicker">Quy trình tư vấn</p>
-          <h3>Từ cảm giác đến lựa chọn rõ ràng</h3>
+          <h3>Từ mẫu bạn thích đến lựa chọn phù hợp</h3>
         </div>
         <ol>
           {consultationSteps.map((step) => (
@@ -1385,8 +1386,8 @@ function ContactBand() {
       </div>
       <div className="conversion-strip">
         <div>
-          <p>Bạn chưa rõ chọn mẫu nào phù hợp?</p>
-          <small>Gửi ảnh phong cách hoặc yêu cầu của bạn, tôi sẽ tư vấn gói trang sức riêng cho bạn.</small>
+          <p>Bạn chưa rõ mẫu nào hợp với mình?</p>
+          <small>Gửi ảnh phong cách bạn thích hoặc nhu cầu đang tìm, Lama Beads sẽ gợi ý mẫu phù hợp.</small>
         </div>
       </div>
     </section>
@@ -1398,12 +1399,12 @@ function Footer({ onNavigate }) {
     <footer className="footer">
       <div>
         <strong>Lama Beads</strong>
-        <p>Trang sức chuỗi hạt thiêng từ Tây Tạng, Nepal và Bhutan.</p>
+        <p>Chuỗi hạt và thiên châu được chọn lọc từ Tây Tạng, Nepal và Bhutan.</p>
       </div>
       <div className="footer-links">
         <a href={`mailto:${contact.email}`}>{contact.email}</a>
         <a href={contact.zalo} target="_blank" rel="noreferrer">
-          Zalo tư vấn
+          Nhắn Zalo
         </a>
         <button onClick={() => onNavigate('/')}>
           Lên đầu trang
