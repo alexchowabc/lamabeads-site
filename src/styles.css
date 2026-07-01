@@ -549,8 +549,8 @@ img {
 }
 
 .filter-chip {
-  min-height: 38px;
-  padding: 0.45rem 0.82rem;
+  min-height: 44px;
+  padding: 0.5rem 0.86rem;
   border: 1px solid var(--line);
   background: var(--canvas);
   color: var(--body);
