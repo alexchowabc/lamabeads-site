@@ -9,6 +9,7 @@ import {
   Clock3,
   Filter,
   Gem,
+  Images,
   Mail,
   MapPin,
   Menu,
@@ -19,6 +20,7 @@ import {
   Shield,
   SlidersHorizontal,
   Sparkles,
+  Video,
   X,
 } from 'lucide-react'
 import { contact, featuredProduct, products } from './data/products'
@@ -37,20 +39,37 @@ const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: r
 const getMediaKey = (media) => `${media.type}:${media.src}`
 
 const createProductMedia = (product) => [
-  ...product.galleryImages.map((src, index) => ({
+  ...(product.galleryImages || []).map((src, index) => ({
     type: 'image',
     src,
     poster: src,
     label: index === 0 ? 'Ảnh chính' : `Ảnh chi tiết ${index + 1}`,
+    description: index === 0 ? 'Góc nhìn tổng thể của sản phẩm.' : 'Góc cận để kiểm tra vân, chất liệu và độ bóng.',
   })),
-  ...product.videos.map((video, index) => ({
+  ...(product.videos || []).map((video, index) => ({
     type: 'video',
     src: video.src,
     poster: video.poster || product.previewImage,
     label: video.label || `Video ${index + 1}`,
     duration: video.duration || '',
+    description: video.description || 'Video kiểm tra chuyển động, độ bóng và cảm giác khi đeo.',
   })),
 ]
+
+const getProductMediaStats = (product) => {
+  const imageCount = product.galleryImages?.length || 0
+  const videoCount = product.videos?.length || 0
+
+  return {
+    imageCount,
+    videoCount,
+    summary: [
+      imageCount ? `${imageCount} ảnh` : '',
+      videoCount ? `${videoCount} video` : 'video theo yêu cầu',
+    ].filter(Boolean).join(' · '),
+    videoLabel: videoCount ? `${videoCount} video cận cảnh` : 'Video cận cảnh khi yêu cầu',
+  }
+}
 
 const formatMediaCount = (mediaItems) => {
   const imageCount = mediaItems.filter((item) => item.type === 'image').length
@@ -329,6 +348,7 @@ function App() {
   const [selectedOrigin, setSelectedOrigin] = useState(ALL_FILTER)
   const [sortMode, setSortMode] = useState('featured')
   const pageRef = useRef(null)
+  const mainRef = useRef(null)
 
   const openProduct = useCallback(
     (product) => {
@@ -388,6 +408,10 @@ function App() {
       ? products.find((item) => item.id === route.id) || featuredProduct
       : featuredProduct
   const visibleProductKey = filteredProducts.map((product) => product.id).join('|')
+  const relatedProducts = useMemo(
+    () => products.filter((item) => item.id !== selectedProduct.id).slice(0, 3),
+    [selectedProduct.id],
+  )
 
   useEffect(() => {
     const root = pageRef.current
@@ -410,6 +434,17 @@ function App() {
     }
   }, [route.name, searchOpen])
 
+  useEffect(() => {
+    const main = mainRef.current
+    if (!main) return
+
+    main.focus({ preventScroll: true })
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+    })
+  }, [route.name, route.id])
+
   return (
     <>
       <div className="app-shell js-animate" ref={pageRef}>
@@ -424,7 +459,7 @@ function App() {
         showSearch={route.name === 'collection'}
         currentRoute={route.name}
       />
-      <main>
+      <main ref={mainRef} tabIndex="-1" aria-label="Nội dung chính">
         {route.name === 'home' ? (
           <HomePage products={products} onExplore={() => navigate('/collection')} onSelect={openProduct} />
         ) : route.name === 'collection' ? (
@@ -454,7 +489,7 @@ function App() {
         ) : route.name === 'product' ? (
           <DetailSection
             product={selectedProduct}
-            relatedProducts={products.filter((item) => item.id !== selectedProduct.id).slice(0, 3)}
+            relatedProducts={relatedProducts}
             onSelect={openProduct}
             onBack={() => navigate('/collection')}
           />
@@ -736,6 +771,11 @@ function Collection({
 }) {
   const activeFilterCount = [query, selectedCategory !== ALL_FILTER, selectedOrigin !== ALL_FILTER]
     .filter(Boolean).length
+  const collectionStats = [
+    ['Sản phẩm', `${totalCount} mẫu`],
+    ['Đang xem', `${products.length} mẫu`],
+    ['Tư liệu', 'Ảnh thật · video theo yêu cầu'],
+  ]
 
   return (
     <section className="collection section" id="collection">
@@ -751,6 +791,14 @@ function Collection({
       <p className="collection-note reveal-up">
         Lọc theo nhu cầu của bạn, chọn một sản phẩm để xem chi tiết kết cấu, chất liệu và hướng dẫn phối.
       </p>
+      <div className="collection-summary reveal-up" aria-label="Tóm tắt bộ sưu tập">
+        {collectionStats.map(([label, value]) => (
+          <span key={label}>
+            <strong>{value}</strong>
+            <small>{label}</small>
+          </span>
+        ))}
+      </div>
       <div className="collection-tools reveal-up">
         <label className="collection-search">
           <Search size={17} />
@@ -860,6 +908,7 @@ function ProductImageFrame({ src, alt, className = 'product-image', loading = 'l
 function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
   const cardTilt = usePointerTilt({ intensity: 12, lift: 6 })
   const cardDepth = `${6 + (depthIndex % 3) * 8}px`
+  const mediaStats = getProductMediaStats(product)
 
   return (
     <button
@@ -870,15 +919,25 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
       onPointerMove={cardTilt.onPointerMove}
       onPointerLeave={cardTilt.onPointerLeave}
     >
-      <ProductImageFrame src={product.previewImage} alt={product.name} />
-      <span className="product-copy">
-        <span>
-          <strong>{product.name}</strong>
-          <small>{product.category}</small>
-          <small>{product.origin}</small>
-          <small className="availability">{product.availability}</small>
+      <span className="product-card-media">
+        <ProductImageFrame src={product.previewImage} alt={product.name} />
+        <span className="product-media-badge">
+          <Camera size={14} />
+          {mediaStats.summary}
         </span>
-        <ArrowRight size={17} />
+      </span>
+      <span className="product-copy">
+        <span className="product-kicker">{product.category}</span>
+        <strong>{product.name}</strong>
+        <span className="product-description">{product.shortDescription}</span>
+        <span className="product-card-meta">
+          <span>{product.origin}</span>
+          <span>{product.availability}</span>
+        </span>
+      </span>
+      <span className="product-card-action">
+        Xem chi tiết
+        <ArrowRight size={16} />
       </span>
     </button>
   )
@@ -886,6 +945,7 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
 
 function DetailSection({ product, relatedProducts, onSelect, onBack }) {
   const mediaItems = useMemo(() => createProductMedia(product), [product])
+  const mediaStats = useMemo(() => getProductMediaStats(product), [product])
   const [activeMediaIndex, setActiveMediaIndex] = useState(0)
   const activeMedia = mediaItems[activeMediaIndex] || mediaItems[0]
   const mainMediaRef = useRef(null)
@@ -985,6 +1045,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
                 key={getMediaKey(media)}
                 className={index === activeMediaIndex ? 'thumb media-thumb is-active' : 'thumb media-thumb'}
                 onClick={() => setActiveMediaIndex(index)}
+                aria-pressed={index === activeMediaIndex}
                 aria-label={`${media.type === 'video' ? 'Xem video' : 'Xem trước hình'} ${product.name}: ${media.label}`}
                 type="button"
               >
@@ -1002,6 +1063,16 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
               isDarkAsset(activeMedia.src) || isDarkAsset(activeMedia.poster) ? 'dark-source' : ''
             }`}
           >
+            <div className="media-toolbar" aria-label="Thông tin tư liệu sản phẩm">
+              <span>
+                <Images size={15} />
+                {mediaStats.imageCount} ảnh
+              </span>
+              <span>
+                <Video size={15} />
+                {mediaStats.videoLabel}
+              </span>
+            </div>
             {activeMedia.type === 'video' ? (
               <video
                 ref={mainMediaRef}
@@ -1033,6 +1104,9 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
               {activeMedia.type === 'video' && activeMedia.duration && <small>{activeMedia.duration}</small>}
             </figcaption>
           </figure>
+          <p className="media-context">
+            {activeMedia.description}
+          </p>
         </div>
         <article className="detail-copy">
           <p className="detail-category">{product.category}</p>
@@ -1042,6 +1116,16 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
             <span>Mã: {product.id}</span>
             <span>{formatMediaCount(mediaItems)}</span>
             <span>{product.origin}</span>
+          </div>
+          <div className="detail-media-note">
+            <Camera size={19} />
+            <div>
+              <strong>Ảnh và video kiểm tra trước khi chọn mẫu</strong>
+              <p>
+                Khi bạn quan tâm một sản phẩm, Lama Beads có thể gửi thêm video xoay chậm,
+                ảnh ánh sáng tự nhiên và góc cận vân để bạn kiểm tra kỹ hơn.
+              </p>
+            </div>
           </div>
           <div className="detail-highlights">
             {(product.highlights || []).map((highlight) => (
@@ -1103,6 +1187,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
 function RelatedCard({ item, onSelect, depthIndex = 0 }) {
   const relatedTilt = usePointerTilt({ intensity: 10, lift: 8 })
   const cardDepth = `${6 + (depthIndex % 3) * 7}px`
+  const mediaStats = getProductMediaStats(item)
 
   return (
     <button
@@ -1120,6 +1205,7 @@ function RelatedCard({ item, onSelect, depthIndex = 0 }) {
         sizes="(max-width: 860px) 100vw, 20vw"
       />
       <span>{item.name}</span>
+      <small>{item.origin} · {mediaStats.summary}</small>
       <ArrowRight size={15} />
     </button>
   )
