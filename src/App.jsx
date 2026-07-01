@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   Clock3,
   Gem,
-  Image as ImageIcon,
   Mail,
   MapPin,
   Menu,
@@ -553,15 +552,10 @@ function App() {
 
 function HomePage({ products, onExplore, onSelect }) {
   const featuredProducts = products.slice(0, 4)
-  const heroProduct = products.find((product) => product.id === 'mat-sap-vang') || featuredProducts[0]
-  const showcaseProducts = [
-    heroProduct,
-    ...products.filter((product) => product.id !== heroProduct?.id).slice(0, 2),
-  ].filter(Boolean)
 
   return (
     <>
-      <ProductDepthScene products={showcaseProducts} onExplore={onExplore} onSelect={onSelect} />
+      <ProductDepthScene onExplore={onExplore} />
       <section className="collection section">
         <div className="section-heading reveal-up">
           <div>
@@ -570,7 +564,7 @@ function HomePage({ products, onExplore, onSelect }) {
           </div>
         </div>
         <p className="collection-note reveal-up">
-          Nhìn trước những tác phẩm nổi bật trước khi duyệt toàn bộ bộ sưu tập.
+          Một lựa chọn ngắn để cảm nhận chất liệu, màu sắc và nhịp thẩm mỹ trước khi vào trang bộ sưu tập đầy đủ.
         </p>
         <div
           className="product-grid reveal-stagger parallax-layer"
@@ -591,8 +585,9 @@ function HomePage({ products, onExplore, onSelect }) {
           ))}
         </div>
         <div className="section-cta-row">
-          <button className="button primary" onClick={onExplore}>
+          <button className="text-link collection-link" onClick={onExplore}>
             Xem toàn bộ bộ sưu tập
+            <ArrowRight size={16} />
           </button>
         </div>
       </section>
@@ -600,7 +595,7 @@ function HomePage({ products, onExplore, onSelect }) {
   )
 }
 
-function ProductDepthScene({ products, onExplore, onSelect }) {
+function ProductDepthScene({ onExplore }) {
   const sceneRef = useRef(null)
   const videoRef = useRef(null)
 
@@ -657,8 +652,6 @@ function ProductDepthScene({ products, onExplore, onSelect }) {
     }
   }, [])
 
-  const leadProduct = products[0]
-
   return (
     <section className="depth-scene cinematic-hero" id="top" ref={sceneRef} aria-label="Lama Beads">
       <div className="depth-stage">
@@ -687,34 +680,11 @@ function ProductDepthScene({ products, onExplore, onSelect }) {
             <button className="button primary" onClick={onExplore}>
               Xem bộ sưu tập
             </button>
-            <a className="button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
+            <a className="text-link depth-contact-link" href={contact.zalo} target="_blank" rel="noreferrer">
               Liên hệ tư vấn
+              <MessageCircle size={16} />
             </a>
           </div>
-          {leadProduct && (
-            <button className="text-link depth-feature-link" type="button" onClick={() => onSelect(leadProduct)}>
-              Xem mẫu đang nổi bật
-              <ArrowRight size={16} />
-            </button>
-          )}
-        </div>
-        <div className="depth-product-strip" aria-label="Sản phẩm nổi bật">
-          {products.map((product, index) => (
-            <button
-              key={product.id}
-              className="depth-product"
-              style={{ '--depth-card-index': index }}
-              onClick={() => onSelect(product)}
-              type="button"
-              aria-label={`Xem chi tiết ${product.name}`}
-            >
-              <img src={product.previewImage} alt={product.name} loading="lazy" />
-              <span>
-                <strong>{product.name}</strong>
-                <small>{product.category}</small>
-              </span>
-            </button>
-          ))}
         </div>
       </div>
     </section>
@@ -1053,7 +1023,6 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
   const mainImageFrameRef = useRef(null)
   const sectionHeadingRef = useRef(null)
   const detailSectionRef = useRef(null)
-  const mediaSectionRef = useRef(null)
   const hasVideo = product.videos.length > 0
 
   useEffect(() => {
@@ -1206,7 +1175,6 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
           <p className="detail-intro">{product.fullDescription}</p>
           <div className="detail-meta">
             <span>Mã: {product.id}</span>
-            <span>{product.availability}</span>
             <span>{product.galleryImages.length} ảnh chi tiết</span>
           </div>
           <div className="spec-list">
@@ -1222,15 +1190,11 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
             <a className="button primary wide" href={contact.zalo} target="_blank" rel="noreferrer">
               Liên hệ tư vấn <MessageCircle size={18} />
             </a>
-            <button className="text-link" onClick={() => mediaSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}>
-              <ImageIcon size={17} /> Xem thêm hình ảnh
-            </button>
           </div>
         </article>
       </div>
       <div
         className="media-related reveal-stagger parallax-layer"
-        ref={mediaSectionRef}
         data-parallax-speed="0.12"
         data-parallax-axis="y"
         data-parallax-direction="reverse"
@@ -1238,26 +1202,6 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
         data-parallax-rotate="0.05"
         data-parallax-rotate-axis="x"
       >
-        <div className="detail-photos">
-          <div>
-            <p className="section-kicker">Hình ảnh chi tiết</p>
-            <h3>Góc nhìn gần của {product.name}</h3>
-          </div>
-          <div className="photo-strip">
-            {product.galleryImages.slice(1).map((image) => (
-              <button
-                key={image}
-                className={isDarkAsset(image) ? 'dark-source' : ''}
-                onClick={() => {
-                  setActiveImage(image)
-                  onOpenGallery(image)
-                }}
-              >
-                <img src={image} alt="" loading="lazy" />
-              </button>
-            ))}
-          </div>
-        </div>
         {hasVideo && (
           <div className="video-card">
             <button className="play-button" aria-label="Phát video">
