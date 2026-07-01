@@ -411,7 +411,8 @@ function App() {
   }, [route.name, searchOpen])
 
   return (
-    <div className="app-shell js-animate" ref={pageRef}>
+    <>
+      <div className="app-shell js-animate" ref={pageRef}>
       <Header
         query={query}
         setQuery={setQuery}
@@ -461,11 +462,9 @@ function App() {
           <NotFoundPage onNavigate={navigate} />
         )}
       </main>
-      <a className="floating-consult button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
-        Tư vấn nhanh
-      </a>
       <Footer onNavigate={navigate} />
-    </div>
+      </div>
+    </>
   )
 }
 
@@ -743,7 +742,7 @@ function Collection({
       <div className="section-heading reveal-up">
         <div>
           <p className="section-kicker">Bộ sưu tập</p>
-          <h2>Mỗi chuỗi hạt là một câu chuyện</h2>
+          <h1>Mỗi chuỗi hạt là một câu chuyện</h1>
         </div>
         <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
           {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả sản phẩm'} <ArrowRight size={16} />
@@ -1037,7 +1036,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
         </div>
         <article className="detail-copy">
           <p className="detail-category">{product.category}</p>
-          <h2 data-testid="detail-title">{product.name}</h2>
+          <h1 data-testid="detail-title">{product.name}</h1>
           <p className="detail-intro">{product.fullDescription}</p>
           <div className="detail-meta">
             <span>Mã: {product.id}</span>
@@ -1255,7 +1254,7 @@ function ContactBand() {
     <section className="contact-page section reveal-up" id="contact">
       <div className="contact-hero">
         <p className="section-kicker">Liên hệ</p>
-        <h2>Chọn mẫu bằng mắt, rồi kiểm tra bằng ảnh và video thật.</h2>
+        <h1>Chọn mẫu bằng mắt, rồi kiểm tra bằng ảnh và video thật.</h1>
         <p>
           Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc ý nghĩa cần tìm,
           gửi yêu cầu để Lama Beads tư vấn theo chất liệu, nguồn gốc và cách đeo.

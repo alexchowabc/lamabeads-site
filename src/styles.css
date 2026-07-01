@@ -110,6 +110,10 @@ img {
 }
 
 .brand {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
   font-family: var(--display);
   font-size: clamp(1.5rem, 2.2vw, 2rem);
   font-weight: 600;
@@ -127,6 +131,8 @@ img {
 
 .desktop-nav button,
 .mobile-menu-link {
+  min-height: 44px;
+  padding-inline: 0.12rem;
   font-size: 0.92rem;
   color: var(--body);
   letter-spacing: 0.05em;
@@ -305,38 +311,6 @@ img {
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-}
-
-.floating-consult {
-  position: fixed;
-  right: 1.2rem;
-  bottom: 1.2rem;
-  z-index: 70;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  background: var(--canvas);
-  backdrop-filter: blur(6px);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.78rem 1.4rem;
-  animation: consultFloat 6.2s ease-in-out infinite;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.floating-consult::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.45), transparent 70%);
-  opacity: 0;
-  transition: opacity 180ms ease;
-  pointer-events: none;
-}
-
-.floating-consult:hover::after {
-  opacity: 1;
 }
 
 .section-heading {
@@ -537,6 +511,7 @@ img {
 
 .collection-search input {
   min-width: 0;
+  min-height: 44px;
   width: 100%;
   border: 0;
   outline: 0;
@@ -610,8 +585,10 @@ img {
   font-size: 0.9rem;
 }
 
+.section-heading h1,
 .section-heading h2,
 .story-copy h2,
+.detail-copy h1,
 .detail-copy h2 {
   margin: 0;
   font-family: var(--display);
@@ -622,8 +599,10 @@ img {
 
 .text-link {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 0.5rem;
+  padding-block: 0.25rem;
   color: var(--body);
   font-size: 0.95rem;
   white-space: nowrap;
@@ -799,9 +778,11 @@ img {
 
 .back-link {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 1.2rem;
+  padding-right: 0.4rem;
   color: var(--muted);
   font-size: 0.95rem;
 }
@@ -940,6 +921,7 @@ img {
   padding-top: 1.3rem;
 }
 
+.detail-copy h1,
 .detail-copy h2 {
   max-width: 9.5ch;
   font-size: clamp(2.65rem, 4.25vw, 4.85rem);
@@ -1315,6 +1297,7 @@ img {
   gap: 1.1rem;
 }
 
+.contact-hero h1,
 .contact-hero h2 {
   margin: 0;
   font-family: var(--display);
@@ -1450,17 +1433,6 @@ img {
   line-height: 1.55;
 }
 
-@keyframes consultFloat {
-  0%,
-  100% {
-    transform: translateY(0) translateZ(0);
-  }
-
-  50% {
-    transform: translateY(-7px) translateZ(6px);
-  }
-}
-
 @keyframes mainImageReveal {
   from {
     opacity: 0.7;
@@ -1505,6 +1477,9 @@ img {
 
 .footer-links a,
 .footer-links button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
   color: var(--body);
   font-size: 0.9rem;
 }
@@ -1636,6 +1611,7 @@ img {
     align-items: start;
   }
 
+  .section-heading h1,
   .section-heading h2 {
     font-size: clamp(2.2rem, 10vw, 3.5rem);
   }
@@ -1682,6 +1658,7 @@ img {
     height: clamp(360px, 72vw, 520px);
   }
 
+  .detail-copy h1,
   .detail-copy h2 {
     font-size: clamp(2.7rem, 13vw, 4rem);
   }
@@ -1792,12 +1769,6 @@ img {
     text-transform: none;
   }
 
-  .floating-consult {
-    right: 0.85rem;
-    bottom: 0.85rem;
-    text-align: center;
-  }
-
   .trust-grid {
     grid-template-columns: 1fr;
   }
@@ -1822,8 +1793,7 @@ img {
   .main-image,
   .related-card,
   .trust-card,
-  .story-image,
-  .floating-consult {
+  .story-image {
     --tilt-x: 0deg !important;
     --tilt-y: 0deg !important;
     --tilt-z: 0px !important;
@@ -1840,7 +1810,6 @@ img {
     opacity: 0 !important;
   }
 
-  .floating-consult,
   .main-image-photo {
     animation: none !important;
   }
