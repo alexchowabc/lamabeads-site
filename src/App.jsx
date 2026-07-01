@@ -59,15 +59,16 @@ const createProductMedia = (product) => [
 const getProductMediaStats = (product) => {
   const imageCount = product.galleryImages?.length || 0
   const videoCount = product.videos?.length || 0
+  const summary = [
+    imageCount ? `${imageCount} ảnh` : '',
+    videoCount ? `${videoCount} video` : '',
+  ].filter(Boolean).join(' · ')
 
   return {
     imageCount,
     videoCount,
-    summary: [
-      imageCount ? `${imageCount} ảnh` : '',
-      videoCount ? `${videoCount} video` : 'gửi video khi cần',
-    ].filter(Boolean).join(' · '),
-    videoLabel: videoCount ? `${videoCount} video cận cảnh` : 'Gửi video cận cảnh khi cần',
+    summary: summary || 'Chưa có ảnh',
+    videoLabel: videoCount ? `${videoCount} video cận cảnh` : '',
   }
 }
 
@@ -349,6 +350,7 @@ function App() {
   const [sortMode, setSortMode] = useState('featured')
   const pageRef = useRef(null)
   const mainRef = useRef(null)
+  const routeProgressRef = useRef(null)
 
   const openProduct = useCallback(
     (product) => {
@@ -445,59 +447,112 @@ function App() {
     })
   }, [route.name, route.id])
 
+  useEffect(() => {
+    if (prefersReducedMotion()) return
+
+    const main = mainRef.current
+    const progressShell = routeProgressRef.current
+    const progressFill = progressShell?.querySelector('span')
+
+    if (progressShell && progressFill) {
+      progressShell.style.opacity = '0'
+      progressFill.style.transform = 'scaleX(0)'
+
+      animate(progressShell, {
+        opacity: [0, 1, 1, 0],
+        duration: 760,
+        easing: 'linear',
+      })
+
+      animate(progressFill, {
+        scaleX: [0, 0.74, 1],
+        duration: 720,
+        easing: 'outCubic',
+      })
+    }
+
+    if (main) {
+      animate(main, {
+        opacity: [0, 1],
+        translateY: [14, 0],
+        filter: ['blur(5px)', 'blur(0px)'],
+        duration: 360,
+        easing: 'outCubic',
+      })
+    }
+  }, [route.name, route.id])
+
+  useEffect(() => {
+    const root = pageRef.current
+    if (!root || prefersReducedMotion()) return
+
+    const cues = Array.from(root.querySelectorAll('.motion-cue'))
+    if (!cues.length) return
+
+    animate(cues, {
+      translateX: [0, 5, 0],
+      duration: 560,
+      easing: 'outCubic',
+      delay: stagger(44),
+    })
+  }, [route.name, route.id, visibleProductKey])
+
   return (
     <>
       <div className="app-shell js-animate" ref={pageRef}>
-      <Header
-        query={query}
-        setQuery={setQuery}
-        searchOpen={searchOpen}
-        setSearchOpen={setSearchOpen}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-        onNavigate={navigate}
-        showSearch={route.name === 'collection'}
-        currentRoute={route.name}
-      />
-      <main ref={mainRef} tabIndex="-1" aria-label="Nội dung chính">
-        {route.name === 'home' ? (
-          <HomePage products={products} onExplore={() => navigate('/collection')} onSelect={openProduct} />
-        ) : route.name === 'collection' ? (
-          <Collection
-            products={filteredProducts}
-            totalCount={products.length}
-            query={query}
-            setQuery={setQuery}
-            categories={categoryOptions}
-            origins={originOptions}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedOrigin={selectedOrigin}
-            setSelectedOrigin={setSelectedOrigin}
-            sortMode={sortMode}
-            setSortMode={setSortMode}
-            onSelect={openProduct}
-            onClearSearch={clearCollectionControls}
-          />
-        ) : route.name === 'about' ? (
-          <>
-            <TrustBand />
-            <StoryBand />
-          </>
-        ) : route.name === 'contact' ? (
-          <ContactBand />
-        ) : route.name === 'product' ? (
-          <DetailSection
-            product={selectedProduct}
-            relatedProducts={relatedProducts}
-            onSelect={openProduct}
-            onBack={() => navigate('/collection')}
-          />
-        ) : (
-          <NotFoundPage onNavigate={navigate} />
-        )}
-      </main>
-      <Footer onNavigate={navigate} />
+        <Header
+          query={query}
+          setQuery={setQuery}
+          searchOpen={searchOpen}
+          setSearchOpen={setSearchOpen}
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          onNavigate={navigate}
+          showSearch={route.name === 'collection'}
+          currentRoute={route.name}
+        />
+        <div className="route-progress" aria-hidden="true" ref={routeProgressRef}>
+          <span />
+        </div>
+        <main ref={mainRef} tabIndex="-1" aria-label="Nội dung chính">
+          {route.name === 'home' ? (
+            <HomePage products={products} onExplore={() => navigate('/collection')} onSelect={openProduct} />
+          ) : route.name === 'collection' ? (
+            <Collection
+              products={filteredProducts}
+              totalCount={products.length}
+              query={query}
+              setQuery={setQuery}
+              categories={categoryOptions}
+              origins={originOptions}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedOrigin={selectedOrigin}
+              setSelectedOrigin={setSelectedOrigin}
+              sortMode={sortMode}
+              setSortMode={setSortMode}
+              onSelect={openProduct}
+              onClearSearch={clearCollectionControls}
+            />
+          ) : route.name === 'about' ? (
+            <>
+              <TrustBand />
+              <StoryBand />
+            </>
+          ) : route.name === 'contact' ? (
+            <ContactBand />
+          ) : route.name === 'product' ? (
+            <DetailSection
+              product={selectedProduct}
+              relatedProducts={relatedProducts}
+              onSelect={openProduct}
+              onBack={() => navigate('/collection')}
+            />
+          ) : (
+            <NotFoundPage onNavigate={navigate} />
+          )}
+        </main>
+        <Footer onNavigate={navigate} />
       </div>
     </>
   )
@@ -540,7 +595,7 @@ function HomePage({ products, onExplore, onSelect }) {
         <div className="section-cta-row">
           <button className="text-link collection-link" onClick={onExplore}>
             Xem toàn bộ bộ sưu tập
-            <ArrowRight size={16} />
+            <ArrowRight className="motion-cue" size={16} />
           </button>
         </div>
       </section>
@@ -650,7 +705,7 @@ function NotFoundPage({ onNavigate }) {
       <div className="section-heading reveal-up">
         <div>
           <p className="section-kicker">Không tìm thấy</p>
-          <h2>Trang này chưa sẵn sàng</h2>
+          <h2>Không tìm thấy trang này</h2>
         </div>
       </div>
       <p className="collection-note reveal-up">Bạn có thể quay về trang chủ hoặc xem lại bộ sưu tập hiện có.</p>
@@ -713,7 +768,7 @@ function Header({
                 <input
                   autoFocus
                   value={query}
-                  placeholder="Tìm chuỗi, Dzi..."
+                  aria-label="Tìm trong bộ sưu tập"
                   onChange={(event) => setQuery(event.target.value)}
                 />
               </label>
@@ -744,7 +799,7 @@ function Header({
               onClick={() => onNavigate(target)}
             >
               {label}
-              <ArrowRight size={18} />
+              <ArrowRight className="motion-cue" size={18} />
             </button>
           ))}
         </div>
@@ -774,7 +829,7 @@ function Collection({
   const collectionStats = [
     ['Tổng mẫu', `${totalCount} mẫu`],
     ['Hiển thị', `${products.length} mẫu`],
-    ['Ảnh/Video', 'Ảnh thật · gửi video khi cần'],
+    ['Hình ảnh', 'Ảnh thật của từng mẫu'],
   ]
 
   return (
@@ -785,7 +840,7 @@ function Collection({
           <h1>Mỗi chuỗi hạt là một câu chuyện</h1>
         </div>
         <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
-          {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả sản phẩm'} <ArrowRight size={16} />
+          {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả sản phẩm'} <ArrowRight className="motion-cue" size={16} />
         </button>
       </div>
       <p className="collection-note reveal-up">
@@ -806,7 +861,7 @@ function Collection({
           <span>Tìm sản phẩm</span>
           <input
             value={query}
-            placeholder="Dzi 3 mắt, Nepal, bồ đề..."
+            aria-label="Tìm sản phẩm trong bộ sưu tập"
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
@@ -938,7 +993,7 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
       </span>
       <span className="product-card-action">
         Xem chi tiết
-        <ArrowRight size={16} />
+        <ArrowRight className="motion-cue" size={16} />
       </span>
     </button>
   )
@@ -1019,9 +1074,16 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
     [Sparkles, 'Ý nghĩa', product.meaning],
     [Shield, 'Bảo quản', product.care],
   ]
+  const hasProductVideos = mediaStats.videoCount > 0
+  const mediaNoteTitle = hasProductVideos
+    ? 'Xem kỹ bằng ảnh và video trước khi chọn'
+    : 'Xem kỹ từng góc trước khi chọn'
+  const mediaNoteCopy = hasProductVideos
+    ? 'Bạn có thể xem ảnh cận, video xoay chậm và góc vân rõ hơn để cảm nhận bề mặt, độ bóng và dáng đeo.'
+    : 'Nếu bạn quan tâm một mẫu, Lama Beads có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay để bạn yên tâm hơn trước khi quyết định.'
   const assurances = [
     [BadgeCheck, 'Xem kỹ trước khi chọn', product.inspection],
-    [Camera, 'Có thể gửi thêm ảnh và video', 'Nếu bạn muốn xem rõ hơn, Lama Beads có thể gửi thêm góc quay cận cảnh để nhìn vân, bề mặt và độ bóng.'],
+    [Camera, hasProductVideos ? 'Ảnh và video cận cảnh' : 'Ảnh cận theo từng góc', mediaNoteCopy],
     [PackageCheck, 'Đóng gói & bảo quản', 'Mỗi mẫu đều có gợi ý bảo quản riêng để dây, hạt và phụ kiện bền hơn khi sử dụng.'],
   ]
 
@@ -1069,10 +1131,12 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
                 <Images size={15} />
                 {mediaStats.imageCount} ảnh
               </span>
-              <span>
-                <Video size={15} />
-                {mediaStats.videoLabel}
-              </span>
+              {mediaStats.videoCount > 0 && (
+                <span>
+                  <Video size={15} />
+                  {mediaStats.videoLabel}
+                </span>
+              )}
             </div>
             {activeMedia.type === 'video' ? (
               <video
@@ -1121,11 +1185,8 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
           <div className="detail-media-note">
             <Camera size={19} />
             <div>
-              <strong>Xem kỹ bằng ảnh và video trước khi chọn</strong>
-              <p>
-                Nếu bạn quan tâm một mẫu, Lama Beads có thể gửi thêm video xoay chậm,
-                ảnh dưới ánh sáng tự nhiên và góc cận vân để bạn yên tâm hơn trước khi quyết định.
-              </p>
+              <strong>{mediaNoteTitle}</strong>
+              <p>{mediaNoteCopy}</p>
             </div>
           </div>
           <div className="detail-highlights">
@@ -1207,7 +1268,7 @@ function RelatedCard({ item, onSelect, depthIndex = 0 }) {
       />
       <span>{item.name}</span>
       <small>{item.origin} · {mediaStats.summary}</small>
-      <ArrowRight size={15} />
+      <ArrowRight className="motion-cue" size={15} />
     </button>
   )
 }
