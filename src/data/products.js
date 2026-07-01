@@ -1,4 +1,4 @@
-const asset = (path) => `/assets/gamma-export/images/${path}`
+const asset = (path) => `/assets/product-gallery/images/${path}`
 
 export const contact = {
   email: 'lamabeads@gmail.com',

@@ -83,13 +83,13 @@ Videos should be real media files or hosted embeds when available. Until those e
 
 Saved asset folder:
 
-`/Users/alexzhou/website_lama/assets/gamma-export/images`
+`/Users/alexzhou/website_lama/assets/product-gallery/images`
 
 Current asset split:
 
 - `edited-images`: clean bead/product closeups on black backgrounds. Best for product details and close-up inspection.
 - `original`: real phone product photos. Useful as secondary gallery material, but some include strong yellow backgrounds or phone UI artifacts.
-- `generated-images`: Gamma-generated editorial images. Useful for story/craft sections, but should not replace real product photography.
+- `generated-images`: Editorial-style generated images. Useful for story/craft sections, but should not replace real product photography.
 
 Best next asset improvement:
 

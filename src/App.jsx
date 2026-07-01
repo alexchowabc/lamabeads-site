@@ -628,7 +628,7 @@ function Hero({ onExplore }) {
           aria-label="Thiên châu Lama Beads"
         >
           <span className="hero-media-glow" aria-hidden="true" />
-          <img src="/assets/gamma-export/images/generated-images/Cr9kBe1hknLl2ryOjIzI_.png" alt="Thiên châu Dzi Lama Beads" />
+          <img src="/assets/product-gallery/images/generated-images/Cr9kBe1hknLl2ryOjIzI_.png" alt="Thiên châu Dzi Lama Beads" />
         </div>
       </div>
       <button className="scroll-cue" onClick={onExplore} aria-label="Xuống bộ sưu tập">
@@ -1041,7 +1041,7 @@ function StoryBand() {
         onPointerLeave={storyTilt.onPointerLeave}
       >
         <img
-          src="/assets/gamma-export/images/generated-images/Kk18f1S3N3Q3hV1HfpaE3.png"
+          src="/assets/product-gallery/images/generated-images/Kk18f1S3N3Q3hV1HfpaE3.png"
           alt="Cận cảnh thiên châu trên nền gỗ"
           loading="lazy"
         />
