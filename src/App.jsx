@@ -22,7 +22,43 @@ const isDarkAsset = (src) => src.includes('/edited-images/')
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
+const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/lama-jade-depth-openart.mp4'
+const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/lama-jade-start-frame.png'
+
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+function parseRoute(pathname = window.location.pathname) {
+  const path = ((pathname || '/') + '').split('?')[0].split('#')[0].replace(/\/+$/, '') || '/'
+
+  if (path === '/' || path === '/index.html') {
+    return { name: 'home' }
+  }
+
+  if (path === '/collection') {
+    return { name: 'collection' }
+  }
+
+  if (path === '/about') {
+    return { name: 'about' }
+  }
+
+  if (path === '/contact') {
+    return { name: 'contact' }
+  }
+
+  if (path.startsWith('/product/')) {
+    const [, productId] = path.split('/').filter(Boolean)
+    return { name: 'product', id: productId || null }
+  }
+
+  return { name: 'notfound' }
+}
+
+function createPath(path) {
+  if (!path) return '/'
+  const normalizedPath = String(path).trim()
+  return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
+}
 
 function useScrollReveal(rootRef, dependencies = []) {
   useEffect(() => {
@@ -327,16 +363,41 @@ function useSpinRotate({
 }
 
 function App() {
-  const [selectedProduct, setSelectedProduct] = useState(featuredProduct)
+  const [route, setRoute] = useState(() => parseRoute())
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [lightboxImage, setLightboxImage] = useState('')
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
-  const detailRef = useRef(null)
-  const detailSectionRef = useRef(null)
   const pageRef = useRef(null)
   const lightboxFrameTilt = usePointerTilt({ intensity: 16, lift: 16 })
+
+  const openProduct = useCallback(
+    (product) => {
+      if (!product?.id) return
+      const targetPath = createPath(`/product/${product.id}`)
+      if (targetPath !== window.location.pathname) {
+        window.history.pushState({}, '', targetPath)
+      }
+      setRoute(parseRoute(targetPath))
+    },
+    [],
+  )
+
+  const navigate = useCallback((path) => {
+    const targetPath = createPath(path)
+    if (targetPath !== window.location.pathname) {
+      window.history.pushState({}, '', targetPath)
+    }
+    setMenuOpen(false)
+    setRoute(parseRoute(targetPath))
+  }, [])
+
+  useEffect(() => {
+    const onPopState = () => setRoute(parseRoute())
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   const filteredProducts = useMemo(() => {
     const term = query.trim().toLowerCase()
@@ -349,19 +410,10 @@ function App() {
     )
   }, [query])
 
-  const showProduct = (product, shouldScroll = true) => {
-    setSelectedProduct(product)
-    if (shouldScroll) {
-      requestAnimationFrame(() => {
-        detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
-    }
-  }
-
-  const scrollTo = (id) => {
-    setMenuOpen(false)
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  const selectedProduct =
+    route.name === 'product' && route.id
+      ? products.find((item) => item.id === route.id) || featuredProduct
+      : featuredProduct
 
   const openLightbox = (image) => {
     setLightboxImage(image)
@@ -403,8 +455,14 @@ function App() {
     })
   }, [])
 
-  useScrollReveal(pageRef, [filteredProducts.length])
-  useScrollParallax(pageRef, [filteredProducts.length])
+  useScrollReveal(pageRef, [route.name])
+  useScrollParallax(pageRef, [route.name])
+
+  useEffect(() => {
+    if (route.name !== 'collection' && searchOpen) {
+      setSearchOpen(false)
+    }
+  }, [route.name, searchOpen])
 
   useEffect(() => {
     const root = pageRef.current
@@ -438,28 +496,37 @@ function App() {
         setSearchOpen={setSearchOpen}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
-        onNavigate={scrollTo}
+        onNavigate={navigate}
+        showSearch={route.name === 'collection'}
       />
       <main>
-        <Hero onExplore={() => scrollTo('collection')} />
-        <Collection
-          products={filteredProducts}
-          selectedProduct={selectedProduct}
-          query={query}
-          onSelect={showProduct}
-          onClearSearch={() => setQuery('')}
-        />
-        <DetailSection
-          refNode={detailRef}
-          sectionRef={detailSectionRef}
-          product={selectedProduct}
-          onOpenGallery={openLightbox}
-          relatedProducts={products.filter((item) => item.id !== selectedProduct.id).slice(0, 3)}
-          onSelect={showProduct}
-        />
-        <TrustBand />
-        <StoryBand />
-        <ContactBand />
+        {route.name === 'home' ? (
+          <HomePage products={products} onExplore={() => navigate('/collection')} onSelect={openProduct} />
+        ) : route.name === 'collection' ? (
+          <Collection
+            products={filteredProducts}
+            query={query}
+            onSelect={openProduct}
+            onClearSearch={() => setQuery('')}
+          />
+        ) : route.name === 'about' ? (
+          <>
+            <TrustBand />
+            <StoryBand />
+          </>
+        ) : route.name === 'contact' ? (
+          <ContactBand />
+        ) : route.name === 'product' ? (
+          <DetailSection
+            product={selectedProduct}
+            onOpenGallery={openLightbox}
+            relatedProducts={products.filter((item) => item.id !== selectedProduct.id).slice(0, 3)}
+            onSelect={openProduct}
+            onBack={() => navigate('/collection')}
+          />
+        ) : (
+          <NotFoundPage onNavigate={navigate} />
+        )}
       </main>
       <a className="floating-consult button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
         Tư vấn nhanh
@@ -479,8 +546,200 @@ function App() {
           </div>
         </div>
       )}
-      <Footer />
+      <Footer onNavigate={navigate} />
     </div>
+  )
+}
+
+function HomePage({ products, onExplore, onSelect }) {
+  const featuredProducts = products.slice(0, 4)
+  const heroProduct = products.find((product) => product.id === 'mat-sap-vang') || featuredProducts[0]
+  const showcaseProducts = [
+    heroProduct,
+    ...products.filter((product) => product.id !== heroProduct?.id).slice(0, 2),
+  ].filter(Boolean)
+
+  return (
+    <>
+      <ProductDepthScene products={showcaseProducts} onExplore={onExplore} onSelect={onSelect} />
+      <section className="collection section">
+        <div className="section-heading reveal-up">
+          <div>
+            <p className="section-kicker">Bộ sưu tập nổi bật</p>
+            <h2>Một số mẫu tiêu biểu</h2>
+          </div>
+        </div>
+        <p className="collection-note reveal-up">
+          Nhìn trước những tác phẩm nổi bật trước khi duyệt toàn bộ bộ sưu tập.
+        </p>
+        <div
+          className="product-grid reveal-stagger parallax-layer"
+          data-parallax-speed="0.16"
+          data-parallax-axis="y"
+          data-parallax-direction="reverse"
+          data-parallax-depth="0.9"
+          data-parallax-rotate="0.08"
+          data-parallax-rotate-axis="both"
+        >
+          {featuredProducts.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              depthIndex={index}
+              onSelect={() => onSelect(product)}
+            />
+          ))}
+        </div>
+        <div className="section-cta-row">
+          <button className="button primary" onClick={onExplore}>
+            Xem toàn bộ bộ sưu tập
+          </button>
+        </div>
+      </section>
+    </>
+  )
+}
+
+function ProductDepthScene({ products, onExplore, onSelect }) {
+  const sceneRef = useRef(null)
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    const root = sceneRef.current
+    const video = videoRef.current
+    if (!root || !video || prefersReducedMotion()) return
+
+    const getProgress = () => {
+      const rect = root.getBoundingClientRect()
+      const stickyOffset = window.innerWidth <= 760 ? 64 : 68
+      const range = Math.max(1, rect.height - window.innerHeight)
+      return clamp((stickyOffset - rect.top) / range, 0, 1)
+    }
+
+    let rafId = 0
+    const syncVideoToScroll = () => {
+      const progress = getProgress()
+      const eased = 1 - Math.pow(1 - progress, 3)
+      root.style.setProperty('--depth-progress', eased.toFixed(3))
+      root.style.setProperty('--depth-video-scale', (1.01 + eased * 0.035).toFixed(3))
+      root.style.setProperty('--depth-focus-x', `${(70 - eased * 14).toFixed(2)}%`)
+      root.style.setProperty('--depth-vignette-opacity', (0.25 + eased * 0.32).toFixed(3))
+      root.style.setProperty('--depth-sheen-opacity', (0.34 + eased * 0.24).toFixed(3))
+      root.style.setProperty('--depth-sheen-x', `${((eased - 0.5) * 10).toFixed(2)}%`)
+
+      if (Number.isFinite(video.duration) && video.duration > 0) {
+        const targetTime = clamp(eased * video.duration, 0, Math.max(0, video.duration - 0.04))
+        if (Math.abs(video.currentTime - targetTime) > 0.035) {
+          video.currentTime = targetTime
+        }
+      }
+
+      rafId = 0
+    }
+
+    const requestSync = () => {
+      if (rafId) return
+      rafId = requestAnimationFrame(syncVideoToScroll)
+    }
+
+    video.pause()
+    video.load()
+    requestSync()
+    video.addEventListener('loadedmetadata', requestSync)
+    window.addEventListener('scroll', requestSync, { passive: true })
+    window.addEventListener('resize', requestSync, { passive: true })
+
+    return () => {
+      video.removeEventListener('loadedmetadata', requestSync)
+      window.removeEventListener('scroll', requestSync)
+      window.removeEventListener('resize', requestSync)
+      cancelAnimationFrame(rafId)
+    }
+  }, [])
+
+  const leadProduct = products[0]
+
+  return (
+    <section className="depth-scene cinematic-hero" id="top" ref={sceneRef} aria-label="Lama Beads">
+      <div className="depth-stage">
+        <div className="depth-video-frame" aria-hidden="true">
+          <video
+            ref={videoRef}
+            src={HOMEPAGE_DEPTH_VIDEO}
+            poster={HOMEPAGE_DEPTH_POSTER}
+            muted
+            playsInline
+            preload="auto"
+          />
+          <span className="depth-video-sheen" />
+          <span className="depth-progress">
+            <span />
+          </span>
+        </div>
+        <div className="depth-copy">
+          <p className="section-kicker">Lama Beads</p>
+          <h1>Đi sâu vào từng hạt ngọc</h1>
+          <p>
+            Một hành trình chậm từ bề mặt chuỗi hạt xanh đến lớp vân trong lòng đá,
+            nơi ánh sáng, độ bóng và sắc vàng nhỏ tạo nên cảm giác riêng của từng món.
+          </p>
+          <div className="hero-actions reveal-stagger">
+            <button className="button primary" onClick={onExplore}>
+              Xem bộ sưu tập
+            </button>
+            <a className="button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
+              Liên hệ tư vấn
+            </a>
+          </div>
+          {leadProduct && (
+            <button className="text-link depth-feature-link" type="button" onClick={() => onSelect(leadProduct)}>
+              Xem mẫu đang nổi bật
+              <ArrowRight size={16} />
+            </button>
+          )}
+        </div>
+        <div className="depth-product-strip" aria-label="Sản phẩm nổi bật">
+          {products.map((product, index) => (
+            <button
+              key={product.id}
+              className="depth-product"
+              style={{ '--depth-card-index': index }}
+              onClick={() => onSelect(product)}
+              type="button"
+              aria-label={`Xem chi tiết ${product.name}`}
+            >
+              <img src={product.previewImage} alt={product.name} loading="lazy" />
+              <span>
+                <strong>{product.name}</strong>
+                <small>{product.category}</small>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function NotFoundPage({ onNavigate }) {
+  return (
+      <section className="section contact-band">
+        <div className="section-heading reveal-up">
+          <div>
+            <p className="section-kicker">Không tồn tại</p>
+            <h2>Trang này hiện chưa có</h2>
+          </div>
+        </div>
+      <p className="collection-note reveal-up">Vui lòng quay lại trang chủ hoặc xem bộ sưu tập.</p>
+      <div className="section-cta-row">
+        <button className="button primary" onClick={() => onNavigate('/')}>
+          Trang chủ
+        </button>
+        <button className="button secondary" onClick={() => onNavigate('/collection')}>
+          Xem bộ sưu tập
+        </button>
+      </div>
+    </section>
   )
 }
 
@@ -492,13 +751,13 @@ function Header({
   menuOpen,
   setMenuOpen,
   onNavigate,
+  showSearch,
 }) {
   const nav = [
-    ['Bộ sưu tập', 'collection'],
-    ['Thiên châu', 'detail'],
-    ['Cam kết', 'trust'],
-    ['Câu chuyện', 'story'],
-    ['Liên hệ', 'contact'],
+    ['Trang chủ', '/'],
+    ['Bộ sưu tập', '/collection'],
+    ['Về chúng tôi', '/about'],
+    ['Liên hệ', '/contact'],
   ]
 
   return (
@@ -506,7 +765,7 @@ function Header({
       <button className="icon-button mobile-only" aria-label="Mở menu" onClick={() => setMenuOpen(true)}>
         <Menu size={24} />
       </button>
-      <button className="brand" onClick={() => onNavigate('top')} aria-label="Lama Beads home">
+      <button className="brand" onClick={() => onNavigate('/')} aria-label="Lama Beads home">
         Lama Beads
       </button>
       <nav className="desktop-nav" aria-label="Chính">
@@ -517,24 +776,28 @@ function Header({
         ))}
       </nav>
       <div className="header-actions">
-        {searchOpen && (
-          <label className="search-field">
-            <Search size={16} />
-            <input
-              autoFocus
-              value={query}
-              placeholder="Tìm chuỗi, Dzi..."
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
+        {showSearch && (
+          <>
+            {searchOpen && (
+              <label className="search-field">
+                <Search size={16} />
+                <input
+                  autoFocus
+                  value={query}
+                  placeholder="Tìm chuỗi, Dzi..."
+                  onChange={(event) => setQuery(event.target.value)}
+                />
+              </label>
+            )}
+            <button
+              className="icon-button"
+              aria-label={searchOpen ? 'Đóng tìm kiếm' : 'Mở tìm kiếm'}
+              onClick={() => setSearchOpen((value) => !value)}
+            >
+              {searchOpen ? <X size={20} /> : <Search size={20} />}
+            </button>
+          </>
         )}
-        <button
-          className="icon-button"
-          aria-label={searchOpen ? 'Đóng tìm kiếm' : 'Mở tìm kiếm'}
-          onClick={() => setSearchOpen((value) => !value)}
-        >
-          {searchOpen ? <X size={20} /> : <Search size={20} />}
-        </button>
       </div>
       {menuOpen && (
         <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
@@ -556,11 +819,64 @@ function Header({
   )
 }
 
-function Hero({ onExplore }) {
+function Hero({ onExplore, product }) {
+  const shellImage = product?.previewImage || '/assets/product-gallery/images/generated-images/Cr9kBe1hknLl2ryOjIzI_.png'
+  const coreImage = product?.galleryImages?.[1] || shellImage
   const mediaTilt = usePointerTilt({ intensity: 18, lift: 10 })
+  const heroRef = useRef(null)
+  const jadeRevealRef = useRef(null)
+
+  useEffect(() => {
+    const hero = heroRef.current
+    const media = jadeRevealRef.current
+    if (!hero || !media || prefersReducedMotion()) return
+
+    let frameId = 0
+
+    const updateDepth = () => {
+      const rect = hero.getBoundingClientRect()
+      const heroHeight = Math.max(hero.offsetHeight, 1)
+      const rawProgress = clamp((-rect.top - 24) / (heroHeight - 40), 0, 1)
+      const easedProgress = 1 - Math.pow(1 - rawProgress, 2)
+
+      media.style.setProperty('--jade-progress', easedProgress.toFixed(3))
+      media.style.setProperty('--jade-core-inset', `${(24 - easedProgress * 16).toFixed(2)}%`)
+      media.style.setProperty('--jade-shell-opacity', (1 - easedProgress * 0.55).toFixed(3))
+      media.style.setProperty('--jade-shell-scale', (1.02 + easedProgress * 0.07).toFixed(3))
+      media.style.setProperty('--jade-shell-rotate', `${(16 - easedProgress * 11).toFixed(2)}deg`)
+      media.style.setProperty('--jade-shell-blur', `${(0.6 + easedProgress * 2.4).toFixed(2)}px`)
+      media.style.setProperty('--jade-core-scale', (0.72 + easedProgress * 0.84).toFixed(3))
+      media.style.setProperty('--jade-core-translate', `${(4 + easedProgress * 58).toFixed(1)}px`)
+      media.style.setProperty('--jade-core-depth', `${(-20 + easedProgress * 145).toFixed(1)}px`)
+      media.style.setProperty('--jade-shell-depth', `${(12 - easedProgress * 34).toFixed(2)}px`)
+      media.style.setProperty('--jade-core-rotate-x', `${(14 + easedProgress * 10).toFixed(2)}deg`)
+      media.style.setProperty('--jade-core-rotate-y', `${(4 + easedProgress * 10).toFixed(2)}deg`)
+      media.style.setProperty('--jade-core-glow', (0.18 + easedProgress * 0.62).toFixed(3))
+      media.style.setProperty('--jade-core-opacity', (0.08 + easedProgress * 0.86).toFixed(3))
+      media.style.setProperty('--jade-stage-tilt', `${(4 + easedProgress * 8).toFixed(2)}deg`)
+      media.style.setProperty('--jade-stage-depth', `${(-12 + easedProgress * 60).toFixed(1)}px`)
+
+      frameId = 0
+    }
+
+    const requestUpdate = () => {
+      if (frameId) return
+      frameId = requestAnimationFrame(updateDepth)
+    }
+
+    requestUpdate()
+    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('resize', requestUpdate, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', requestUpdate)
+      window.removeEventListener('resize', requestUpdate)
+      cancelAnimationFrame(frameId)
+    }
+  }, [])
 
   return (
-    <section className="hero" id="top">
+    <section className="hero" id="top" ref={heroRef}>
       <span
         className="hero-orb hero-orb-left parallax-layer"
         data-parallax-speed="1.2"
@@ -593,7 +909,10 @@ function Hero({ onExplore }) {
       >
         <p className="section-kicker">Thương hiệu trang sức từ chất liệu thiêng</p>
         <h1>Lama Beads</h1>
-        <p>Trang sức chuỗi hạt thiêng từ Tây Tạng, Nepal và Bhutan. Mỗi món được chọn để giữ lại vẻ đẹp tự nhiên, năng lượng an lành và câu chuyện riêng.</p>
+        <p>
+          Trang sức chuỗi hạt thiêng từ Tây Tạng, Nepal và Bhutan. Mỗi món được chọn để giữ lại vẻ đẹp tự nhiên, năng lượng an lành
+          và câu chuyện riêng.
+        </p>
         <div className="hero-actions reveal-stagger">
           <button className="button primary" onClick={onExplore}>
             Xem bộ sưu tập
@@ -615,7 +934,8 @@ function Hero({ onExplore }) {
         <span className="hero-stage-orbit orbit-a" aria-hidden="true" />
         <span className="hero-stage-orbit orbit-b" aria-hidden="true" />
         <div
-          className="hero-media reveal-up"
+          className="hero-media reveal-up jade-reveal"
+          ref={jadeRevealRef}
           data-reveal-rotate-y="-4"
           data-reveal-rotate-x="4"
           data-parallax-speed="0.35"
@@ -628,7 +948,17 @@ function Hero({ onExplore }) {
           aria-label="Thiên châu Lama Beads"
         >
           <span className="hero-media-glow" aria-hidden="true" />
-          <img src="/assets/product-gallery/images/generated-images/Cr9kBe1hknLl2ryOjIzI_.png" alt="Thiên châu Dzi Lama Beads" />
+          <img
+            className="jade-shell"
+            src={shellImage}
+            alt="Thiên châu Lama Beads"
+          />
+          <img
+            className="jade-core"
+            src={coreImage}
+            alt="Chi tiết bên trong hạt jade"
+          />
+          <span className="jade-core-glow" aria-hidden="true" />
         </div>
       </div>
       <button className="scroll-cue" onClick={onExplore} aria-label="Xuống bộ sưu tập">
@@ -638,14 +968,14 @@ function Hero({ onExplore }) {
   )
 }
 
-function Collection({ products, selectedProduct, query, onSelect, onClearSearch }) {
+function Collection({ products, query, onSelect, onClearSearch }) {
   return (
     <section className="collection section" id="collection">
-      <div className="section-heading reveal-up">
-        <div>
-          <p className="section-kicker">Bộ sưu tập</p>
-          <h2>Mỗi chuỗi hạt là một câu chuyện</h2>
-        </div>
+        <div className="section-heading reveal-up">
+          <div>
+            <p className="section-kicker">Bộ sưu tập</p>
+            <h2>Mỗi chuỗi hạt là một câu chuyện</h2>
+          </div>
         <button className="text-link" onClick={onClearSearch}>
           {query ? 'Xem tất cả' : 'Tất cả sản phẩm'} <ArrowRight size={16} />
         </button>
@@ -675,7 +1005,6 @@ function Collection({ products, selectedProduct, query, onSelect, onClearSearch 
               key={product.id}
               product={product}
               depthIndex={index}
-              active={product.id === selectedProduct.id}
               onSelect={() => onSelect(product)}
             />
           ))}
@@ -685,7 +1014,7 @@ function Collection({ products, selectedProduct, query, onSelect, onClearSearch 
   )
 }
 
-function ProductCard({ product, active, onSelect, depthIndex = 0 }) {
+function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
   const cardTilt = usePointerTilt({ intensity: 12, lift: 6 })
   const cardDepth = `${6 + (depthIndex % 3) * 8}px`
 
@@ -713,7 +1042,7 @@ function ProductCard({ product, active, onSelect, depthIndex = 0 }) {
   )
 }
 
-function DetailSection({ refNode, sectionRef, product, relatedProducts, onSelect, onOpenGallery }) {
+function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBack }) {
   const [activeImage, setActiveImage] = useState(product.galleryImages[0])
   const mainImageTilt = usePointerTilt({ intensity: 9, lift: 10 })
   const mainImageSpin = useSpinRotate({
@@ -723,7 +1052,8 @@ function DetailSection({ refNode, sectionRef, product, relatedProducts, onSelect
   const mainImageRef = useRef(null)
   const mainImageFrameRef = useRef(null)
   const sectionHeadingRef = useRef(null)
-  const detailSectionRef = sectionRef || refNode
+  const detailSectionRef = useRef(null)
+  const mediaSectionRef = useRef(null)
   const hasVideo = product.videos.length > 0
 
   useEffect(() => {
@@ -821,7 +1151,7 @@ function DetailSection({ refNode, sectionRef, product, relatedProducts, onSelect
 
   return (
     <section className="detail section" id="detail" ref={detailSectionRef}>
-      <button className="back-link" onClick={() => document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })}>
+      <button className="back-link" onClick={onBack}>
         <ChevronLeft size={16} /> Bộ sưu tập
       </button>
       <div className="detail-layout reveal-stagger" ref={sectionHeadingRef}>
@@ -892,7 +1222,7 @@ function DetailSection({ refNode, sectionRef, product, relatedProducts, onSelect
             <a className="button primary wide" href={contact.zalo} target="_blank" rel="noreferrer">
               Liên hệ tư vấn <MessageCircle size={18} />
             </a>
-            <button className="text-link" onClick={() => document.getElementById('media')?.scrollIntoView({ behavior: 'smooth' })}>
+            <button className="text-link" onClick={() => mediaSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}>
               <ImageIcon size={17} /> Xem thêm hình ảnh
             </button>
           </div>
@@ -900,7 +1230,7 @@ function DetailSection({ refNode, sectionRef, product, relatedProducts, onSelect
       </div>
       <div
         className="media-related reveal-stagger parallax-layer"
-        id="media"
+        ref={mediaSectionRef}
         data-parallax-speed="0.12"
         data-parallax-axis="y"
         data-parallax-direction="reverse"
@@ -935,9 +1265,9 @@ function DetailSection({ refNode, sectionRef, product, relatedProducts, onSelect
             </button>
           </div>
         )}
-        <div className="related">
-          <h3>Sản phẩm liên quan</h3>
-          <div className="related-grid">
+          <div className="related">
+            <h3>Sản phẩm liên quan</h3>
+            <div className="related-grid">
             {relatedProducts.map((item, index) => (
               <RelatedCard key={item.id} item={item} onSelect={onSelect} depthIndex={index} />
             ))}
@@ -985,9 +1315,9 @@ function TrustBand() {
   ]
 
   return (
-    <section className="trust-band section reveal-stagger" id="trust">
-      <div className="section-heading">
-        <div>
+      <section className="trust-band section reveal-stagger" id="trust">
+        <div className="section-heading">
+          <div>
           <p className="section-kicker">Quy trình của chúng tôi</p>
           <h2>Làm cầu nối giữa truyền thống và thẩm mỹ hôm nay</h2>
         </div>
@@ -1058,8 +1388,8 @@ function StoryBand() {
         <p className="section-kicker">Câu chuyện & chế tác</p>
         <h2>Tôn trọng truyền thống. Gìn giữ năng lượng.</h2>
         <p>
-          Lama Beads chọn lọc các hạt thiên châu, bồ đề và đá tự nhiên theo cảm giác chất liệu, sắc vân và sự phù hợp
-          khi phối thành chuỗi. Mỗi món hướng đến vẻ đẹp tĩnh, bền và có thể đồng hành lâu dài.
+          Lama Beads chọn lọc các hạt thiên châu, bồ đề và đá tự nhiên theo cảm giác chất liệu, sắc vân và sự phù hợp khi phối thành chuỗi.
+          Mỗi món hướng đến vẻ đẹp tĩnh, bền và có thể đồng hành lâu dài.
         </p>
         <div className="story-highlights">
           <p>
@@ -1127,7 +1457,7 @@ function ContactBand() {
   )
 }
 
-function Footer() {
+function Footer({ onNavigate }) {
   return (
     <footer className="footer">
       <div>
@@ -1139,7 +1469,7 @@ function Footer() {
         <a href={contact.zalo} target="_blank" rel="noreferrer">
           Zalo tư vấn
         </a>
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <button onClick={() => onNavigate('/')}>
           Lên đầu trang
         </button>
       </div>
