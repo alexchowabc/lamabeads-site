@@ -261,115 +261,12 @@ function usePointerTilt({ intensity = 14, lift = 6 } = {}) {
   }
 }
 
-function useSpinRotate({
-  sensitivity = 0.38,
-  clickThreshold = 10,
-  resetAngle = 0,
-} = {}) {
-  const stateRef = useRef({
-    isDown: false,
-    angle: resetAngle,
-    startX: 0,
-    lastX: 0,
-    totalDelta: 0,
-    pointerId: null,
-    target: null,
-    suppressClick: false,
-  })
-
-  const syncAngle = useCallback((target, angle) => {
-    if (!target) return
-    target.style.setProperty('--spin-rotate', `${((angle % 360) + 360).toFixed(2)}deg`)
-  }, [])
-
-  const onPointerMove = useCallback(
-    (event) => {
-      const state = stateRef.current
-      if (!state.isDown || !state.target || state.pointerId !== event.pointerId) return
-      const delta = event.clientX - state.lastX
-      state.lastX = event.clientX
-      state.totalDelta += Math.abs(delta)
-      state.angle += delta * sensitivity
-      syncAngle(state.target, state.angle)
-      state.suppressClick = state.suppressClick || state.totalDelta > clickThreshold
-    },
-    [sensitivity, clickThreshold, syncAngle],
-  )
-
-  const onPointerUp = useCallback(() => {
-    const state = stateRef.current
-    if (!state.isDown) return
-
-    state.isDown = false
-    state.pointerId = null
-    state.lastX = 0
-    state.totalDelta = 0
-    window.removeEventListener('pointermove', onPointerMove)
-    window.removeEventListener('pointerup', onPointerUp)
-    window.removeEventListener('pointercancel', onPointerUp)
-  }, [onPointerMove])
-
-  const onPointerDown = useCallback(
-    (event) => {
-      if (prefersReducedMotion() || event.button !== undefined && event.button !== 0) return
-
-      const target = event.currentTarget
-      stateRef.current = {
-        isDown: true,
-        angle: stateRef.current.angle,
-        startX: event.clientX,
-        lastX: event.clientX,
-        totalDelta: 0,
-        pointerId: event.pointerId,
-        target,
-        suppressClick: false,
-      }
-
-      window.addEventListener('pointermove', onPointerMove)
-      window.addEventListener('pointerup', onPointerUp)
-      window.addEventListener('pointercancel', onPointerUp)
-      event.preventDefault()
-    },
-    [onPointerMove, onPointerUp],
-  )
-
-  const onPointerLeave = useCallback(() => {
-    onPointerUp()
-  }, [onPointerUp])
-
-  const shouldSuppressNextClick = useCallback(() => {
-    const state = stateRef.current
-    if (!state.suppressClick) return false
-    state.suppressClick = false
-    return true
-  }, [])
-
-  const reset = useCallback((target) => {
-    stateRef.current.angle = resetAngle
-    syncAngle(target, resetAngle)
-  }, [resetAngle, syncAngle])
-
-  useEffect(() => () => onPointerUp(), [onPointerUp])
-
-  return {
-    onPointerDown,
-    onPointerMove,
-    onPointerUp,
-    onPointerLeave,
-    shouldSuppressNextClick,
-    reset,
-  }
-}
-
 function App() {
   const [route, setRoute] = useState(() => parseRoute())
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [lightboxImage, setLightboxImage] = useState('')
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const pageRef = useRef(null)
-  const lightboxFrameTilt = usePointerTilt({ intensity: 16, lift: 16 })
 
   const openProduct = useCallback(
     (product) => {
@@ -414,34 +311,6 @@ function App() {
       ? products.find((item) => item.id === route.id) || featuredProduct
       : featuredProduct
 
-  const openLightbox = (image) => {
-    setLightboxImage(image)
-    setIsLightboxOpen(true)
-  }
-
-  const closeLightbox = () => {
-    setIsLightboxOpen(false)
-    setLightboxImage('')
-  }
-
-  useEffect(() => {
-    if (!isLightboxOpen) return
-
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        closeLightbox()
-      }
-    }
-
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', onKeyDown)
-
-    return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [isLightboxOpen])
-
   useEffect(() => {
     const root = pageRef.current
     if (!root || prefersReducedMotion()) return
@@ -462,29 +331,6 @@ function App() {
       setSearchOpen(false)
     }
   }, [route.name, searchOpen])
-
-  useEffect(() => {
-    const root = pageRef.current
-    if (!root || !isLightboxOpen || prefersReducedMotion()) return
-    const overlay = root.querySelector('.lightbox')
-    const frame = root.querySelector('.lightbox-frame')
-
-    if (!overlay || !frame) return
-
-    animate(overlay, {
-      opacity: [0, 1],
-      duration: 240,
-      easing: 'outCubic',
-    })
-
-    animate(frame, {
-      opacity: [0, 1],
-      scale: [0.94, 1],
-      rotateX: [6, 0],
-      duration: 420,
-      easing: 'outCubic',
-    })
-  }, [isLightboxOpen])
 
   return (
     <div className="app-shell js-animate" ref={pageRef}>
@@ -518,7 +364,6 @@ function App() {
         ) : route.name === 'product' ? (
           <DetailSection
             product={selectedProduct}
-            onOpenGallery={openLightbox}
             relatedProducts={products.filter((item) => item.id !== selectedProduct.id).slice(0, 3)}
             onSelect={openProduct}
             onBack={() => navigate('/collection')}
@@ -530,21 +375,6 @@ function App() {
       <a className="floating-consult button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
         Tư vấn nhanh
       </a>
-      {isLightboxOpen && (
-        <div className="lightbox" role="dialog" aria-modal="true" onClick={closeLightbox}>
-          <button className="lightbox-close icon-button" aria-label="Đóng xem ảnh" onClick={closeLightbox}>
-            <X size={22} />
-          </button>
-          <div
-            className="lightbox-frame"
-            onClick={(event) => event.stopPropagation()}
-            onPointerMove={lightboxFrameTilt.onPointerMove}
-            onPointerLeave={lightboxFrameTilt.onPointerLeave}
-          >
-            <img src={lightboxImage} alt={selectedProduct.name} />
-          </div>
-        </div>
-      )}
       <Footer onNavigate={navigate} />
     </div>
   )
@@ -1012,22 +842,15 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
   )
 }
 
-function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBack }) {
+function DetailSection({ product, relatedProducts, onSelect, onBack }) {
   const [activeImage, setActiveImage] = useState(product.galleryImages[0])
-  const mainImageTilt = usePointerTilt({ intensity: 9, lift: 10 })
-  const mainImageSpin = useSpinRotate({
-    sensitivity: 0.44,
-    clickThreshold: 10,
-  })
   const mainImageRef = useRef(null)
-  const mainImageFrameRef = useRef(null)
   const sectionHeadingRef = useRef(null)
   const detailSectionRef = useRef(null)
   const hasVideo = product.videos.length > 0
 
   useEffect(() => {
     setActiveImage(product.galleryImages[0])
-    mainImageSpin.reset(mainImageFrameRef.current)
   }, [product])
 
   useEffect(() => {
@@ -1086,31 +909,6 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
     })
   }, [activeImage])
 
-  useEffect(() => {
-    mainImageSpin.reset(mainImageFrameRef.current)
-  }, [activeImage, mainImageSpin])
-
-  const handleMainImageClick = useCallback(() => {
-    if (mainImageSpin.shouldSuppressNextClick()) return
-    onOpenGallery(activeImage)
-  }, [activeImage, onOpenGallery, mainImageSpin])
-
-  const handleMainImagePointerMove = useCallback(
-    (event) => {
-      mainImageTilt.onPointerMove(event)
-      mainImageSpin.onPointerMove(event)
-    },
-    [mainImageTilt, mainImageSpin],
-  )
-
-  const handleMainImagePointerLeave = useCallback(
-    (event) => {
-      mainImageTilt.onPointerLeave(event)
-      mainImageSpin.onPointerLeave()
-    },
-    [mainImageTilt, mainImageSpin],
-  )
-
   const specs = [
     [Gem, 'Chất liệu', product.materials],
     [MapPin, 'Nguồn gốc', product.origin],
@@ -1138,28 +936,15 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
               <button
                 key={image}
                 className={image === activeImage ? 'thumb is-active' : 'thumb'}
-                onClick={() => {
-                  setActiveImage(image)
-                  onOpenGallery(image)
-                }}
-                aria-label={`Xem hình ${product.name}`}
+                onClick={() => setActiveImage(image)}
+                aria-label={`Xem trước hình ${product.name}`}
                 type="button"
               >
                 <img src={image} alt="" />
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            ref={mainImageFrameRef}
-            className={`main-image ${isDarkAsset(activeImage) ? 'dark-source' : ''}`}
-            onClick={handleMainImageClick}
-            aria-label={`Mở ảnh phóng to ${product.name}`}
-            onPointerDown={mainImageSpin.onPointerDown}
-            onPointerMove={handleMainImagePointerMove}
-            onPointerUp={mainImageSpin.onPointerUp}
-            onPointerLeave={handleMainImagePointerLeave}
-          >
+          <figure className={`main-image ${isDarkAsset(activeImage) ? 'dark-source' : ''}`}>
             <img
               ref={mainImageRef}
               className="main-image-photo"
@@ -1167,7 +952,7 @@ function DetailSection({ product, relatedProducts, onSelect, onOpenGallery, onBa
               alt={product.name}
               key={activeImage}
             />
-          </button>
+          </figure>
         </div>
         <article className="detail-copy">
           <p className="detail-category">{product.category}</p>
