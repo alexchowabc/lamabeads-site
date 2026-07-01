@@ -2,8 +2,8 @@ const asset = (path) => `/assets/product-gallery/images/${path}`
 
 export const contact = {
   email: 'lamabeads@gmail.com',
-  phone: '+84 987 654 321',
-  zalo: 'https://zalo.me/84987654321',
+  phone: '',
+  zalo: '',
   regions: 'Tây Tạng · Nepal · Bhutan',
 }
 
@@ -29,7 +29,10 @@ export const products = [
     care: 'Tránh hóa chất, nước hoa và va đập mạnh. Lau bằng khăn mềm sau khi sử dụng.',
     highlights: ['Vân ba mắt rõ ở hạt chủ', 'Sắc hổ phách ấm, dễ đeo hằng ngày', 'Hợp với người thích cảm giác vững và an tâm'],
     inspection: 'Nên xem kỹ độ sâu của vân, độ bóng bề mặt và độ chắc của dây trước khi chọn.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo chiều dài chuỗi trước khi chốt mẫu',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'dzi-9-mat',
@@ -52,7 +55,10 @@ export const products = [
     care: 'Cất riêng trong túi mềm, tránh kéo mạnh phần dây tua.',
     highlights: ['Hạt Dzi lớn làm điểm nhấn chính', 'Tông xanh đậm tạo cảm giác tĩnh và sâu', 'Hợp đeo thiền hoặc trưng bày trang trọng'],
     inspection: 'Nên xem độ cân của hạt chủ, sắc xanh của chuỗi và phần kết dây tua.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo chiều dài chuỗi và phần tua trước khi gửi',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'mat-sap-vang',
@@ -75,7 +81,10 @@ export const products = [
     care: 'Tránh nhiệt cao và ánh nắng trực tiếp trong thời gian dài.',
     highlights: ['Tông mật sáp vàng ấm', 'Hạt Dzi giữa vòng nổi bật trên cổ tay', 'Dễ phối với trang phục hằng ngày'],
     inspection: 'Nên xem sắc vàng, độ mịn của bề mặt hạt và các điểm nối kim loại.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo theo cổ tay trước khi chốt size',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'dzi-lien-hoa',
@@ -98,7 +107,10 @@ export const products = [
     care: 'Không ngâm nước. Bảo quản trong hộp riêng để tránh trầy bề mặt.',
     highlights: ['Dáng hạt rời, dễ phối theo ý riêng', 'Vân Liên Hoa gọn và dễ nhận diện', 'Hợp làm hạt chủ cho vòng tay'],
     inspection: 'Nên xem độ rõ của vân Liên Hoa, bề mặt đánh bóng và hai đầu hạt.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo kích thước hạt trước khi phối',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'dzi-nui-tu-di',
@@ -121,7 +133,10 @@ export const products = [
     care: 'Tránh để chung với đá cứng sắc cạnh. Lau khô trước khi cất.',
     highlights: ['Vân núi cho cảm giác vững chãi', 'Dáng dài, hợp làm hạt chủ', 'Đẹp nhất khi phối tối giản'],
     inspection: 'Nên xem đường vân núi, thân hạt và những dấu mộc tự nhiên trên bề mặt.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo kích thước hạt trước khi phối',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'dzi-hai-mat',
@@ -144,7 +159,10 @@ export const products = [
     care: 'Tránh tiếp xúc nước biển, clo và dung dịch tẩy rửa.',
     highlights: ['Bố cục hai mắt cân đối', 'Dễ phối cùng bạc, aquamarine hoặc bồ đề', 'Hợp với người thích ý nghĩa gắn kết'],
     inspection: 'Nên xem độ cân của hai mắt, màu nền và độ sạch của rãnh vân.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo kích thước hạt trước khi phối',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'dzi-co-thai-yen',
@@ -167,7 +185,10 @@ export const products = [
     care: 'Hạn chế va chạm trực tiếp. Có thể lau bằng vải cotton khô.',
     highlights: ['Sắc nâu trầm, gợi cảm giác cổ vật', 'Bề mặt mộc có chiều sâu', 'Hợp với người thích nét tự nhiên, không quá hoàn hảo'],
     inspection: 'Nên xem mảng vân sâu, dấu tự nhiên trên thân hạt và độ chắc khi xỏ dây.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo kích thước hạt trước khi phối',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
   {
     id: 'chuoi-bo-de',
@@ -190,7 +211,10 @@ export const products = [
     care: 'Giữ khô, tránh nước lâu và để nơi thoáng khi không sử dụng.',
     highlights: ['Hạt bồ đề nhẹ và gần gũi', 'Phù hợp niệm chú hoặc đeo hằng ngày', 'Có thể phối thêm Dzi làm điểm nhấn'],
     inspection: 'Nên xem độ đều của hạt, độ khô tự nhiên và cảm giác dây khi cầm trên tay.',
-    availability: 'Liên hệ tư vấn',
+    availability: 'Kiểm tra tình trạng',
+    priceNote: 'Báo giá theo mẫu cụ thể',
+    sizeNote: 'Đo chiều dài chuỗi trước khi chốt mẫu',
+    shippingNote: 'Đóng gói riêng và xác nhận phí gửi theo địa chỉ.',
   },
 ]
 

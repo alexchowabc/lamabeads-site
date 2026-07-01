@@ -1,5 +1,5 @@
 import { animate, stagger } from 'animejs'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
@@ -29,14 +29,113 @@ const isDarkAsset = (src = '') => src.includes('/edited-images/')
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
-const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/lama-jade-depth-openart.mp4'
-const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/lama-jade-start-frame.png'
+const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/lama-jade-depth-openart.mp4'
+const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/lama-jade-start-frame.avif'
 const ALL_FILTER = 'all'
 const VI_COLLATOR = new Intl.Collator('vi', { sensitivity: 'base' })
+const CONTACT_HREF = contact.zalo || `mailto:${contact.email}`
+const CONTACT_LINK_PROPS = contact.zalo ? { target: '_blank', rel: 'noreferrer' } : {}
+const CONTACT_ACTION_LABEL = contact.zalo ? 'Liên hệ tư vấn' : 'Gửi yêu cầu qua email'
+const ContactIcon = contact.zalo ? MessageCircle : Mail
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const getMediaKey = (media) => `${media.type}:${media.src}`
+
+const getOptimizedImageSrc = (src = '', width = 1200) => {
+  if (!src.includes('/assets/product-gallery/images/')) return ''
+  return src
+    .replace('/assets/product-gallery/images/', `/assets/product-gallery/optimized/${width}/`)
+    .replace(/\.(png|jpe?g)$/i, '.avif')
+}
+
+const getOptimizedImageSrcSet = (src = '') => {
+  const small = getOptimizedImageSrc(src, 720)
+  const large = getOptimizedImageSrc(src, 1200)
+  return small && large ? `${small} 720w, ${large} 1200w` : ''
+}
+
+const getRoutePath = (route) => {
+  if (route.name === 'home') return '/'
+  if (route.name === 'collection') return '/collection'
+  if (route.name === 'about') return '/about'
+  if (route.name === 'contact') return '/contact'
+  if (route.name === 'product' && route.id) return `/product/${route.id}`
+  return '/404'
+}
+
+const getRouteSeo = (route, product) => {
+  if (route.name === 'collection') {
+    return {
+      title: 'Bộ sưu tập chuỗi hạt và thiên châu | Lama Beads',
+      description: 'Khám phá bộ sưu tập chuỗi hạt, vòng tay và thiên châu Dzi được Lama Beads chọn lọc từ Tây Tạng, Nepal và Bhutan.',
+    }
+  }
+
+  if (route.name === 'product' && product) {
+    return {
+      title: `${product.name} | Lama Beads`,
+      description: `${product.shortDescription} Xem ảnh thật, chất liệu, ý nghĩa và gợi ý bảo quản trước khi chọn.`,
+    }
+  }
+
+  if (route.name === 'about') {
+    return {
+      title: 'Về Lama Beads | Chọn hạt và hoàn thiện thủ công',
+      description: 'Tìm hiểu cách Lama Beads chọn thiên châu, bồ đề và đá tự nhiên theo chất hạt, sắc vân và cảm giác khi đeo.',
+    }
+  }
+
+  if (route.name === 'contact') {
+    return {
+      title: 'Liên hệ tư vấn | Lama Beads',
+      description: 'Liên hệ Lama Beads để xem thêm ảnh thật, hỏi chất liệu, nguồn hạt, kích thước và tình trạng từng mẫu trước khi chọn.',
+    }
+  }
+
+  if (route.name === 'notfound') {
+    return {
+      title: 'Không tìm thấy trang | Lama Beads',
+      description: 'Trang bạn đang tìm không tồn tại. Quay lại trang chủ hoặc xem bộ sưu tập hiện có của Lama Beads.',
+    }
+  }
+
+  return {
+    title: 'Lama Beads | Chuỗi hạt và thiên châu chọn lọc',
+    description: 'Lama Beads giới thiệu chuỗi hạt, thiên châu Dzi và trang sức tâm linh chọn lọc từ Tây Tạng, Nepal và Bhutan.',
+  }
+}
+
+const setMetaTag = (selector, attrName, attrValue, content) => {
+  let tag = document.head.querySelector(selector)
+  if (!tag) {
+    tag = document.createElement('meta')
+    tag.setAttribute(attrName, attrValue)
+    document.head.appendChild(tag)
+  }
+  tag.setAttribute('content', content)
+}
+
+const updateDocumentSeo = (route, product) => {
+  const seo = getRouteSeo(route, product)
+  const canonicalHref = `https://lamabeads.com${getRoutePath(route)}`
+  let canonical = document.head.querySelector('link[rel="canonical"]')
+
+  document.title = seo.title
+  setMetaTag('meta[name="description"]', 'name', 'description', seo.description)
+  setMetaTag('meta[property="og:title"]', 'property', 'og:title', seo.title)
+  setMetaTag('meta[property="og:description"]', 'property', 'og:description', seo.description)
+  setMetaTag('meta[property="og:type"]', 'property', 'og:type', route.name === 'product' ? 'product' : 'website')
+  setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalHref)
+
+  if (!canonical) {
+    canonical = document.createElement('link')
+    canonical.setAttribute('rel', 'canonical')
+    document.head.appendChild(canonical)
+  }
+
+  canonical.setAttribute('href', canonicalHref)
+}
 
 const createProductMedia = (product) => [
   ...(product.galleryImages || []).map((src, index) => ({
@@ -416,6 +515,10 @@ function App() {
   )
 
   useEffect(() => {
+    updateDocumentSeo(route, selectedProduct)
+  }, [route, selectedProduct])
+
+  useEffect(() => {
     const root = pageRef.current
     if (!root || prefersReducedMotion()) return
 
@@ -554,7 +657,42 @@ function App() {
         </main>
         <Footer onNavigate={navigate} />
       </div>
+      {route.name === 'product' && (
+        <MobileContactCta productName={selectedProduct.name} />
+      )}
     </>
+  )
+}
+
+function MobileContactCta({ productName }) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const updateVisibility = () => {
+      const threshold = Math.min(620, window.innerHeight * 0.72)
+      setIsVisible(window.scrollY > threshold)
+    }
+
+    updateVisibility()
+    window.addEventListener('scroll', updateVisibility, { passive: true })
+    window.addEventListener('resize', updateVisibility)
+
+    return () => {
+      window.removeEventListener('scroll', updateVisibility)
+      window.removeEventListener('resize', updateVisibility)
+    }
+  }, [productName])
+
+  return (
+    <a
+      className={`mobile-sticky-cta ${isVisible ? 'is-visible' : ''}`}
+      href={CONTACT_HREF}
+      aria-label={`Gửi yêu cầu tư vấn về ${productName}`}
+      {...CONTACT_LINK_PROPS}
+    >
+      <ContactIcon size={18} />
+      <span>{CONTACT_ACTION_LABEL}</span>
+    </a>
   )
 }
 
@@ -688,9 +826,9 @@ function ProductDepthScene({ onExplore }) {
             <button className="button primary" onClick={onExplore}>
               Xem bộ sưu tập
             </button>
-            <a className="text-link depth-contact-link" href={contact.zalo} target="_blank" rel="noreferrer">
-              Liên hệ tư vấn
-              <MessageCircle size={16} />
+            <a className="text-link depth-contact-link" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
+              {CONTACT_ACTION_LABEL}
+              <ContactIcon size={16} />
             </a>
           </div>
         </div>
@@ -705,7 +843,7 @@ function NotFoundPage({ onNavigate }) {
       <div className="section-heading reveal-up">
         <div>
           <p className="section-kicker">Không tìm thấy</p>
-          <h2>Không tìm thấy trang này</h2>
+          <h1>Không tìm thấy trang này</h1>
         </div>
       </div>
       <p className="collection-note reveal-up">Bạn có thể quay về trang chủ hoặc xem lại bộ sưu tập hiện có.</p>
@@ -945,14 +1083,45 @@ function Collection({
   )
 }
 
-function ProductImageFrame({ src, alt, className = 'product-image', loading = 'lazy', sizes = '(max-width: 860px) 45vw, 25vw' }) {
+const OptimizedImage = forwardRef(function OptimizedImage({
+  src,
+  alt,
+  className,
+  loading = 'lazy',
+  decoding = 'async',
+  width,
+  height,
+  sizes,
+  fetchPriority,
+}, ref) {
+  const optimizedSrcSet = getOptimizedImageSrcSet(src)
+
   return (
-    <span className={`${className} ${isDarkAsset(src) ? 'dark-source' : ''}`}>
+    <picture>
+      {optimizedSrcSet && <source type="image/avif" srcSet={optimizedSrcSet} sizes={sizes} />}
       <img
+        ref={ref}
+        className={className}
         src={src}
         alt={alt}
         loading={loading}
-        decoding="async"
+        decoding={decoding}
+        width={width}
+        height={height}
+        sizes={sizes}
+        fetchPriority={fetchPriority}
+      />
+    </picture>
+  )
+})
+
+function ProductImageFrame({ src, alt, className = 'product-image', loading = 'lazy', sizes = '(max-width: 860px) 45vw, 25vw' }) {
+  return (
+    <span className={`${className} ${isDarkAsset(src) ? 'dark-source' : ''}`}>
+      <OptimizedImage
+        src={src}
+        alt={alt}
+        loading={loading}
         width="900"
         height="776"
         sizes={sizes}
@@ -1070,9 +1239,13 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
 
   const specs = [
     [Gem, 'Chất liệu', product.materials],
+    [BadgeCheck, 'Tình trạng', product.availability],
+    [Clock3, 'Giá', product.priceNote],
+    [PackageCheck, 'Kích thước', product.sizeNote],
     [MapPin, 'Nguồn gốc', product.origin],
     [Sparkles, 'Ý nghĩa', product.meaning],
     [Shield, 'Bảo quản', product.care],
+    [PackageCheck, 'Giao nhận', product.shippingNote],
   ]
   const hasProductVideos = mediaStats.videoCount > 0
   const mediaNoteTitle = hasProductVideos
@@ -1112,7 +1285,14 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
                 aria-label={`${media.type === 'video' ? 'Xem video' : 'Xem trước hình'} ${product.name}: ${media.label}`}
                 type="button"
               >
-                <img src={media.poster || media.src} alt="" loading="lazy" decoding="async" />
+                <OptimizedImage
+                  src={media.poster || media.src}
+                  alt=""
+                  loading="lazy"
+                  width="220"
+                  height="220"
+                  sizes="88px"
+                />
                 {media.type === 'video' && (
                   <span className="thumb-play" aria-hidden="true">
                     <Play size={16} />
@@ -1150,7 +1330,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
                 preload="metadata"
               />
             ) : (
-              <img
+              <OptimizedImage
                 ref={mainMediaRef}
                 className="main-image-photo"
                 src={activeMedia.src}
@@ -1218,8 +1398,8 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
             ))}
           </div>
           <div className="detail-actions reveal-stagger">
-            <a className="button primary wide" href={contact.zalo} target="_blank" rel="noreferrer">
-              Liên hệ tư vấn <MessageCircle size={18} />
+            <a className="button primary wide" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
+              {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
             </a>
           </div>
         </article>
@@ -1345,10 +1525,13 @@ function StoryBand() {
         onPointerMove={storyTilt.onPointerMove}
         onPointerLeave={storyTilt.onPointerLeave}
       >
-        <img
+        <OptimizedImage
           src="/assets/product-gallery/images/generated-images/Kk18f1S3N3Q3hV1HfpaE3.png"
           alt="Cận cảnh thiên châu trên nền gỗ"
           loading="lazy"
+          width="1200"
+          height="840"
+          sizes="(max-width: 860px) 100vw, 46vw"
         />
       </div>
       <div
@@ -1377,8 +1560,8 @@ function StoryBand() {
             <span>Tư vấn</span> Gợi ý theo phong cách, cổ tay và mục đích sử dụng
           </p>
         </div>
-        <a className="button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
-          Tìm hiểu thêm
+        <a className="button secondary" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
+          {CONTACT_ACTION_LABEL}
         </a>
       </div>
     </section>
@@ -1389,26 +1572,26 @@ function ContactBand() {
   const contactCards = [
     [MapPin, 'Nguồn hạt', contact.regions, null],
     [Mail, 'Email', contact.email, `mailto:${contact.email}`],
-    [MessageCircle, 'Nhắn tư vấn', 'Zalo / WhatsApp', contact.zalo],
+    ...(contact.zalo ? [[MessageCircle, 'Nhắn tư vấn', 'Zalo / WhatsApp', contact.zalo]] : []),
     [Clock3, 'Giờ làm việc', '09:00 - 18:00', null],
   ]
   const consultationSteps = [
     'Gửi ảnh mẫu bạn thích hoặc mô tả phong cách đang tìm.',
     'Lama Beads gợi ý mẫu, kích thước và ý nghĩa hợp với bạn.',
-    'Xem thêm ảnh hoặc video cận cảnh trước khi quyết định.',
+    'Xem thêm ảnh cận, tình trạng mẫu và cách bảo quản trước khi quyết định.',
   ]
 
   return (
     <section className="contact-page section reveal-up" id="contact">
       <div className="contact-hero">
         <p className="section-kicker">Liên hệ</p>
-        <h1>Xem kỹ bằng ảnh và video thật trước khi chọn.</h1>
+        <h1>Xem kỹ bằng ảnh thật trước khi chọn.</h1>
         <p>
           Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc ý nghĩa mình đang tìm,
-          cứ gửi yêu cầu để Lama Beads gợi ý theo chất liệu, nguồn hạt và cách đeo.
+          cứ gửi yêu cầu để Lama Beads gợi ý theo chất liệu, nguồn hạt, kích thước và cách đeo.
         </p>
-        <a className="button primary contact-cta" href={contact.zalo} target="_blank" rel="noreferrer">
-          Gửi yêu cầu <MessageCircle size={18} />
+        <a className="button primary contact-cta" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
+          {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
         </a>
       </div>
       <div className="contact-card-grid">
@@ -1464,9 +1647,11 @@ function Footer({ onNavigate }) {
       </div>
       <div className="footer-links">
         <a href={`mailto:${contact.email}`}>{contact.email}</a>
-        <a href={contact.zalo} target="_blank" rel="noreferrer">
-          Nhắn Zalo
-        </a>
+        {contact.zalo && (
+          <a href={contact.zalo} target="_blank" rel="noreferrer">
+            Nhắn Zalo
+          </a>
+        )}
         <button onClick={() => onNavigate('/')}>
           Lên đầu trang
         </button>
