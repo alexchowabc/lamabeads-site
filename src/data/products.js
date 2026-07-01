@@ -27,6 +27,8 @@ export const products = [
     origin: 'Tây Tạng',
     meaning: 'Bảo hộ · May mắn · Cân bằng',
     care: 'Tránh hóa chất, nước hoa và va đập mạnh. Lau bằng khăn mềm sau khi sử dụng.',
+    highlights: ['Vân ba mắt rõ ở tâm hạt', 'Sắc hổ phách ấm, dễ phối hằng ngày', 'Phù hợp người thích cảm giác bảo hộ'],
+    inspection: 'Ưu tiên kiểm tra độ sâu vân, độ bóng bề mặt và độ chắc của phần dây trước khi tư vấn.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -48,6 +50,8 @@ export const products = [
     origin: 'Tây Tạng',
     meaning: 'Trường thọ · Phúc lộc · Viên mãn',
     care: 'Cất riêng trong túi mềm, tránh kéo mạnh phần dây tua.',
+    highlights: ['Hạt Dzi lớn làm điểm nhấn chính', 'Tông xanh đậm tạo cảm giác trầm tĩnh', 'Hợp đeo thiền hoặc trưng bày trang nghiêm'],
+    inspection: 'Kiểm tra độ cân của hạt chủ, độ đều màu của chuỗi và phần kết dây tua.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -69,6 +73,8 @@ export const products = [
     origin: 'Nepal',
     meaning: 'Ấm áp · Tài lộc · An ổn',
     care: 'Tránh nhiệt cao và ánh nắng trực tiếp trong thời gian dài.',
+    highlights: ['Tông mật sáp vàng ấm', 'Hạt Dzi trung tâm nổi bật trên cổ tay', 'Dễ đeo cùng trang phục thường ngày'],
+    inspection: 'Kiểm tra sắc vàng, độ mịn bề mặt hạt và điểm nối phụ kiện kim loại.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -90,6 +96,8 @@ export const products = [
     origin: 'Tây Tạng',
     meaning: 'Thanh tịnh · Khai mở · Bảo hộ',
     care: 'Không ngâm nước. Bảo quản trong hộp riêng để tránh trầy bề mặt.',
+    highlights: ['Dáng hạt rời dễ phối riêng', 'Vân Liên Hoa gọn, dễ nhận diện', 'Hợp làm hạt chủ cho vòng tay'],
+    inspection: 'Kiểm tra độ sắc của vân Liên Hoa, bề mặt đánh bóng và hai đầu hạt.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -111,6 +119,8 @@ export const products = [
     origin: 'Bhutan',
     meaning: 'Vững chãi · Kiên định · Tĩnh tâm',
     care: 'Tránh để chung với đá cứng sắc cạnh. Lau khô trước khi cất.',
+    highlights: ['Vân núi tạo cảm giác vững chãi', 'Dáng dài phù hợp làm hạt chủ', 'Đẹp nhất khi phối tối giản'],
+    inspection: 'Kiểm tra đường vân núi, thân hạt và những vết mộc tự nhiên trên bề mặt.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -132,6 +142,8 @@ export const products = [
     origin: 'Tây Tạng',
     meaning: 'Hài hòa · Gắn kết · Bình an',
     care: 'Tránh tiếp xúc nước biển, clo và dung dịch tẩy rửa.',
+    highlights: ['Bố cục hai mắt cân đối', 'Dễ phối cùng bạc, aquamarine hoặc bồ đề', 'Hợp người thích ý nghĩa kết nối'],
+    inspection: 'Kiểm tra sự cân đối của hai mắt, màu nền và độ sạch của rãnh vân.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -153,6 +165,8 @@ export const products = [
     origin: 'Nepal',
     meaning: 'Trầm ổn · Bảo hộ · Nội lực',
     care: 'Hạn chế va chạm trực tiếp. Có thể lau bằng vải cotton khô.',
+    highlights: ['Sắc nâu trầm như cổ vật', 'Bề mặt mộc có chiều sâu', 'Hợp người thích chất liệu không quá hoàn hảo'],
+    inspection: 'Kiểm tra mảng vân sâu, dấu tự nhiên trên thân hạt và độ chắc khi xỏ dây.',
     availability: 'Liên hệ để tư vấn',
   },
   {
@@ -174,6 +188,8 @@ export const products = [
     origin: 'Bhutan',
     meaning: 'Tỉnh thức · Bình an · Chánh niệm',
     care: 'Giữ khô, tránh nước lâu và để nơi thoáng khi không sử dụng.',
+    highlights: ['Hạt bồ đề nhẹ và gần gũi', 'Phù hợp niệm chú hoặc đeo hằng ngày', 'Có thể phối thêm Dzi làm điểm nhấn'],
+    inspection: 'Kiểm tra độ đều hạt, độ khô tự nhiên và cảm giác dây khi cầm trên tay.',
     availability: 'Liên hệ để tư vấn',
   },
 ]

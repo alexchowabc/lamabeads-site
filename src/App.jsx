@@ -2,29 +2,88 @@ import { animate, stagger } from 'animejs'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowRight,
+  BadgeCheck,
+  Camera,
   ChevronLeft,
+  CheckCircle2,
   Clock3,
+  Filter,
   Gem,
   Mail,
   MapPin,
   Menu,
   MessageCircle,
+  PackageCheck,
   Play,
   Search,
   Shield,
+  SlidersHorizontal,
   Sparkles,
   X,
 } from 'lucide-react'
 import { contact, featuredProduct, products } from './data/products'
 
-const isDarkAsset = (src) => src.includes('/edited-images/')
+const isDarkAsset = (src = '') => src.includes('/edited-images/')
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/lama-jade-depth-openart.mp4'
 const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/lama-jade-start-frame.png'
+const ALL_FILTER = 'all'
+const VI_COLLATOR = new Intl.Collator('vi', { sensitivity: 'base' })
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const getMediaKey = (media) => `${media.type}:${media.src}`
+
+const createProductMedia = (product) => [
+  ...product.galleryImages.map((src, index) => ({
+    type: 'image',
+    src,
+    poster: src,
+    label: index === 0 ? 'Ảnh chính' : `Ảnh chi tiết ${index + 1}`,
+  })),
+  ...product.videos.map((video, index) => ({
+    type: 'video',
+    src: video.src,
+    poster: video.poster || product.previewImage,
+    label: video.label || `Video ${index + 1}`,
+    duration: video.duration || '',
+  })),
+]
+
+const formatMediaCount = (mediaItems) => {
+  const imageCount = mediaItems.filter((item) => item.type === 'image').length
+  const videoCount = mediaItems.filter((item) => item.type === 'video').length
+  return [
+    imageCount ? `${imageCount} ảnh` : '',
+    videoCount ? `${videoCount} video` : '',
+  ].filter(Boolean).join(' · ')
+}
+
+const getSearchText = (product) => [
+  product.name,
+  product.category,
+  product.origin,
+  product.meaning,
+  product.materials,
+  product.shortDescription,
+  ...(product.highlights || []),
+].join(' ').toLowerCase()
+
+const sortProductList = (items, sortMode) => {
+  const sorted = [...items]
+
+  if (sortMode === 'name') {
+    return sorted.sort((a, b) => VI_COLLATOR.compare(a.name, b.name))
+  }
+
+  if (sortMode === 'origin') {
+    return sorted.sort((a, b) => VI_COLLATOR.compare(a.origin, b.origin) || VI_COLLATOR.compare(a.name, b.name))
+  }
+
+  return sorted
+}
 
 function parseRoute(pathname = window.location.pathname) {
   const path = ((pathname || '/') + '').split('?')[0].split('#')[0].replace(/\/+$/, '') || '/'
@@ -266,6 +325,9 @@ function App() {
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState(ALL_FILTER)
+  const [selectedOrigin, setSelectedOrigin] = useState(ALL_FILTER)
+  const [sortMode, setSortMode] = useState('featured')
   const pageRef = useRef(null)
 
   const openProduct = useCallback(
@@ -295,21 +357,37 @@ function App() {
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
+  const categoryOptions = useMemo(
+    () => [ALL_FILTER, ...Array.from(new Set(products.map((product) => product.category)))],
+    [],
+  )
+  const originOptions = useMemo(
+    () => [ALL_FILTER, ...Array.from(new Set(products.map((product) => product.origin)))],
+    [],
+  )
+
   const filteredProducts = useMemo(() => {
     const term = query.trim().toLowerCase()
-    if (!term) return products
-    return products.filter((product) =>
-      [product.name, product.category, product.origin, product.meaning]
-        .join(' ')
-        .toLowerCase()
-        .includes(term),
+    const matched = products.filter((product) =>
+      (!term || getSearchText(product).includes(term)) &&
+      (selectedCategory === ALL_FILTER || product.category === selectedCategory) &&
+      (selectedOrigin === ALL_FILTER || product.origin === selectedOrigin),
     )
-  }, [query])
+    return sortProductList(matched, sortMode)
+  }, [query, selectedCategory, selectedOrigin, sortMode])
+
+  const clearCollectionControls = useCallback(() => {
+    setQuery('')
+    setSelectedCategory(ALL_FILTER)
+    setSelectedOrigin(ALL_FILTER)
+    setSortMode('featured')
+  }, [])
 
   const selectedProduct =
     route.name === 'product' && route.id
       ? products.find((item) => item.id === route.id) || featuredProduct
       : featuredProduct
+  const visibleProductKey = filteredProducts.map((product) => product.id).join('|')
 
   useEffect(() => {
     const root = pageRef.current
@@ -323,7 +401,7 @@ function App() {
     })
   }, [])
 
-  useScrollReveal(pageRef, [route.name])
+  useScrollReveal(pageRef, [route.name, visibleProductKey])
   useScrollParallax(pageRef, [route.name])
 
   useEffect(() => {
@@ -343,6 +421,7 @@ function App() {
         setMenuOpen={setMenuOpen}
         onNavigate={navigate}
         showSearch={route.name === 'collection'}
+        currentRoute={route.name}
       />
       <main>
         {route.name === 'home' ? (
@@ -350,9 +429,19 @@ function App() {
         ) : route.name === 'collection' ? (
           <Collection
             products={filteredProducts}
+            totalCount={products.length}
             query={query}
+            setQuery={setQuery}
+            categories={categoryOptions}
+            origins={originOptions}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedOrigin={selectedOrigin}
+            setSelectedOrigin={setSelectedOrigin}
+            sortMode={sortMode}
+            setSortMode={setSortMode}
             onSelect={openProduct}
-            onClearSearch={() => setQuery('')}
+            onClearSearch={clearCollectionControls}
           />
         ) : route.name === 'about' ? (
           <>
@@ -492,7 +581,7 @@ function ProductDepthScene({ onExplore }) {
             poster={HOMEPAGE_DEPTH_POSTER}
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
           />
           <span className="depth-video-sheen" />
           <span className="depth-progress">
@@ -523,13 +612,13 @@ function ProductDepthScene({ onExplore }) {
 
 function NotFoundPage({ onNavigate }) {
   return (
-      <section className="section contact-band">
-        <div className="section-heading reveal-up">
-          <div>
-            <p className="section-kicker">Không tồn tại</p>
-            <h2>Trang này hiện chưa có</h2>
-          </div>
+    <section className="section not-found-page">
+      <div className="section-heading reveal-up">
+        <div>
+          <p className="section-kicker">Không tồn tại</p>
+          <h2>Trang này hiện chưa có</h2>
         </div>
+      </div>
       <p className="collection-note reveal-up">Vui lòng quay lại trang chủ hoặc xem bộ sưu tập.</p>
       <div className="section-cta-row">
         <button className="button primary" onClick={() => onNavigate('/')}>
@@ -552,12 +641,13 @@ function Header({
   setMenuOpen,
   onNavigate,
   showSearch,
+  currentRoute,
 }) {
   const nav = [
-    ['Trang chủ', '/'],
-    ['Bộ sưu tập', '/collection'],
-    ['Về chúng tôi', '/about'],
-    ['Liên hệ', '/contact'],
+    ['Trang chủ', '/', 'home'],
+    ['Bộ sưu tập', '/collection', 'collection'],
+    ['Về chúng tôi', '/about', 'about'],
+    ['Liên hệ', '/contact', 'contact'],
   ]
 
   return (
@@ -569,8 +659,13 @@ function Header({
         Lama Beads
       </button>
       <nav className="desktop-nav" aria-label="Chính">
-        {nav.map(([label, target]) => (
-          <button key={target} onClick={() => onNavigate(target)}>
+        {nav.map(([label, target, routeName]) => (
+          <button
+            key={target}
+            className={currentRoute === routeName ? 'is-active' : ''}
+            aria-current={currentRoute === routeName ? 'page' : undefined}
+            onClick={() => onNavigate(target)}
+          >
             {label}
           </button>
         ))}
@@ -607,8 +702,13 @@ function Header({
               <X size={22} />
             </button>
           </div>
-          {nav.map(([label, target]) => (
-            <button key={target} className="mobile-menu-link" onClick={() => onNavigate(target)}>
+          {nav.map(([label, target, routeName]) => (
+            <button
+              key={target}
+              className={`mobile-menu-link ${currentRoute === routeName ? 'is-active' : ''}`}
+              aria-current={currentRoute === routeName ? 'page' : undefined}
+              onClick={() => onNavigate(target)}
+            >
               {label}
               <ArrowRight size={18} />
             </button>
@@ -619,173 +719,101 @@ function Header({
   )
 }
 
-function Hero({ onExplore, product }) {
-  const shellImage = product?.previewImage || '/assets/product-gallery/images/generated-images/Cr9kBe1hknLl2ryOjIzI_.png'
-  const coreImage = product?.galleryImages?.[1] || shellImage
-  const mediaTilt = usePointerTilt({ intensity: 18, lift: 10 })
-  const heroRef = useRef(null)
-  const jadeRevealRef = useRef(null)
+function Collection({
+  products,
+  totalCount,
+  query,
+  setQuery,
+  categories,
+  origins,
+  selectedCategory,
+  setSelectedCategory,
+  selectedOrigin,
+  setSelectedOrigin,
+  sortMode,
+  setSortMode,
+  onSelect,
+  onClearSearch,
+}) {
+  const activeFilterCount = [query, selectedCategory !== ALL_FILTER, selectedOrigin !== ALL_FILTER]
+    .filter(Boolean).length
 
-  useEffect(() => {
-    const hero = heroRef.current
-    const media = jadeRevealRef.current
-    if (!hero || !media || prefersReducedMotion()) return
-
-    let frameId = 0
-
-    const updateDepth = () => {
-      const rect = hero.getBoundingClientRect()
-      const heroHeight = Math.max(hero.offsetHeight, 1)
-      const rawProgress = clamp((-rect.top - 24) / (heroHeight - 40), 0, 1)
-      const easedProgress = 1 - Math.pow(1 - rawProgress, 2)
-
-      media.style.setProperty('--jade-progress', easedProgress.toFixed(3))
-      media.style.setProperty('--jade-core-inset', `${(24 - easedProgress * 16).toFixed(2)}%`)
-      media.style.setProperty('--jade-shell-opacity', (1 - easedProgress * 0.55).toFixed(3))
-      media.style.setProperty('--jade-shell-scale', (1.02 + easedProgress * 0.07).toFixed(3))
-      media.style.setProperty('--jade-shell-rotate', `${(16 - easedProgress * 11).toFixed(2)}deg`)
-      media.style.setProperty('--jade-shell-blur', `${(0.6 + easedProgress * 2.4).toFixed(2)}px`)
-      media.style.setProperty('--jade-core-scale', (0.72 + easedProgress * 0.84).toFixed(3))
-      media.style.setProperty('--jade-core-translate', `${(4 + easedProgress * 58).toFixed(1)}px`)
-      media.style.setProperty('--jade-core-depth', `${(-20 + easedProgress * 145).toFixed(1)}px`)
-      media.style.setProperty('--jade-shell-depth', `${(12 - easedProgress * 34).toFixed(2)}px`)
-      media.style.setProperty('--jade-core-rotate-x', `${(14 + easedProgress * 10).toFixed(2)}deg`)
-      media.style.setProperty('--jade-core-rotate-y', `${(4 + easedProgress * 10).toFixed(2)}deg`)
-      media.style.setProperty('--jade-core-glow', (0.18 + easedProgress * 0.62).toFixed(3))
-      media.style.setProperty('--jade-core-opacity', (0.08 + easedProgress * 0.86).toFixed(3))
-      media.style.setProperty('--jade-stage-tilt', `${(4 + easedProgress * 8).toFixed(2)}deg`)
-      media.style.setProperty('--jade-stage-depth', `${(-12 + easedProgress * 60).toFixed(1)}px`)
-
-      frameId = 0
-    }
-
-    const requestUpdate = () => {
-      if (frameId) return
-      frameId = requestAnimationFrame(updateDepth)
-    }
-
-    requestUpdate()
-    window.addEventListener('scroll', requestUpdate, { passive: true })
-    window.addEventListener('resize', requestUpdate, { passive: true })
-
-    return () => {
-      window.removeEventListener('scroll', requestUpdate)
-      window.removeEventListener('resize', requestUpdate)
-      cancelAnimationFrame(frameId)
-    }
-  }, [])
-
-  return (
-    <section className="hero" id="top" ref={heroRef}>
-      <span
-        className="hero-orb hero-orb-left parallax-layer"
-        data-parallax-speed="1.2"
-        data-parallax-axis="x"
-        data-parallax-depth="1"
-        data-parallax-rotate="0.22"
-        data-parallax-rotate-axis="both"
-        aria-hidden="true"
-      />
-      <span
-        className="hero-orb hero-orb-right parallax-layer"
-        data-parallax-speed="0.85"
-        data-parallax-axis="x"
-        data-parallax-direction="reverse"
-        data-parallax-depth="1"
-        data-parallax-rotate="0.18"
-        data-parallax-rotate-axis="both"
-        aria-hidden="true"
-      />
-      <div
-        className="hero-copy reveal-up parallax-layer"
-        data-parallax-speed="0.55"
-        data-parallax-axis="y"
-        data-parallax-direction="reverse"
-        data-parallax-depth="0.5"
-        data-parallax-rotate="0.16"
-        data-parallax-rotate-axis="x"
-        data-reveal-rotate-y="8"
-        data-reveal-rotate-x="6"
-      >
-        <p className="section-kicker">Thương hiệu trang sức từ chất liệu thiêng</p>
-        <h1>Lama Beads</h1>
-        <p>
-          Trang sức chuỗi hạt thiêng từ Tây Tạng, Nepal và Bhutan. Mỗi món được chọn để giữ lại vẻ đẹp tự nhiên, năng lượng an lành
-          và câu chuyện riêng.
-        </p>
-        <div className="hero-actions reveal-stagger">
-          <button className="button primary" onClick={onExplore}>
-            Xem bộ sưu tập
-          </button>
-          <a className="button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
-            Liên hệ tư vấn
-          </a>
-        </div>
-        <p className="hero-note">Giảm nhẹ ánh sáng, tập trung vào đường vân và bề mặt thiên nhiên trên từng hạt.</p>
-      </div>
-      <div
-        className="hero-media-stage parallax-layer"
-        data-parallax-speed="0.28"
-        data-parallax-axis="x"
-        data-parallax-depth="0.45"
-        data-parallax-rotate="0.12"
-        data-parallax-rotate-axis="both"
-      >
-        <span className="hero-stage-orbit orbit-a" aria-hidden="true" />
-        <span className="hero-stage-orbit orbit-b" aria-hidden="true" />
-        <div
-          className="hero-media reveal-up jade-reveal"
-          ref={jadeRevealRef}
-          data-reveal-rotate-y="-4"
-          data-reveal-rotate-x="4"
-          data-parallax-speed="0.35"
-          data-parallax-axis="y"
-          data-parallax-depth="0.8"
-          data-parallax-rotate="0.24"
-          data-parallax-rotate-axis="y"
-          onPointerMove={mediaTilt.onPointerMove}
-          onPointerLeave={mediaTilt.onPointerLeave}
-          aria-label="Thiên châu Lama Beads"
-        >
-          <span className="hero-media-glow" aria-hidden="true" />
-          <img
-            className="jade-shell"
-            src={shellImage}
-            alt="Thiên châu Lama Beads"
-          />
-          <img
-            className="jade-core"
-            src={coreImage}
-            alt="Chi tiết bên trong hạt jade"
-          />
-          <span className="jade-core-glow" aria-hidden="true" />
-        </div>
-      </div>
-      <button className="scroll-cue" onClick={onExplore} aria-label="Xuống bộ sưu tập">
-        <ArrowRight size={22} />
-      </button>
-    </section>
-  )
-}
-
-function Collection({ products, query, onSelect, onClearSearch }) {
   return (
     <section className="collection section" id="collection">
-        <div className="section-heading reveal-up">
-          <div>
-            <p className="section-kicker">Bộ sưu tập</p>
-            <h2>Mỗi chuỗi hạt là một câu chuyện</h2>
-          </div>
-        <button className="text-link" onClick={onClearSearch}>
-          {query ? 'Xem tất cả' : 'Tất cả sản phẩm'} <ArrowRight size={16} />
+      <div className="section-heading reveal-up">
+        <div>
+          <p className="section-kicker">Bộ sưu tập</p>
+          <h2>Mỗi chuỗi hạt là một câu chuyện</h2>
+        </div>
+        <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
+          {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả sản phẩm'} <ArrowRight size={16} />
         </button>
       </div>
       <p className="collection-note reveal-up">
         Lọc theo nhu cầu của bạn, chọn một sản phẩm để xem chi tiết kết cấu, chất liệu và hướng dẫn phối.
       </p>
+      <div className="collection-tools reveal-up">
+        <label className="collection-search">
+          <Search size={17} />
+          <span>Tìm sản phẩm</span>
+          <input
+            value={query}
+            placeholder="Dzi 3 mắt, Nepal, bồ đề..."
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </label>
+        <div className="filter-group" aria-label="Lọc theo loại sản phẩm">
+          <span className="filter-label">
+            <Filter size={16} />
+            Loại
+          </span>
+          <div className="filter-chips">
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className={category === selectedCategory ? 'filter-chip is-active' : 'filter-chip'}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category === ALL_FILTER ? 'Tất cả' : category}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="filter-group" aria-label="Lọc theo nguồn gốc">
+          <span className="filter-label">
+            <MapPin size={16} />
+            Nguồn
+          </span>
+          <div className="filter-chips">
+            {origins.map((origin) => (
+              <button
+                key={origin}
+                type="button"
+                className={origin === selectedOrigin ? 'filter-chip is-active' : 'filter-chip'}
+                onClick={() => setSelectedOrigin(origin)}
+              >
+                {origin === ALL_FILTER ? 'Tất cả' : origin}
+              </button>
+            ))}
+          </div>
+        </div>
+        <label className="sort-control">
+          <SlidersHorizontal size={16} />
+          <span>Sắp xếp</span>
+          <select value={sortMode} onChange={(event) => setSortMode(event.target.value)}>
+            <option value="featured">Gợi ý</option>
+            <option value="name">Tên A-Z</option>
+            <option value="origin">Nguồn gốc</option>
+          </select>
+        </label>
+      </div>
+      <p className="collection-result-count">
+        Đang hiển thị {products.length} / {totalCount} sản phẩm
+      </p>
       {products.length === 0 ? (
         <div className="empty-state">
-          <p>Chưa có sản phẩm phù hợp với từ khóa hiện tại.</p>
+          <p>Chưa có sản phẩm phù hợp với bộ lọc hiện tại.</p>
           <button className="button secondary" onClick={onClearSearch}>
             Xem lại bộ sưu tập
           </button>
@@ -814,6 +842,22 @@ function Collection({ products, query, onSelect, onClearSearch }) {
   )
 }
 
+function ProductImageFrame({ src, alt, className = 'product-image', loading = 'lazy', sizes = '(max-width: 860px) 45vw, 25vw' }) {
+  return (
+    <span className={`${className} ${isDarkAsset(src) ? 'dark-source' : ''}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading={loading}
+        decoding="async"
+        width="900"
+        height="776"
+        sizes={sizes}
+      />
+    </span>
+  )
+}
+
 function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
   const cardTilt = usePointerTilt({ intensity: 12, lift: 6 })
   const cardDepth = `${6 + (depthIndex % 3) * 8}px`
@@ -827,13 +871,12 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
       onPointerMove={cardTilt.onPointerMove}
       onPointerLeave={cardTilt.onPointerLeave}
     >
-      <span className={`product-image ${isDarkAsset(product.previewImage) ? 'dark-source' : ''}`}>
-        <img src={product.previewImage} alt={product.name} loading="lazy" />
-      </span>
+      <ProductImageFrame src={product.previewImage} alt={product.name} />
       <span className="product-copy">
         <span>
           <strong>{product.name}</strong>
           <small>{product.category}</small>
+          <small>{product.origin}</small>
           <small className="availability">{product.availability}</small>
         </span>
         <ArrowRight size={17} />
@@ -843,15 +886,16 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
 }
 
 function DetailSection({ product, relatedProducts, onSelect, onBack }) {
-  const [activeImage, setActiveImage] = useState(product.galleryImages[0])
-  const mainImageRef = useRef(null)
+  const mediaItems = useMemo(() => createProductMedia(product), [product])
+  const [activeMediaIndex, setActiveMediaIndex] = useState(0)
+  const activeMedia = mediaItems[activeMediaIndex] || mediaItems[0]
+  const mainMediaRef = useRef(null)
   const sectionHeadingRef = useRef(null)
   const detailSectionRef = useRef(null)
-  const hasVideo = product.videos.length > 0
 
   useEffect(() => {
-    setActiveImage(product.galleryImages[0])
-  }, [product])
+    setActiveMediaIndex(0)
+  }, [product.id])
 
   useEffect(() => {
     const root = detailSectionRef?.current
@@ -899,21 +943,26 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
   }, [product.id, detailSectionRef])
 
   useEffect(() => {
-    if (!mainImageRef.current || prefersReducedMotion()) return
+    if (!mainMediaRef.current || prefersReducedMotion()) return
 
-    animate(mainImageRef.current, {
+    animate(mainMediaRef.current, {
       opacity: [0, 1],
       scale: [0.97, 1],
       duration: 320,
       easing: 'outCubic',
     })
-  }, [activeImage])
+  }, [activeMedia])
 
   const specs = [
     [Gem, 'Chất liệu', product.materials],
     [MapPin, 'Nguồn gốc', product.origin],
     [Sparkles, 'Ý nghĩa', product.meaning],
     [Shield, 'Bảo quản', product.care],
+  ]
+  const assurances = [
+    [BadgeCheck, 'Kiểm tra trước khi tư vấn', product.inspection],
+    [Camera, 'Ảnh và video theo yêu cầu', 'Khi bạn chọn mẫu, Lama Beads có thể gửi thêm góc quay cận cảnh để kiểm tra vân, bề mặt và độ bóng.'],
+    [PackageCheck, 'Đóng gói & bảo quản', 'Mỗi mẫu được tư vấn cách giữ dây, hạt và phụ kiện để dùng lâu hơn.'],
   ]
 
   return (
@@ -932,26 +981,58 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
           data-parallax-rotate-axis="both"
         >
           <div className="thumb-rail">
-            {product.galleryImages.map((image) => (
+            {mediaItems.map((media, index) => (
               <button
-                key={image}
-                className={image === activeImage ? 'thumb is-active' : 'thumb'}
-                onClick={() => setActiveImage(image)}
-                aria-label={`Xem trước hình ${product.name}`}
+                key={getMediaKey(media)}
+                className={index === activeMediaIndex ? 'thumb media-thumb is-active' : 'thumb media-thumb'}
+                onClick={() => setActiveMediaIndex(index)}
+                aria-label={`${media.type === 'video' ? 'Xem video' : 'Xem trước hình'} ${product.name}: ${media.label}`}
                 type="button"
               >
-                <img src={image} alt="" />
+                <img src={media.poster || media.src} alt="" loading="lazy" decoding="async" />
+                {media.type === 'video' && (
+                  <span className="thumb-play" aria-hidden="true">
+                    <Play size={16} />
+                  </span>
+                )}
               </button>
             ))}
           </div>
-          <figure className={`main-image ${isDarkAsset(activeImage) ? 'dark-source' : ''}`}>
-            <img
-              ref={mainImageRef}
-              className="main-image-photo"
-              src={activeImage}
-              alt={product.name}
-              key={activeImage}
-            />
+          <figure
+            className={`main-image main-media ${activeMedia.type === 'video' ? 'is-video' : ''} ${
+              isDarkAsset(activeMedia.src) || isDarkAsset(activeMedia.poster) ? 'dark-source' : ''
+            }`}
+          >
+            {activeMedia.type === 'video' ? (
+              <video
+                ref={mainMediaRef}
+                className="main-image-photo"
+                src={activeMedia.src}
+                poster={activeMedia.poster}
+                key={getMediaKey(activeMedia)}
+                controls
+                playsInline
+                preload="metadata"
+              />
+            ) : (
+              <img
+                ref={mainMediaRef}
+                className="main-image-photo"
+                src={activeMedia.src}
+                alt={`${product.name} - ${activeMedia.label}`}
+                key={getMediaKey(activeMedia)}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                width="1200"
+                height="1200"
+                sizes="(max-width: 860px) 100vw, 58vw"
+              />
+            )}
+            <figcaption className="media-caption">
+              <span>{activeMedia.label}</span>
+              {activeMedia.type === 'video' && activeMedia.duration && <small>{activeMedia.duration}</small>}
+            </figcaption>
           </figure>
         </div>
         <article className="detail-copy">
@@ -960,7 +1041,16 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
           <p className="detail-intro">{product.fullDescription}</p>
           <div className="detail-meta">
             <span>Mã: {product.id}</span>
-            <span>{product.galleryImages.length} ảnh chi tiết</span>
+            <span>{formatMediaCount(mediaItems)}</span>
+            <span>{product.origin}</span>
+          </div>
+          <div className="detail-highlights">
+            {(product.highlights || []).map((highlight) => (
+              <span key={highlight}>
+                <CheckCircle2 size={16} />
+                {highlight}
+              </span>
+            ))}
           </div>
           <div className="spec-list">
             {specs.map(([Icon, label, value]) => (
@@ -971,6 +1061,17 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
               </div>
             ))}
           </div>
+          <div className="detail-assurance">
+            {assurances.map(([Icon, title, description]) => (
+              <article key={title}>
+                <Icon size={18} />
+                <div>
+                  <strong>{title}</strong>
+                  <p>{description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
           <div className="detail-actions reveal-stagger">
             <a className="button primary wide" href={contact.zalo} target="_blank" rel="noreferrer">
               Liên hệ tư vấn <MessageCircle size={18} />
@@ -979,7 +1080,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
         </article>
       </div>
       <div
-        className="media-related reveal-stagger parallax-layer"
+        className="media-related related-only reveal-stagger parallax-layer"
         data-parallax-speed="0.12"
         data-parallax-axis="y"
         data-parallax-direction="reverse"
@@ -987,16 +1088,9 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
         data-parallax-rotate="0.05"
         data-parallax-rotate-axis="x"
       >
-        {hasVideo && (
-          <div className="video-card">
-            <button className="play-button" aria-label="Phát video">
-              <Play size={26} />
-            </button>
-          </div>
-        )}
-          <div className="related">
-            <h3>Sản phẩm liên quan</h3>
-            <div className="related-grid">
+        <div className="related">
+          <h3>Sản phẩm liên quan</h3>
+          <div className="related-grid">
             {relatedProducts.map((item, index) => (
               <RelatedCard key={item.id} item={item} onSelect={onSelect} depthIndex={index} />
             ))}
@@ -1020,7 +1114,12 @@ function RelatedCard({ item, onSelect, depthIndex = 0 }) {
       onPointerMove={relatedTilt.onPointerMove}
       onPointerLeave={relatedTilt.onPointerLeave}
     >
-      <img src={item.previewImage} alt={item.name} loading="lazy" />
+      <ProductImageFrame
+        src={item.previewImage}
+        alt={item.name}
+        className="related-image"
+        sizes="(max-width: 860px) 100vw, 20vw"
+      />
       <span>{item.name}</span>
       <ArrowRight size={15} />
     </button>
@@ -1044,9 +1143,9 @@ function TrustBand() {
   ]
 
   return (
-      <section className="trust-band section reveal-stagger" id="trust">
-        <div className="section-heading">
-          <div>
+    <section className="trust-band section reveal-stagger" id="trust">
+      <div className="section-heading">
+        <div>
           <p className="section-kicker">Quy trình của chúng tôi</p>
           <h2>Làm cầu nối giữa truyền thống và thẩm mỹ hôm nay</h2>
         </div>
@@ -1140,47 +1239,70 @@ function StoryBand() {
 }
 
 function ContactBand() {
+  const contactCards = [
+    [MapPin, 'Nguồn hàng', contact.regions, null],
+    [Mail, 'Email', contact.email, `mailto:${contact.email}`],
+    [MessageCircle, 'Tư vấn nhanh', 'Zalo / WhatsApp', contact.zalo],
+    [Clock3, 'Giờ làm việc', '09:00 - 18:00', null],
+  ]
+  const consultationSteps = [
+    'Gửi ảnh hoặc mô tả phong cách bạn thích.',
+    'Lama Beads gợi ý mẫu, kích thước và ý nghĩa phù hợp.',
+    'Nhận thêm ảnh hoặc video cận cảnh trước khi chốt mẫu.',
+  ]
+
   return (
-    <section className="contact-band reveal-up" id="contact">
-      <div className="contact-item">
-        <MapPin size={22} />
-        <span>
-          <strong>Lama Beads</strong>
-          <small>{contact.regions}</small>
-        </span>
+    <section className="contact-page section reveal-up" id="contact">
+      <div className="contact-hero">
+        <p className="section-kicker">Liên hệ</p>
+        <h2>Chọn mẫu bằng mắt, rồi kiểm tra bằng ảnh và video thật.</h2>
+        <p>
+          Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc ý nghĩa cần tìm,
+          gửi yêu cầu để Lama Beads tư vấn theo chất liệu, nguồn gốc và cách đeo.
+        </p>
+        <a className="button primary contact-cta" href={contact.zalo} target="_blank" rel="noreferrer">
+          Gửi yêu cầu tư vấn <MessageCircle size={18} />
+        </a>
       </div>
-      <a className="contact-item" href={`mailto:${contact.email}`}>
-        <Mail size={22} />
-        <span>
-          <strong>Email</strong>
-          <small>{contact.email}</small>
-        </span>
-      </a>
-      <a className="contact-item" href={contact.zalo} target="_blank" rel="noreferrer">
-        <MessageCircle size={22} />
-        <span>
-          <strong>Tư vấn</strong>
-          <small>Zalo / WhatsApp</small>
-        </span>
-      </a>
-      <div className="contact-item">
-        <Clock3 size={22} />
-        <span>
-          <strong>Giờ làm việc</strong>
-          <small>09:00 - 18:00</small>
-        </span>
+      <div className="contact-card-grid">
+        {contactCards.map(([Icon, title, value, href]) => {
+          const content = (
+            <>
+              <Icon size={22} />
+              <span>
+                <strong>{title}</strong>
+                <small>{value}</small>
+              </span>
+            </>
+          )
+
+          return href ? (
+            <a key={title} className="contact-item" href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noreferrer' : undefined}>
+              {content}
+            </a>
+          ) : (
+            <div key={title} className="contact-item">
+              {content}
+            </div>
+          )
+        })}
       </div>
-      <a className="button primary contact-cta" href={contact.zalo} target="_blank" rel="noreferrer">
-        Liên hệ với chúng tôi
-      </a>
+      <div className="consultation-flow">
+        <div>
+          <p className="section-kicker">Quy trình tư vấn</p>
+          <h3>Từ cảm giác đến lựa chọn rõ ràng</h3>
+        </div>
+        <ol>
+          {consultationSteps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+      </div>
       <div className="conversion-strip">
         <div>
           <p>Bạn chưa rõ chọn mẫu nào phù hợp?</p>
           <small>Gửi ảnh phong cách hoặc yêu cầu của bạn, tôi sẽ tư vấn gói trang sức riêng cho bạn.</small>
         </div>
-        <a className="button secondary" href={contact.zalo} target="_blank" rel="noreferrer">
-          Nhận tư vấn ngay
-        </a>
       </div>
     </section>
   )
