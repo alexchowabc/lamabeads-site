@@ -3,3 +3,5 @@ node_modules
 /.vite
 *.local
 .DS_Store
+media_review/
+media_prepared/
