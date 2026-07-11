@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BadgeCheck,
   Camera,
+  ChevronDown,
   ChevronLeft,
   CheckCircle2,
   Clock3,
@@ -14,10 +15,8 @@ import {
   MapPin,
   Menu,
   MessageCircle,
-  PackageCheck,
   Play,
   Search,
-  Shield,
   SlidersHorizontal,
   Sparkles,
   Video,
@@ -39,6 +38,8 @@ const ContactIcon = contact.zalo ? MessageCircle : Mail
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const getMediaKey = (media) => `${media.type}:${media.src}`
+
+const getProductById = (id) => products.find((product) => product.id === id)
 
 const getOptimizedImageSrc = (src = '', width = 1200) => {
   if (!src.includes('/assets/product-gallery/images/')) return ''
@@ -709,51 +710,55 @@ function MobileContactCta({ productName }) {
 }
 
 function HomePage({ products, onExplore, onSelect }) {
-  const featuredProducts = products.slice(0, 4)
+  const heroProduct = getProductById('lama-009') || products[0]
+  const signatureProducts = [heroProduct, ...products.filter((product) => product.id !== heroProduct.id)].slice(0, 5)
 
   return (
     <>
-      <ProductDepthScene onExplore={onExplore} />
-      <section className="collection section">
-        <div className="section-heading reveal-up">
-          <div>
-            <p className="section-kicker">Bộ sưu tập nổi bật</p>
-            <h2>Một số mẫu tiêu biểu</h2>
-          </div>
-        </div>
-        <p className="collection-note reveal-up">
-          Một vài mẫu nổi bật để bạn cảm nhận chất liệu, màu sắc và tinh thần của Lama Beads trước khi xem toàn bộ bộ sưu tập.
-        </p>
-        <div
-          className="product-grid reveal-stagger parallax-layer"
-          data-parallax-speed="0.16"
-          data-parallax-axis="y"
-          data-parallax-direction="reverse"
-          data-parallax-depth="0.9"
-          data-parallax-rotate="0.08"
-          data-parallax-rotate-axis="both"
-        >
-          {featuredProducts.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              depthIndex={index}
-              onSelect={() => onSelect(product)}
-            />
-          ))}
-        </div>
-        <div className="section-cta-row">
-          <button className="text-link collection-link" onClick={onExplore}>
-            Xem toàn bộ bộ sưu tập
-            <ArrowRight className="motion-cue" size={16} />
-          </button>
-        </div>
-      </section>
+      <ProductDepthScene product={heroProduct} onExplore={onExplore} onSelect={onSelect} />
+      <HomeSignature products={signatureProducts} onExplore={onExplore} onSelect={onSelect} />
+      <TrustBand compact />
     </>
   )
 }
 
-function ProductDepthScene({ onExplore }) {
+function HomeSignature({ products, onExplore, onSelect }) {
+  return (
+    <section className="home-signature section">
+      <div className="home-signature-heading reveal-up">
+        <h2>Mỗi món ngọc là một câu chuyện</h2>
+        <button className="text-link collection-link" onClick={onExplore}>
+          Xem bộ sưu tập
+          <ArrowRight className="motion-cue" size={16} />
+        </button>
+      </div>
+      <div className="signature-rail reveal-stagger" aria-label="Mẫu nổi bật">
+        {products.map((product, index) => (
+          <button
+            className={`signature-card ${index === 0 ? 'is-large' : ''}`}
+            key={product.id}
+            onClick={() => onSelect(product)}
+            data-testid={`signature-card-${product.id}`}
+            type="button"
+          >
+            <ProductImageFrame
+              src={product.previewImage}
+              alt={product.name}
+              className="signature-image"
+              sizes={index === 0 ? '(max-width: 860px) 100vw, 48vw' : '(max-width: 860px) 45vw, 16vw'}
+            />
+            <span>
+              <small>{product.category}</small>
+              <strong>{product.name}</strong>
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ProductDepthScene({ product, onExplore, onSelect }) {
   const sceneRef = useRef(null)
   const videoRef = useRef(null)
 
@@ -828,22 +833,29 @@ function ProductDepthScene({ onExplore }) {
           </span>
         </div>
         <div className="depth-copy">
-          <p className="section-kicker">Lama Beads</p>
           <h1>Ngắm sâu từng lớp vân</h1>
-          <p>
-            Từ bề mặt hạt đến những lớp vân bên trong, mỗi chuyển động nhỏ của ánh sáng
-            đều làm hiện rõ chất đá, độ bóng và cảm giác riêng của từng món.
-          </p>
+          <p>Trang sức ngọc được chọn theo sắc, vân và cảm giác khi lên người.</p>
           <div className="hero-actions reveal-stagger">
             <button className="button primary" onClick={onExplore}>
               Xem bộ sưu tập
             </button>
-            <a className="text-link depth-contact-link" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
-              {CONTACT_ACTION_LABEL}
-              <ContactIcon size={16} />
-            </a>
           </div>
         </div>
+        {product && (
+          <button className="hero-product-glimpse" type="button" onClick={() => onSelect(product)}>
+            <ProductImageFrame
+              src={product.previewImage}
+              alt={product.name}
+              className="hero-glimpse-image"
+              sizes="112px"
+            />
+            <span>
+              <small>{product.category}</small>
+              <strong>{product.name}</strong>
+            </span>
+            <ArrowRight size={15} />
+          </button>
+        )}
       </div>
     </section>
   )
@@ -974,20 +986,51 @@ function Collection({
   onSelect,
   onClearSearch,
 }) {
+  const collectionRef = useRef(null)
   const activeFilterCount = [query, selectedCategory !== ALL_FILTER, selectedOrigin !== ALL_FILTER]
     .filter(Boolean).length
   const showOriginFilter = origins.length > 2
+  const isEditorialView = products.length > 0 && activeFilterCount === 0 && sortMode === 'featured'
+  const editorialLead = isEditorialView
+    ? products.find((product) => product.id === 'lama-003') || products[0]
+    : null
+  const editorialGroups = useMemo(() => {
+    if (!isEditorialView) return []
+    return categories
+      .filter((category) => category !== ALL_FILTER)
+      .map((category) => ({
+        category,
+        items: products.filter((product) => product.category === category && product.id !== editorialLead?.id),
+      }))
+      .filter((group) => group.items.length > 0)
+  }, [categories, editorialLead?.id, isEditorialView, products])
   const collectionStats = [
-    ['Tổng mẫu', `${totalCount} mẫu`],
-    ['Hiển thị', `${products.length} mẫu`],
-    ['Media', 'Ảnh và video theo từng mẫu'],
+    ['Tất cả mẫu', `${totalCount} mẫu`],
+    ['Đang xem', `${products.length} mẫu`],
+    ['Media', 'Ảnh & video theo từng mẫu'],
   ]
 
+  useEffect(() => {
+    const root = collectionRef.current
+    if (!root || prefersReducedMotion()) return
+
+    const items = Array.from(root.querySelectorAll('.collection-feature, .category-product-card, .product-card'))
+    if (!items.length) return
+
+    animate(items, {
+      opacity: [0, 1],
+      translateY: [18, 0],
+      filter: ['blur(8px)', 'blur(0px)'],
+      duration: 420,
+      easing: 'outCubic',
+      delay: stagger(34),
+    })
+  }, [visibleProductsKey(products), isEditorialView])
+
   return (
-    <section className="collection section" id="collection">
+    <section className="collection section" id="collection" ref={collectionRef}>
       <div className="section-heading reveal-up">
         <div>
-          <p className="section-kicker">Bộ sưu tập</p>
           <h1>Mỗi món ngọc là một câu chuyện</h1>
         </div>
         <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
@@ -995,8 +1038,7 @@ function Collection({
         </button>
       </div>
       <p className="collection-note reveal-up">
-        Dùng bộ lọc để tìm nhanh mẫu hợp dáng đeo và phong cách bạn đang tìm.
-        Chọn một sản phẩm để xem ảnh, video, chất liệu và gợi ý bảo quản.
+        Chọn dáng ngọc hợp với phong cách của bạn. Mỗi mẫu có ảnh thật, video và ghi chú riêng.
       </p>
       <div className="collection-summary reveal-up" aria-label="Tóm tắt bộ sưu tập">
         {collectionStats.map(([label, value]) => (
@@ -1074,9 +1116,23 @@ function Collection({
             Xem lại bộ sưu tập
           </button>
         </div>
+      ) : isEditorialView ? (
+        <div className="collection-editorial">
+          <FeaturedProductPanel product={editorialLead} onSelect={onSelect} />
+          <div className="category-sections reveal-stagger">
+            {editorialGroups.map((group) => (
+              <CategoryProductRow
+                key={group.category}
+                category={group.category}
+                products={group.items}
+                onSelect={onSelect}
+              />
+            ))}
+          </div>
+        </div>
       ) : (
         <div
-          className="product-grid reveal-stagger parallax-layer"
+          className="product-grid collection-focus-grid reveal-stagger parallax-layer"
           data-parallax-speed="0.16"
           data-parallax-axis="y"
           data-parallax-direction="reverse"
@@ -1098,6 +1154,61 @@ function Collection({
   )
 }
 
+const visibleProductsKey = (items) => items.map((product) => product.id).join('|')
+
+function FeaturedProductPanel({ product, onSelect }) {
+  if (!product) return null
+  const mediaStats = getProductMediaStats(product)
+
+  return (
+    <button className="collection-feature" type="button" onClick={() => onSelect(product)}>
+      <ProductImageFrame
+        src={product.previewImage}
+        alt={product.name}
+        className="collection-feature-image"
+        loading="eager"
+        sizes="(max-width: 860px) 100vw, 58vw"
+      />
+      <span className="collection-feature-copy">
+        <small>{product.category}</small>
+        <strong>{product.name}</strong>
+        <span>{product.shortDescription}</span>
+        <em>{mediaStats.summary}</em>
+      </span>
+    </button>
+  )
+}
+
+function CategoryProductRow({ category, products, onSelect }) {
+  return (
+    <section className="category-section" aria-label={category}>
+      <div className="category-section-heading">
+        <h2>{category}</h2>
+        <span>{products.length} mẫu</span>
+      </div>
+      <div className="category-product-row">
+        {products.map((product) => (
+          <button
+            key={product.id}
+            type="button"
+            className="category-product-card"
+            data-testid={`category-product-${product.id}`}
+            onClick={() => onSelect(product)}
+          >
+            <ProductImageFrame
+              src={product.previewImage}
+              alt={product.name}
+              className="category-product-image"
+              sizes="(max-width: 860px) 45vw, 18vw"
+            />
+            <span>{product.name}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 const OptimizedImage = forwardRef(function OptimizedImage({
   src,
   alt,
@@ -1109,10 +1220,11 @@ const OptimizedImage = forwardRef(function OptimizedImage({
   sizes,
   fetchPriority,
 }, ref) {
+  const [isLoaded, setIsLoaded] = useState(false)
   const optimizedSrcSet = getOptimizedImageSrcSet(src)
 
   return (
-    <picture>
+    <picture className={`media-picture ${isLoaded ? 'is-loaded' : ''}`}>
       {optimizedSrcSet && <source type="image/avif" srcSet={optimizedSrcSet} sizes={sizes} />}
       <img
         ref={ref}
@@ -1125,6 +1237,7 @@ const OptimizedImage = forwardRef(function OptimizedImage({
         height={height}
         sizes={sizes}
         fetchPriority={fetchPriority}
+        onLoad={() => setIsLoaded(true)}
       />
     </picture>
   )
@@ -1218,7 +1331,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
       easing: 'outCubic',
     })
 
-    const specRows = Array.from(root.querySelectorAll('.spec-row'))
+    const specRows = Array.from(root.querySelectorAll('.detail-disclosure'))
     if (specRows.length) {
       animate(specRows, {
         opacity: [0, 1],
@@ -1252,28 +1365,22 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
     })
   }, [activeMedia])
 
-  const specs = [
+  const detailFacts = [
     [Gem, 'Chất liệu', product.materials],
     [BadgeCheck, 'Tình trạng', product.availability],
-    [Clock3, 'Giá', product.priceNote],
-    [PackageCheck, 'Kích thước', product.sizeNote],
-    [MapPin, 'Bộ sưu tập', product.origin],
-    [Sparkles, 'Ý nghĩa', product.meaning],
-    [Shield, 'Bảo quản', product.care],
-    [PackageCheck, 'Giao nhận', product.shippingNote],
+    [Camera, 'Media', formatMediaCount(mediaItems)],
+  ]
+  const detailSections = [
+    ['Chất liệu', product.materials],
+    ['Dáng & kích thước', `${product.sizeNote}. ${product.availability}.`],
+    ['Ý nghĩa', product.meaning],
+    ['Kiểm tra trước khi chọn', product.inspection],
+    ['Bảo quản', `${product.care} ${product.shippingNote}`],
   ]
   const hasProductVideos = mediaStats.videoCount > 0
-  const mediaNoteTitle = hasProductVideos
-    ? 'Xem kỹ bằng ảnh và video trước khi chọn'
-    : 'Xem kỹ từng góc trước khi chọn'
   const mediaNoteCopy = hasProductVideos
     ? 'Bạn có thể xem ảnh cận, video xoay chậm và góc vân rõ hơn để cảm nhận bề mặt, độ bóng và dáng đeo.'
     : 'Nếu bạn quan tâm một mẫu, Lama Beads có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay để bạn yên tâm hơn trước khi quyết định.'
-  const assurances = [
-    [BadgeCheck, 'Xem kỹ trước khi chọn', product.inspection],
-    [Camera, hasProductVideos ? 'Ảnh và video cận cảnh' : 'Ảnh cận theo từng góc', mediaNoteCopy],
-    [PackageCheck, 'Đóng gói & bảo quản', 'Mỗi mẫu đều có gợi ý bảo quản riêng để dây, hạt và phụ kiện bền hơn khi sử dụng.'],
-  ]
 
   return (
     <section className="detail section" id="detail" ref={detailSectionRef}>
@@ -1370,17 +1477,14 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
           <p className="detail-category">{product.category}</p>
           <h1 data-testid="detail-title">{product.name}</h1>
           <p className="detail-intro">{product.fullDescription}</p>
-          <div className="detail-meta">
-            <span>Mã: {product.id}</span>
-            <span>{formatMediaCount(mediaItems)}</span>
-            <span>{product.origin}</span>
-          </div>
-          <div className="detail-media-note">
-            <Camera size={19} />
-            <div>
-              <strong>{mediaNoteTitle}</strong>
-              <p>{mediaNoteCopy}</p>
-            </div>
+          <div className="detail-facts" aria-label="Thông tin nhanh">
+            {detailFacts.map(([Icon, label, value]) => (
+              <span key={label}>
+                <Icon size={16} />
+                <small>{label}</small>
+                <strong>{value}</strong>
+              </span>
+            ))}
           </div>
           <div className="detail-highlights">
             {(product.highlights || []).map((highlight) => (
@@ -1390,24 +1494,12 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
               </span>
             ))}
           </div>
-          <div className="spec-list">
-            {specs.map(([Icon, label, value]) => (
-              <div className="spec-row" key={label}>
-                <Icon size={20} />
-                <strong>{label}</strong>
-                <span>{value}</span>
-              </div>
-            ))}
-          </div>
-          <div className="detail-assurance">
-            {assurances.map(([Icon, title, description]) => (
-              <article key={title}>
-                <Icon size={18} />
-                <div>
-                  <strong>{title}</strong>
-                  <p>{description}</p>
-                </div>
-              </article>
+          <p className="detail-media-note compact-note">{mediaNoteCopy}</p>
+          <div className="detail-disclosures">
+            {detailSections.map(([title, value], index) => (
+              <DisclosureItem key={title} title={title} defaultOpen={index === 0}>
+                {value}
+              </DisclosureItem>
             ))}
           </div>
           <div className="detail-actions reveal-stagger">
@@ -1427,7 +1519,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
         data-parallax-rotate-axis="x"
       >
         <div className="related">
-          <h3>Có thể bạn cũng thích</h3>
+          <h3>Phối cùng món này</h3>
           <div className="related-grid">
             {relatedProducts.map((item, index) => (
               <RelatedCard key={item.id} item={item} onSelect={onSelect} depthIndex={index} />
@@ -1436,6 +1528,18 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
         </div>
       </div>
     </section>
+  )
+}
+
+function DisclosureItem({ title, children, defaultOpen = false }) {
+  return (
+    <details className="detail-disclosure" open={defaultOpen}>
+      <summary>
+        <span>{title}</span>
+        <ChevronDown size={18} />
+      </summary>
+      <p>{children}</p>
+    </details>
   )
 }
 
@@ -1466,7 +1570,7 @@ function RelatedCard({ item, onSelect, depthIndex = 0 }) {
   )
 }
 
-function TrustBand() {
+function TrustBand({ compact = false }) {
   const values = [
     {
       title: 'Chọn hạt kỹ lưỡng',
@@ -1483,11 +1587,11 @@ function TrustBand() {
   ]
 
   return (
-    <section className="trust-band section reveal-stagger" id="trust">
+    <section className={`trust-band section reveal-stagger ${compact ? 'is-compact' : ''}`} id="trust">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">Cách chúng tôi chọn hạt</p>
-          <h1>Giữ tinh thần truyền thống trong cách đeo hiện đại</h1>
+          <p className="section-kicker">Cách chúng tôi chọn ngọc</p>
+          <h1>Ít mẫu hơn. Chọn kỹ hơn.</h1>
         </div>
       </div>
       <div className="trust-grid">
