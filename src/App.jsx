@@ -1,5 +1,5 @@
 import { animate, stagger } from 'animejs'
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
@@ -59,6 +59,46 @@ const PRODUCT_PROFILES = {
   'lama-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], occasion: ['hằng ngày', 'tiệc nhẹ'], placement: 'face', weight: 'vừa' },
 }
 
+const slugifyVietnamese = (value = '') => value
+  .toString()
+  .trim()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/đ/g, 'd')
+  .replace(/Đ/g, 'D')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+
+const getCategorySortRank = (category) => {
+  const index = COMPLEMENT_CATEGORY_ORDER.indexOf(category)
+  return index === -1 ? 99 : index
+}
+
+const sortCategories = (categories) => [...categories].sort((first, second) => {
+  const rankDelta = getCategorySortRank(first) - getCategorySortRank(second)
+
+  return rankDelta || VI_COLLATOR.compare(first, second)
+})
+
+const getCategoryPath = (category) => (
+  !category || category === ALL_FILTER ? '/collection' : `/collection/${slugifyVietnamese(category)}`
+)
+
+const getCategoryFromSlug = (slug) => {
+  const normalizedSlug = slugifyVietnamese(slug)
+  return Array.from(new Set(products.map((product) => product.category)))
+    .find((category) => slugifyVietnamese(category) === normalizedSlug)
+}
+
+const uniqueProfileValues = (items, selector, { exclude = [] } = {}) => {
+  const excluded = new Set(exclude)
+  return Array.from(new Set(items.flatMap((product) => {
+    const value = selector(getProductProfile(product))
+    return Array.isArray(value) ? value : [value]
+  }).filter((value) => value && !excluded.has(value)))).sort(VI_COLLATOR.compare)
+}
+
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const getMediaKey = (media) => `${media.type}:${media.src}`
@@ -100,34 +140,44 @@ const getPlacementLabel = (product) => getCategorySlotLabel(product?.category ||
 
 const getSharedValues = (first = [], second = []) => first.filter((value) => second.includes(value))
 
-const getMatchReason = (baseProduct, candidate) => {
+const getMatchSignals = (baseProduct, candidate) => {
   const baseProfile = getProductProfile(baseProduct)
   const candidateProfile = getProductProfile(candidate)
-  const reasons = []
-  const sharedMood = getSharedValues(candidateProfile.mood, baseProfile.mood)[0]
-  const sharedOccasion = getSharedValues(candidateProfile.occasion, baseProfile.occasion)[0]
+  const signals = []
+  const sharedMood = getSharedValues(candidateProfile.mood, baseProfile.mood)
+  const sharedOccasion = getSharedValues(candidateProfile.occasion, baseProfile.occasion)
 
   if (baseProfile.color === candidateProfile.color) {
-    reasons.push(`Cùng tông ${candidateProfile.color}`)
+    signals.push({ label: 'Sắc ngọc', value: `Cùng tông ${candidateProfile.color}` })
   }
 
   if (baseProfile.metal !== 'không rõ' && baseProfile.metal === candidateProfile.metal) {
-    reasons.push(`Đồng điệu chi tiết ${candidateProfile.metal}`)
-  }
-
-  if (sharedMood) {
-    reasons.push(`Giữ cảm giác ${sharedMood}`)
-  }
-
-  if (sharedOccasion) {
-    reasons.push(`Hợp ${sharedOccasion}`)
+    signals.push({ label: 'Chi tiết', value: `Cùng ánh ${candidateProfile.metal}` })
   }
 
   if (baseProfile.placement !== candidateProfile.placement) {
-    reasons.push(`Bổ sung ở ${getPlacementLabel(candidate).toLowerCase()}`)
+    signals.push({ label: 'Vị trí', value: getPlacementLabel(candidate) })
   }
 
-  return reasons.slice(0, 2).join(' · ') || `Tạo điểm nhấn ở ${getPlacementLabel(candidate).toLowerCase()}`
+  if (sharedMood[0]) {
+    signals.push({ label: 'Cảm giác', value: sharedMood[0] })
+  }
+
+  if (sharedOccasion[0]) {
+    signals.push({ label: 'Dịp dùng', value: sharedOccasion[0] })
+  }
+
+  return signals
+}
+
+const getMatchReason = (baseProduct, candidate) => {
+  const signals = getMatchSignals(baseProduct, candidate)
+  const reason = signals
+    .slice(0, 2)
+    .map((signal) => signal.value)
+    .join(' · ')
+
+  return reason || `Tạo điểm nhấn ở ${getPlacementLabel(candidate).toLowerCase()}`
 }
 
 const getMatchScore = (baseProduct, candidate) => {
@@ -164,6 +214,7 @@ const getMatchedProducts = (baseProduct, limit = 4) => {
       product: candidate,
       score: getMatchScore(baseProduct, candidate),
       reason: getMatchReason(baseProduct, candidate),
+      signals: getMatchSignals(baseProduct, candidate),
     }))
     .sort((a, b) => (
       b.score - a.score ||
@@ -206,7 +257,7 @@ const toAbsoluteUrl = (path = '') => {
 
 const getRoutePath = (route) => {
   if (route.name === 'home') return '/'
-  if (route.name === 'collection') return '/collection'
+  if (route.name === 'collection') return getCategoryPath(route.category)
   if (route.name === 'concierge') return '/concierge'
   if (route.name === 'matching') return '/matching'
   if (route.name === 'care') return '/care'
@@ -218,11 +269,14 @@ const getRoutePath = (route) => {
 
 const getRouteSeo = (route, product) => {
   if (route.name === 'collection') {
+    const category = route.category
     return {
-      title: 'Bộ sưu tập trang sức ngọc | Lama Beads',
-      description: 'Khám phá bộ sưu tập hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc của Lama Beads.',
+      title: category ? `${category} ngọc | Lama Beads` : 'Bộ sưu tập trang sức ngọc | Lama Beads',
+      description: category
+        ? `Xem các mẫu ${category.toLowerCase()} ngọc của Lama Beads với ảnh thật, video, chất liệu và gợi ý phối món phù hợp.`
+        : 'Khám phá bộ sưu tập hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc của Lama Beads.',
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Bộ sưu tập trang sức ngọc Lama Beads',
+      imageAlt: category ? `${category} ngọc Lama Beads` : 'Bộ sưu tập trang sức ngọc Lama Beads',
     }
   }
 
@@ -474,7 +528,10 @@ const sortProductList = (items, sortMode) => {
   }
 
   if (sortMode === 'category') {
-    return sorted.sort((a, b) => VI_COLLATOR.compare(a.category, b.category) || VI_COLLATOR.compare(a.name, b.name))
+    return sorted.sort((a, b) => (
+      getCategorySortRank(a.category) - getCategorySortRank(b.category) ||
+      VI_COLLATOR.compare(a.name, b.name)
+    ))
   }
 
   return sorted
@@ -489,6 +546,12 @@ function parseRoute(pathname = window.location.pathname) {
 
   if (path === '/collection') {
     return { name: 'collection' }
+  }
+
+  if (path.startsWith('/collection/')) {
+    const [, categorySlug] = path.split('/').filter(Boolean)
+    const category = getCategoryFromSlug(categorySlug)
+    return category ? { name: 'collection', category } : { name: 'notfound' }
   }
 
   if (path === '/concierge') {
@@ -732,9 +795,16 @@ function App() {
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState(ALL_FILTER)
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    const initialRoute = parseRoute()
+    return initialRoute.name === 'collection' ? initialRoute.category || ALL_FILTER : ALL_FILTER
+  })
   const [selectedOrigin, setSelectedOrigin] = useState(ALL_FILTER)
+  const [selectedColor, setSelectedColor] = useState(ALL_FILTER)
+  const [selectedMetal, setSelectedMetal] = useState(ALL_FILTER)
+  const [selectedMood, setSelectedMood] = useState(ALL_FILTER)
   const [sortMode, setSortMode] = useState('featured')
+  const deferredQuery = useDeferredValue(query)
   const pageRef = useRef(null)
   const mainRef = useRef(null)
   const routeProgressRef = useRef(null)
@@ -767,30 +837,68 @@ function App() {
   }, [])
 
   const categoryOptions = useMemo(
-    () => [ALL_FILTER, ...Array.from(new Set(products.map((product) => product.category)))],
+    () => [ALL_FILTER, ...sortCategories(Array.from(new Set(products.map((product) => product.category))))],
     [],
   )
   const originOptions = useMemo(
     () => [ALL_FILTER, ...Array.from(new Set(products.map((product) => product.origin)))],
     [],
   )
+  const colorOptions = useMemo(
+    () => [ALL_FILTER, ...uniqueProfileValues(products, (profile) => profile.color)],
+    [],
+  )
+  const metalOptions = useMemo(
+    () => [ALL_FILTER, ...uniqueProfileValues(products, (profile) => profile.metal, { exclude: ['không rõ'] })],
+    [],
+  )
+  const moodOptions = useMemo(
+    () => [ALL_FILTER, ...uniqueProfileValues(products, (profile) => profile.mood)],
+    [],
+  )
+
+  useEffect(() => {
+    if (route.name !== 'collection') return
+    const routeCategory = route.category || ALL_FILTER
+    setSelectedCategory((current) => (current === routeCategory ? current : routeCategory))
+  }, [route.name, route.category])
 
   const filteredProducts = useMemo(() => {
-    const term = query.trim().toLowerCase()
-    const matched = products.filter((product) =>
-      (!term || getSearchText(product).includes(term)) &&
-      (selectedCategory === ALL_FILTER || product.category === selectedCategory) &&
-      (selectedOrigin === ALL_FILTER || product.origin === selectedOrigin),
-    )
+    const term = deferredQuery.trim().toLowerCase()
+    const matched = products.filter((product) => {
+      const profile = getProductProfile(product)
+
+      return (
+        (!term || getSearchText(product).includes(term)) &&
+        (selectedCategory === ALL_FILTER || product.category === selectedCategory) &&
+        (selectedOrigin === ALL_FILTER || product.origin === selectedOrigin) &&
+        (selectedColor === ALL_FILTER || profile.color === selectedColor) &&
+        (selectedMetal === ALL_FILTER || profile.metal === selectedMetal) &&
+        (selectedMood === ALL_FILTER || profile.mood.includes(selectedMood))
+      )
+    })
     return sortProductList(matched, sortMode)
-  }, [query, selectedCategory, selectedOrigin, sortMode])
+  }, [deferredQuery, selectedCategory, selectedOrigin, selectedColor, selectedMetal, selectedMood, sortMode])
+
+  const handleCategoryChange = useCallback((category) => {
+    setSelectedCategory(category)
+    if (route.name === 'collection') {
+      navigate(getCategoryPath(category))
+    }
+  }, [navigate, route.name])
 
   const clearCollectionControls = useCallback(() => {
     setQuery('')
     setSelectedCategory(ALL_FILTER)
     setSelectedOrigin(ALL_FILTER)
+    setSelectedColor(ALL_FILTER)
+    setSelectedMetal(ALL_FILTER)
+    setSelectedMood(ALL_FILTER)
     setSortMode('featured')
-  }, [])
+    if (route.name === 'collection' && route.category) {
+      navigate('/collection')
+    }
+  }, [navigate, route.category, route.name])
 
   const selectedProduct =
     route.name === 'product' && route.id
@@ -913,10 +1021,19 @@ function App() {
               setQuery={setQuery}
               categories={categoryOptions}
               origins={originOptions}
+              colors={colorOptions}
+              metals={metalOptions}
+              moods={moodOptions}
               selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
+              setSelectedCategory={handleCategoryChange}
               selectedOrigin={selectedOrigin}
               setSelectedOrigin={setSelectedOrigin}
+              selectedColor={selectedColor}
+              setSelectedColor={setSelectedColor}
+              selectedMetal={selectedMetal}
+              setSelectedMetal={setSelectedMetal}
+              selectedMood={selectedMood}
+              setSelectedMood={setSelectedMood}
               sortMode={sortMode}
               setSortMode={setSortMode}
               onSelect={openProduct}
@@ -1136,6 +1253,7 @@ function MatchingPage({ products, onSelect }) {
   const [selectedId, setSelectedId] = useState('lama-003')
   const selectedProduct = products.find((product) => product.id === selectedId) || products[0]
   const matchedSet = useMemo(() => getMatchedProducts(selectedProduct, 4), [selectedProduct])
+  const selectedProfile = getProductProfile(selectedProduct)
 
   return (
     <section className="luxury-page section matching-page">
@@ -1177,6 +1295,11 @@ function MatchingPage({ products, onSelect }) {
             <small>Món chính</small>
             <strong>{selectedProduct.name}</strong>
             <em>{selectedProduct.shortDescription}</em>
+            <span className="match-base-tags" aria-label="Đặc điểm món chính">
+              <b>{selectedProfile.color}</b>
+              {selectedProfile.metal !== 'không rõ' && <b>{selectedProfile.metal}</b>}
+              {selectedProfile.mood.slice(0, 2).map((mood) => <b key={mood}>{mood}</b>)}
+            </span>
           </span>
         </button>
         <div className="match-set">
@@ -1185,6 +1308,7 @@ function MatchingPage({ products, onSelect }) {
               key={match.product.id}
               item={match.product}
               reason={match.reason}
+              signals={match.signals}
               onSelect={onSelect}
             />
           ))}
@@ -1496,20 +1620,38 @@ function Collection({
   setQuery,
   categories,
   origins,
+  colors,
+  metals,
+  moods,
   selectedCategory,
   setSelectedCategory,
   selectedOrigin,
   setSelectedOrigin,
+  selectedColor,
+  setSelectedColor,
+  selectedMetal,
+  setSelectedMetal,
+  selectedMood,
+  setSelectedMood,
   sortMode,
   setSortMode,
   onSelect,
   onClearSearch,
 }) {
   const collectionRef = useRef(null)
-  const activeFilterCount = [query, selectedCategory !== ALL_FILTER, selectedOrigin !== ALL_FILTER]
+  const activeFilterCount = [
+    query,
+    selectedCategory !== ALL_FILTER,
+    selectedOrigin !== ALL_FILTER,
+    selectedColor !== ALL_FILTER,
+    selectedMetal !== ALL_FILTER,
+    selectedMood !== ALL_FILTER,
+    sortMode !== 'featured',
+  ]
     .filter(Boolean).length
   const showOriginFilter = origins.length > 2
   const isEditorialView = products.length > 0 && activeFilterCount === 0 && sortMode === 'featured'
+  const isCategoryView = selectedCategory !== ALL_FILTER
   const editorialLead = isEditorialView
     ? products.find((product) => product.id === 'lama-003') || products[0]
     : null
@@ -1526,8 +1668,13 @@ function Collection({
   const collectionStats = [
     ['Tất cả mẫu', `${totalCount} mẫu`],
     ['Đang xem', `${products.length} mẫu`],
-    ['Media', 'Ảnh & video theo từng mẫu'],
+    ['Bộ lọc', activeFilterCount ? `${activeFilterCount} đang bật` : 'Chưa lọc'],
+    ['Media', 'Ảnh & video'],
   ]
+  const collectionTitle = isCategoryView ? selectedCategory : 'Mỗi món ngọc là một câu chuyện'
+  const collectionCopy = isCategoryView
+    ? `Xem riêng các mẫu ${selectedCategory.toLowerCase()} với ảnh thật, video và gợi ý phối cùng theo sắc ngọc.`
+    : 'Chọn dáng ngọc hợp với phong cách của bạn. Mỗi mẫu có ảnh thật, video và ghi chú riêng.'
 
   useEffect(() => {
     const root = collectionRef.current
@@ -1550,14 +1697,14 @@ function Collection({
     <section className="collection section" id="collection" ref={collectionRef}>
       <div className="section-heading reveal-up">
         <div>
-          <h1>Mỗi món ngọc là một câu chuyện</h1>
+          <h1>{collectionTitle}</h1>
         </div>
         <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
-          {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả sản phẩm'} <ArrowRight className="motion-cue" size={16} />
+          {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả mẫu'} <ArrowRight className="motion-cue" size={16} />
         </button>
       </div>
       <p className="collection-note reveal-up">
-        Chọn dáng ngọc hợp với phong cách của bạn. Mỗi mẫu có ảnh thật, video và ghi chú riêng.
+        {collectionCopy}
       </p>
       <div className="collection-summary reveal-up" aria-label="Tóm tắt bộ sưu tập">
         {collectionStats.map(([label, value]) => (
@@ -1570,10 +1717,10 @@ function Collection({
       <div className="collection-tools reveal-up">
         <label className="collection-search">
           <Search size={17} />
-          <span>Tìm sản phẩm</span>
+          <span>Tìm mẫu</span>
           <input
             value={query}
-            aria-label="Tìm sản phẩm trong bộ sưu tập"
+            aria-label="Tìm mẫu trong bộ sưu tập"
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
@@ -1589,12 +1736,37 @@ function Collection({
                 type="button"
                 className={category === selectedCategory ? 'filter-chip is-active' : 'filter-chip'}
                 onClick={() => setSelectedCategory(category)}
+                aria-current={category === selectedCategory ? 'page' : undefined}
               >
                 {category === ALL_FILTER ? 'Tất cả' : category}
               </button>
             ))}
           </div>
         </div>
+        <FilterChipGroup
+          icon={<Gem size={16} />}
+          label="Sắc ngọc"
+          options={colors}
+          value={selectedColor}
+          onChange={setSelectedColor}
+          allLabel="Tất cả"
+        />
+        <FilterChipGroup
+          icon={<BadgeCheck size={16} />}
+          label="Chi tiết"
+          options={metals}
+          value={selectedMetal}
+          onChange={setSelectedMetal}
+          allLabel="Tất cả"
+        />
+        <FilterChipGroup
+          icon={<Sparkles size={16} />}
+          label="Cảm giác"
+          options={moods}
+          value={selectedMood}
+          onChange={setSelectedMood}
+          allLabel="Tất cả"
+        />
         {showOriginFilter && (
           <div className="filter-group" aria-label="Lọc theo bộ sưu tập">
             <span className="filter-label">
@@ -1674,6 +1846,32 @@ function Collection({
 }
 
 const visibleProductsKey = (items) => items.map((product) => product.id).join('|')
+
+function FilterChipGroup({ icon, label, options, value, onChange, allLabel = 'Tất cả' }) {
+  if (!options?.length) return null
+
+  return (
+    <div className="filter-group compact-filter" aria-label={`Lọc theo ${label.toLowerCase()}`}>
+      <span className="filter-label">
+        {icon}
+        {label}
+      </span>
+      <div className="filter-chips">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            className={option === value ? 'filter-chip is-active' : 'filter-chip'}
+            onClick={() => onChange(option)}
+            aria-pressed={option === value}
+          >
+            {option === ALL_FILTER ? allLabel : option}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function FeaturedProductPanel({ product, onSelect }) {
   if (!product) return null
@@ -2073,6 +2271,7 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
                 key={match.product.id}
                 item={match.product}
                 reason={match.reason}
+                signals={match.signals}
                 onSelect={onSelect}
               />
             ))}
@@ -2095,7 +2294,7 @@ function DisclosureItem({ title, children, defaultOpen = false }) {
   )
 }
 
-function MatchProductCard({ item, reason, onSelect }) {
+function MatchProductCard({ item, reason, signals = [], onSelect }) {
   return (
     <button className="match-product-card" type="button" onClick={() => onSelect(item)}>
       <ProductImageFrame
@@ -2108,6 +2307,15 @@ function MatchProductCard({ item, reason, onSelect }) {
         <small>{getCategorySlotLabel(item.category)}</small>
         <strong>{item.name}</strong>
         <em>{reason}</em>
+        {signals.length > 0 && (
+          <span className="match-signal-row" aria-label="Lý do phối hợp">
+            {signals.slice(0, 3).map((signal) => (
+              <b key={`${item.id}-${signal.label}-${signal.value}`}>
+                {signal.label}: {signal.value}
+              </b>
+            ))}
+          </span>
+        )}
       </span>
     </button>
   )
