@@ -1,4 +1,4 @@
-# Lama Beads Website Direction
+# Châu Ngọc Phúc Website Direction
 
 ## Source Reference Review
 
@@ -6,7 +6,7 @@ The requested `awesome_design` folder was not present at `/Users/alexzhou/Downlo
 
 `/Users/alexzhou/Downloads/awesome-design-md-main/design-md`
 
-No Tiffany-specific Markdown file exists in that library. I reviewed the available references and selected the closest fit for Lama Beads:
+No Tiffany-specific Markdown file exists in that library. I reviewed the available references and selected the closest fit for Châu Ngọc Phúc:
 
 - Primary base: `apple/DESIGN.md`
 - Secondary influence: `bugatti/DESIGN.md`
@@ -31,7 +31,7 @@ The site should feel like a refined jewelry gallery, not a direct copy of Tiffan
 ### Layout
 
 - Header: minimal brand wordmark, product/category navigation, contact action.
-- Home first viewport: Lama Beads brand signal, short value statement, one product-led hero image, CTA to collection.
+- Home first viewport: Châu Ngọc Phúc brand signal, short value statement, one product-led hero image, CTA to collection.
 - Collection section: product preview grid, each item with image, name, material/origin, and short description.
 - Product detail: clicked item opens a dedicated detail view or modal with gallery, description, available videos, additional photos, care notes, and contact/buy action.
 - Story/craft sections: only where they support trust and product value.

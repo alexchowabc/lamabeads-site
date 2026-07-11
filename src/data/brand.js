@@ -1,8 +1,8 @@
 const cleanUrl = (value) => String(value || '').replace(/\/+$/, '')
 
 export const brand = {
-  name: import.meta.env.VITE_BRAND_NAME || 'Lama Beads',
-  siteUrl: cleanUrl(import.meta.env.VITE_SITE_URL || 'https://lamabeads.com'),
+  name: import.meta.env.VITE_BRAND_NAME || 'Châu Ngọc Phúc',
+  siteUrl: cleanUrl(import.meta.env.VITE_SITE_URL || 'https://chaungocphuc.com'),
   locale: 'vi_VN',
   language: 'vi-VN',
   productLine: 'trang sức ngọc',

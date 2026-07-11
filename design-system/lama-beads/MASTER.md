@@ -6,7 +6,7 @@
 
 ---
 
-**Project:** Lama Beads
+**Project:** Châu Ngọc Phúc
 **Generated:** 2026-07-01 19:56:52
 **Category:** E-commerce Luxury
 
@@ -166,7 +166,7 @@
 
 **Key Effects:** Morphing elements (SVG/CSS), fluid animations (400-600ms curves), dynamic blur (backdrop-filter), color transitions
 
-**Lama Beads Interpretation:** Use liquid/glass effects only where they support jewelry inspection: translucent header, subtle product media overlays, soft scroll video treatment. Avoid shiny app-like panels, large blur cards, chromatic effects, or anything that makes the jewelry feel fake.
+**Châu Ngọc Phúc Interpretation:** Use liquid/glass effects only where they support jewelry inspection: translucent header, subtle product media overlays, soft scroll video treatment. Avoid shiny app-like panels, large blur cards, chromatic effects, or anything that makes the jewelry feel fake.
 
 ### Page Pattern
 

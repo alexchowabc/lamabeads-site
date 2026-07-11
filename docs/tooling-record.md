@@ -8,7 +8,7 @@ Last verified: 2026-07-01
   - Status: installed.
   - Path: `/Users/alexzhou/.codex/skills/ui-ux-pro-max/SKILL.md`
   - Purpose: UI/UX design guidance, design-system recommendations, accessibility, layout, typography, animation, responsive quality checks, and stack-specific guidance.
-  - Note: For future UI or design changes on Lama Beads, read this skill first when design quality, layout, animation, or UX is involved.
+  - Note: For future UI or design changes on Châu Ngọc Phúc, read this skill first when design quality, layout, animation, or UX is involved.
 
 ## Project Animation Packages
 

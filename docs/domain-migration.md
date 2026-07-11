@@ -1,6 +1,6 @@
 # Domain And Brand Migration
 
-Use this when the final business name and domain are ready.
+Use this for the Châu Ngọc Phúc domain migration.
 
 ## Update App Identity
 
@@ -10,7 +10,7 @@ Use this when the final business name and domain are ready.
    - `VITE_CONTACT_EMAIL`
    - `VITE_CONTACT_URL`
 2. Update `index.html` title and meta description so the first HTML response matches the new name.
-3. Update `public/CNAME` only after the new domain DNS is ready.
+3. Update `public/CNAME` to the production custom domain.
 
 ## DNS / Hosting Order
 
@@ -23,6 +23,22 @@ Use this when the final business name and domain are ready.
    - Canonical, Open Graph, and JSON-LD URLs use the new domain.
 5. Keep the old domain active until the new domain is fully verified.
 
+## Squarespace DNS Records
+
+Add these custom records in Squarespace:
+
+| Type | Host | Value |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| CNAME | `www` | `alexchowabc.github.io` |
+
+Do not add wildcard records such as `*`.
+
 ## Current Status
 
-The current live domain remains `lamabeads.com` until the new name/domain is confirmed.
+Target domain: `chaungocphuc.com`.
+
+GitHub Pages source is prepared for the new domain. Squarespace DNS still needs to point `chaungocphuc.com` to GitHub Pages before the new domain can load.

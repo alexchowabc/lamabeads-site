@@ -2,7 +2,7 @@
 
 ## Page Job
 
-Home is the brand and mood page. It should make Lama Beads feel premium, calm, and material-focused before asking users to browse.
+Home is the brand and mood page. It should make Châu Ngọc Phúc feel premium, calm, and material-focused before asking users to browse.
 
 ## Structure
 
@@ -23,4 +23,3 @@ Home is the brand and mood page. It should make Lama Beads feel premium, calm, a
 - Hero media should be video or one strong image, not multiple competing thumbnails.
 - Avoid repeating the same product preview image in hero shortcuts and collection cards.
 - If a future campaign video exists, Home can feature it; product-specific videos belong on product detail pages.
-
