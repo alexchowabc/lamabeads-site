@@ -1488,11 +1488,11 @@ function ProductDepthScene({ product, onExplore, onSelect }) {
           </span>
         </div>
         <div className="depth-copy">
-          <h1>Sắc ngọc</h1>
-          <p>Ảnh thật. Video tự phát. Tư vấn riêng.</p>
+          <h1>Trang sức ngọc</h1>
+          <p>Chọn lọc theo sắc, vân và dáng đeo.</p>
           <div className="hero-actions reveal-stagger">
-            <button className="button primary" onClick={onExplore}>
-              Bộ sưu tập
+            <button className="button hero-cta" onClick={onExplore}>
+              Xem bộ sưu tập
             </button>
           </div>
         </div>
@@ -1687,8 +1687,8 @@ function Collection({
   ]
   const collectionTitle = isCategoryView ? selectedCategory : 'Bộ sưu tập'
   const collectionCopy = isCategoryView
-    ? `Ảnh thật, video tự phát và gợi ý phối theo sắc ngọc.`
-    : 'Ảnh thật. Video tự phát. Tư vấn riêng.'
+    ? 'Xem sắc ngọc qua ảnh thật, video cận và gợi ý phối phù hợp.'
+    : 'Các thiết kế được chọn theo sắc, vân và cảm giác khi lên người.'
   const categoryGuide = isCategoryView ? CATEGORY_GUIDES[selectedCategory] : null
 
   useEffect(() => {
