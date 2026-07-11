@@ -141,7 +141,7 @@ main {
 .js-animate .reveal-stagger,
 .js-animate .reveal-card {
   opacity: 1;
-  filter: blur(10px);
+  filter: blur(2px);
 }
 
 .site-header {

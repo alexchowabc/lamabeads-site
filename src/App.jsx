@@ -414,7 +414,7 @@ function useScrollReveal(rootRef, dependencies = []) {
         rotateX: [revealX, 0],
         rotateY: [clamp(parseFloat(node.dataset.revealRotateY) || 0, -30, 30), 0],
         translateZ: [baseTranslateZ + revealZ, 0],
-        filter: ['blur(8px)', 'blur(0px)'],
+        filter: ['blur(2px)', 'blur(0px)'],
         duration,
         easing: 'outCubic',
       })
@@ -424,7 +424,7 @@ function useScrollReveal(rootRef, dependencies = []) {
           opacity: [0, 1],
           translateY: [14, 0],
           rotateX: [2, 0],
-          filter: ['blur(6px)', 'blur(0px)'],
+          filter: ['blur(2px)', 'blur(0px)'],
           duration: clamp(parseFloat(node.dataset.revealDuration) || 520, 140, 700),
           easing: 'outCubic',
           delay: stagger(64),
@@ -441,8 +441,8 @@ function useScrollReveal(rootRef, dependencies = []) {
         })
       },
       {
-        threshold: 0.18,
-        rootMargin: '0px 0px -10% 0px',
+        threshold: 0.08,
+        rootMargin: '0px 0px 12% 0px',
       },
     )
 
@@ -456,7 +456,7 @@ function useScrollReveal(rootRef, dependencies = []) {
     requestAnimationFrame(() => {
       revealNodes.forEach((node) => {
         const rect = node.getBoundingClientRect()
-        if (rect.top < window.innerHeight * 0.88 && rect.bottom > 0) {
+        if (rect.top < window.innerHeight * 0.98 && rect.bottom > 0) {
           animateNode(node)
           observer.unobserve(node)
         }
