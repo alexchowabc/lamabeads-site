@@ -25,8 +25,6 @@ import {
 } from 'lucide-react'
 import { contact, featuredProduct, products } from './data/products'
 
-const isDarkAsset = (src = '') => src.includes('/edited-images/')
-
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/lama-jade-depth-openart.mp4'
@@ -67,8 +65,8 @@ const getRoutePath = (route) => {
 const getRouteSeo = (route, product) => {
   if (route.name === 'collection') {
     return {
-      title: 'Bộ sưu tập chuỗi hạt và thiên châu | Lama Beads',
-      description: 'Khám phá bộ sưu tập chuỗi hạt, vòng tay và thiên châu Dzi được Lama Beads chọn lọc từ Tây Tạng, Nepal và Bhutan.',
+      title: 'Bộ sưu tập trang sức ngọc | Lama Beads',
+      description: 'Khám phá bộ sưu tập hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc của Lama Beads.',
     }
   }
 
@@ -82,14 +80,14 @@ const getRouteSeo = (route, product) => {
   if (route.name === 'about') {
     return {
       title: 'Về Lama Beads | Chọn hạt và hoàn thiện thủ công',
-      description: 'Tìm hiểu cách Lama Beads chọn thiên châu, bồ đề và đá tự nhiên theo chất hạt, sắc vân và cảm giác khi đeo.',
+      description: 'Tìm hiểu cách Lama Beads chọn trang sức ngọc theo màu sắc, dáng đeo, độ bóng và cảm giác khi sử dụng.',
     }
   }
 
   if (route.name === 'contact') {
     return {
       title: 'Liên hệ tư vấn | Lama Beads',
-      description: 'Liên hệ Lama Beads để xem thêm ảnh thật, hỏi chất liệu, nguồn hạt, kích thước và tình trạng từng mẫu trước khi chọn.',
+      description: 'Liên hệ Lama Beads để xem thêm ảnh thật, hỏi chất liệu, kích thước, dáng đeo và tình trạng từng mẫu trước khi chọn.',
     }
   }
 
@@ -101,8 +99,8 @@ const getRouteSeo = (route, product) => {
   }
 
   return {
-    title: 'Lama Beads | Chuỗi hạt và thiên châu chọn lọc',
-    description: 'Lama Beads giới thiệu chuỗi hạt, thiên châu Dzi và trang sức tâm linh chọn lọc từ Tây Tạng, Nepal và Bhutan.',
+    title: 'Lama Beads | Trang sức ngọc chọn lọc',
+    description: 'Lama Beads giới thiệu hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc với ảnh và video sản phẩm.',
   }
 }
 
@@ -197,8 +195,8 @@ const sortProductList = (items, sortMode) => {
     return sorted.sort((a, b) => VI_COLLATOR.compare(a.name, b.name))
   }
 
-  if (sortMode === 'origin') {
-    return sorted.sort((a, b) => VI_COLLATOR.compare(a.origin, b.origin) || VI_COLLATOR.compare(a.name, b.name))
+  if (sortMode === 'category') {
+    return sorted.sort((a, b) => VI_COLLATOR.compare(a.category, b.category) || VI_COLLATOR.compare(a.name, b.name))
   }
 
   return sorted
@@ -509,10 +507,24 @@ function App() {
       ? products.find((item) => item.id === route.id) || featuredProduct
       : featuredProduct
   const visibleProductKey = filteredProducts.map((product) => product.id).join('|')
-  const relatedProducts = useMemo(
-    () => products.filter((item) => item.id !== selectedProduct.id).slice(0, 3),
-    [selectedProduct.id],
-  )
+  const relatedProducts = useMemo(() => {
+    const preferred = (selectedProduct.relatedIds || [])
+      .map((id) => products.find((item) => item.id === id))
+      .filter(Boolean)
+    const fallback = products.filter(
+      (item) => item.id !== selectedProduct.id && item.category === selectedProduct.category,
+    )
+    const broaderFallback = products.filter((item) => item.id !== selectedProduct.id)
+    const seen = new Set([selectedProduct.id])
+
+    return [...preferred, ...fallback, ...broaderFallback]
+      .filter((item) => {
+        if (!item || seen.has(item.id)) return false
+        seen.add(item.id)
+        return true
+      })
+      .slice(0, 3)
+  }, [selectedProduct])
 
   useEffect(() => {
     updateDocumentSeo(route, selectedProduct)
@@ -964,10 +976,11 @@ function Collection({
 }) {
   const activeFilterCount = [query, selectedCategory !== ALL_FILTER, selectedOrigin !== ALL_FILTER]
     .filter(Boolean).length
+  const showOriginFilter = origins.length > 2
   const collectionStats = [
     ['Tổng mẫu', `${totalCount} mẫu`],
     ['Hiển thị', `${products.length} mẫu`],
-    ['Hình ảnh', 'Ảnh thật của từng mẫu'],
+    ['Media', 'Ảnh và video theo từng mẫu'],
   ]
 
   return (
@@ -975,15 +988,15 @@ function Collection({
       <div className="section-heading reveal-up">
         <div>
           <p className="section-kicker">Bộ sưu tập</p>
-          <h1>Mỗi chuỗi hạt là một câu chuyện</h1>
+          <h1>Mỗi món ngọc là một câu chuyện</h1>
         </div>
         <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
           {activeFilterCount ? 'Xóa bộ lọc' : 'Tất cả sản phẩm'} <ArrowRight className="motion-cue" size={16} />
         </button>
       </div>
       <p className="collection-note reveal-up">
-        Dùng bộ lọc để tìm nhanh mẫu hợp chất liệu, nguồn gốc hoặc phong cách bạn đang tìm.
-        Chọn một sản phẩm để xem ảnh cận, chất liệu và gợi ý bảo quản.
+        Dùng bộ lọc để tìm nhanh mẫu hợp dáng đeo và phong cách bạn đang tìm.
+        Chọn một sản phẩm để xem ảnh, video, chất liệu và gợi ý bảo quản.
       </p>
       <div className="collection-summary reveal-up" aria-label="Tóm tắt bộ sưu tập">
         {collectionStats.map(([label, value]) => (
@@ -1021,31 +1034,33 @@ function Collection({
             ))}
           </div>
         </div>
-        <div className="filter-group" aria-label="Lọc theo nguồn gốc">
-          <span className="filter-label">
-            <MapPin size={16} />
-            Nguồn
-          </span>
-          <div className="filter-chips">
-            {origins.map((origin) => (
-              <button
-                key={origin}
-                type="button"
-                className={origin === selectedOrigin ? 'filter-chip is-active' : 'filter-chip'}
-                onClick={() => setSelectedOrigin(origin)}
-              >
-                {origin === ALL_FILTER ? 'Tất cả' : origin}
-              </button>
-            ))}
+        {showOriginFilter && (
+          <div className="filter-group" aria-label="Lọc theo bộ sưu tập">
+            <span className="filter-label">
+              <MapPin size={16} />
+              Bộ sưu tập
+            </span>
+            <div className="filter-chips">
+              {origins.map((origin) => (
+                <button
+                  key={origin}
+                  type="button"
+                  className={origin === selectedOrigin ? 'filter-chip is-active' : 'filter-chip'}
+                  onClick={() => setSelectedOrigin(origin)}
+                >
+                  {origin === ALL_FILTER ? 'Tất cả' : origin}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         <label className="sort-control">
           <SlidersHorizontal size={16} />
           <span>Sắp xếp</span>
           <select value={sortMode} onChange={(event) => setSortMode(event.target.value)}>
             <option value="featured">Gợi ý</option>
             <option value="name">Tên A-Z</option>
-            <option value="origin">Nguồn gốc</option>
+            <option value="category">Dòng sản phẩm</option>
           </select>
         </label>
       </div>
@@ -1117,7 +1132,7 @@ const OptimizedImage = forwardRef(function OptimizedImage({
 
 function ProductImageFrame({ src, alt, className = 'product-image', loading = 'lazy', sizes = '(max-width: 860px) 45vw, 25vw' }) {
   return (
-    <span className={`${className} ${isDarkAsset(src) ? 'dark-source' : ''}`}>
+    <span className={className}>
       <OptimizedImage
         src={src}
         alt={alt}
@@ -1242,7 +1257,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
     [BadgeCheck, 'Tình trạng', product.availability],
     [Clock3, 'Giá', product.priceNote],
     [PackageCheck, 'Kích thước', product.sizeNote],
-    [MapPin, 'Nguồn gốc', product.origin],
+    [MapPin, 'Bộ sưu tập', product.origin],
     [Sparkles, 'Ý nghĩa', product.meaning],
     [Shield, 'Bảo quản', product.care],
     [PackageCheck, 'Giao nhận', product.shippingNote],
@@ -1302,9 +1317,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
             ))}
           </div>
           <figure
-            className={`main-image main-media ${activeMedia.type === 'video' ? 'is-video' : ''} ${
-              isDarkAsset(activeMedia.src) || isDarkAsset(activeMedia.poster) ? 'dark-source' : ''
-            }`}
+            className={`main-image main-media ${activeMedia.type === 'video' ? 'is-video' : ''}`}
           >
             <div className="media-toolbar" aria-label="Thông tin hình ảnh sản phẩm">
               <span>
@@ -1526,8 +1539,8 @@ function StoryBand() {
         onPointerLeave={storyTilt.onPointerLeave}
       >
         <OptimizedImage
-          src="/assets/product-gallery/images/generated-images/Kk18f1S3N3Q3hV1HfpaE3.png"
-          alt="Cận cảnh thiên châu trên nền gỗ"
+          src="/assets/product-gallery/images/lama-products/lama-003-01.jpg"
+          alt="Cận cảnh trang sức ngọc của Lama Beads"
           loading="lazy"
           width="1200"
           height="840"
@@ -1546,18 +1559,18 @@ function StoryBand() {
         <p className="section-kicker">Câu chuyện & chế tác</p>
         <h2>Tôn trọng chất liệu. Giữ lại cảm giác riêng.</h2>
         <p>
-          Lama Beads chọn thiên châu, bồ đề và đá tự nhiên theo chất hạt, sắc vân và sự hài hòa khi phối thành chuỗi.
-          Mỗi món hướng đến vẻ đẹp tĩnh, bền và có thể đồng hành lâu dài.
+          Lama Beads chọn từng mẫu ngọc theo màu sắc, dáng đeo, độ bóng và sự hài hòa khi lên người.
+          Mỗi món hướng đến vẻ đẹp tinh tế, dễ phối và có thể đồng hành lâu dài.
         </p>
         <div className="story-highlights">
           <p>
-            <span>Nguồn hạt</span> Tây Tạng, Nepal, Bhutan
+            <span>Dòng sản phẩm</span> Hoa tai, vòng tay, vòng cổ, nhẫn, vòng kiềng
           </p>
           <p>
-            <span>Quy trình</span> Chọn hạt, làm sạch, hoàn thiện bề mặt và sắp lại theo dáng đeo
+            <span>Quy trình</span> Chọn mẫu, kiểm tra ảnh/video, xác nhận tình trạng trước khi gửi
           </p>
           <p>
-            <span>Tư vấn</span> Gợi ý theo phong cách, cổ tay và mục đích sử dụng
+            <span>Tư vấn</span> Gợi ý theo phong cách, dáng đeo và món muốn phối cùng
           </p>
         </div>
         <a className="button secondary" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
@@ -1570,7 +1583,7 @@ function StoryBand() {
 
 function ContactBand() {
   const contactCards = [
-    [MapPin, 'Nguồn hạt', contact.regions, null],
+    [MapPin, 'Dòng sản phẩm', contact.regions, null],
     [Mail, 'Email', contact.email, `mailto:${contact.email}`],
     ...(contact.zalo ? [[MessageCircle, 'Nhắn tư vấn', 'Zalo / WhatsApp', contact.zalo]] : []),
     [Clock3, 'Giờ làm việc', '09:00 - 18:00', null],
@@ -1587,8 +1600,8 @@ function ContactBand() {
         <p className="section-kicker">Liên hệ</p>
         <h1>Xem kỹ bằng ảnh thật trước khi chọn.</h1>
         <p>
-          Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc ý nghĩa mình đang tìm,
-          cứ gửi yêu cầu để Lama Beads gợi ý theo chất liệu, nguồn hạt, kích thước và cách đeo.
+          Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc món muốn phối cùng,
+          cứ gửi yêu cầu để Lama Beads gợi ý theo chất liệu, kích thước và cách đeo.
         </p>
         <a className="button primary contact-cta" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
           {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
@@ -1643,7 +1656,7 @@ function Footer({ onNavigate }) {
     <footer className="footer">
       <div>
         <strong>Lama Beads</strong>
-        <p>Chuỗi hạt và thiên châu được chọn lọc từ Tây Tạng, Nepal và Bhutan.</p>
+        <p>Trang sức ngọc được chọn theo màu sắc, dáng đeo và cảm giác khi sử dụng.</p>
       </div>
       <div className="footer-links">
         <a href={`mailto:${contact.email}`}>{contact.email}</a>

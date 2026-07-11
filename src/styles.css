@@ -824,17 +824,6 @@ main {
   transition: transform 420ms ease;
 }
 
-.product-image.dark-source {
-  background:
-    radial-gradient(circle at 50% 44%, rgba(158, 207, 210, 0.18), transparent 36%),
-    linear-gradient(145deg, #fbfaf6 0%, #f2eee6 100%);
-}
-
-.product-image.dark-source img {
-  object-fit: contain;
-  padding: 1rem;
-}
-
 .product-card:hover .product-image img {
   transform: scale(1.035);
 }
@@ -1076,16 +1065,6 @@ main {
 
 .main-image video {
   background: #111418;
-}
-
-.main-image.dark-source {
-  background:
-    radial-gradient(circle at 50% 44%, rgba(158, 207, 210, 0.22), transparent 34%),
-    linear-gradient(145deg, #fbfaf6 0%, #f2eee6 100%);
-}
-
-.main-image.dark-source img {
-  padding: clamp(1.2rem, 4vw, 3rem);
 }
 
 .media-caption {
@@ -1346,17 +1325,6 @@ main {
   height: 100%;
   object-fit: cover;
   background: var(--stone);
-}
-
-.related-image.dark-source {
-  background:
-    radial-gradient(circle at 50% 44%, rgba(158, 207, 210, 0.18), transparent 36%),
-    linear-gradient(145deg, #fbfaf6 0%, #f2eee6 100%);
-}
-
-.related-image.dark-source img {
-  object-fit: contain;
-  padding: 1rem;
 }
 
 .related-card svg {
