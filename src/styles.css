@@ -1703,6 +1703,11 @@ main {
   background: #111418;
 }
 
+.main-image.is-video .main-image-photo {
+  padding: 0;
+  object-fit: cover;
+}
+
 .media-caption {
   position: absolute;
   left: 1rem;

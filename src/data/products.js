@@ -1,11 +1,11 @@
 const imageAsset = (name) => `/assets/product-gallery/images/lama-products/${name}`
 const videoAsset = (name) => `/assets/product-gallery/videos/lama-products/${name}`
 
-const productVideo = (name, poster, label = 'Video sản phẩm') => ({
+const productVideo = (name, poster, label = 'Góc chuyển động') => ({
   src: videoAsset(name),
   poster,
   label,
-  duration: 'Video ngắn',
+  duration: 'Tự động lặp',
   description: 'Xem rõ sắc ngọc, độ bóng và chuyển động dưới ánh sáng.',
 })
 

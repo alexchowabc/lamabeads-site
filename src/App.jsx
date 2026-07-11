@@ -26,8 +26,10 @@ import { contact, featuredProduct, products } from './data/products'
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
+const SITE_URL = 'https://lamabeads.com'
 const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/lama-jade-depth-openart.mp4'
 const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/lama-jade-start-frame.avif'
+const DEFAULT_SOCIAL_IMAGE = featuredProduct.previewImage
 const ALL_FILTER = 'all'
 const VI_COLLATOR = new Intl.Collator('vi', { sensitivity: 'base' })
 const CONTACT_HREF = contact.zalo || `mailto:${contact.email}`
@@ -43,18 +45,18 @@ const MATCH_SLOT_LABELS = {
   'Vòng kiềng': 'Cổ tay rõ nét',
 }
 const PRODUCT_PROFILES = {
-  'lama-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], weight: 'mềm' },
-  'lama-002': { color: 'xanh', metal: 'bạc', mood: ['thanh lịch', 'mềm'], weight: 'nổi' },
-  'lama-003': { color: 'xanh', metal: 'bạc', mood: ['hiện đại', 'gọn'], weight: 'nổi' },
-  'lama-004': { color: 'cam', metal: 'vàng', mood: ['ấm', 'trẻ'], weight: 'vừa' },
-  'lama-005': { color: 'xanh', metal: 'bạc', mood: ['nữ tính', 'tươi'], weight: 'vừa' },
-  'lama-006': { color: 'tím nhạt', metal: 'bạc', mood: ['dịu', 'dễ đeo'], weight: 'mềm' },
-  'lama-007': { color: 'xanh lam', metal: 'không rõ', mood: ['trong', 'tối giản'], weight: 'mềm' },
-  'lama-008': { color: 'xanh', metal: 'bạc', mood: ['gọn', 'dễ đeo'], weight: 'nhỏ' },
-  'lama-009': { color: 'xanh', metal: 'vàng', mood: ['trang trọng', 'trầm'], weight: 'nổi' },
-  'lama-010': { color: 'tím nhạt', metal: 'vàng', mood: ['dịu', 'nữ tính'], weight: 'mềm' },
-  'lama-011': { color: 'xanh', metal: 'bạc', mood: ['tươi', 'tự nhiên'], weight: 'vừa' },
-  'lama-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], weight: 'vừa' },
+  'lama-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'lama-002': { color: 'xanh', metal: 'bạc', mood: ['thanh lịch', 'mềm'], occasion: ['tiệc nhẹ', 'tư vấn'], placement: 'face', weight: 'nổi' },
+  'lama-003': { color: 'xanh', metal: 'bạc', mood: ['hiện đại', 'gọn'], occasion: ['đi làm', 'tiệc nhẹ'], placement: 'face', weight: 'nổi' },
+  'lama-004': { color: 'cam', metal: 'vàng', mood: ['ấm', 'trẻ'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
+  'lama-005': { color: 'xanh', metal: 'bạc', mood: ['nữ tính', 'tươi'], occasion: ['hằng ngày', 'quà tặng'], placement: 'hand', weight: 'vừa' },
+  'lama-006': { color: 'tím nhạt', metal: 'bạc', mood: ['dịu', 'dễ đeo'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'lama-007': { color: 'xanh lam', metal: 'không rõ', mood: ['trong', 'tối giản'], occasion: ['hằng ngày', 'thiền tĩnh'], placement: 'wrist', weight: 'mềm' },
+  'lama-008': { color: 'xanh', metal: 'bạc', mood: ['gọn', 'dễ đeo'], occasion: ['hằng ngày', 'đi làm'], placement: 'face', weight: 'nhỏ' },
+  'lama-009': { color: 'xanh', metal: 'vàng', mood: ['trang trọng', 'trầm'], occasion: ['sự kiện', 'quà tặng'], placement: 'neck', weight: 'nổi' },
+  'lama-010': { color: 'tím nhạt', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'lama-011': { color: 'xanh', metal: 'bạc', mood: ['tươi', 'tự nhiên'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
+  'lama-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], occasion: ['hằng ngày', 'tiệc nhẹ'], placement: 'face', weight: 'vừa' },
 }
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -87,30 +89,45 @@ const getProductProfile = (product) => PRODUCT_PROFILES[product?.id] || {
   color: product?.category || 'ngọc',
   metal: 'không rõ',
   mood: [],
+  occasion: [],
+  placement: product?.category || 'other',
   weight: 'vừa',
 }
 
 const getCategorySlotLabel = (category) => MATCH_SLOT_LABELS[category] || category
 
+const getPlacementLabel = (product) => getCategorySlotLabel(product?.category || '')
+
+const getSharedValues = (first = [], second = []) => first.filter((value) => second.includes(value))
+
 const getMatchReason = (baseProduct, candidate) => {
   const baseProfile = getProductProfile(baseProduct)
   const candidateProfile = getProductProfile(candidate)
   const reasons = []
+  const sharedMood = getSharedValues(candidateProfile.mood, baseProfile.mood)[0]
+  const sharedOccasion = getSharedValues(candidateProfile.occasion, baseProfile.occasion)[0]
 
   if (baseProfile.color === candidateProfile.color) {
     reasons.push(`Cùng tông ${candidateProfile.color}`)
   }
 
   if (baseProfile.metal !== 'không rõ' && baseProfile.metal === candidateProfile.metal) {
-    reasons.push(`Hợp chi tiết màu ${candidateProfile.metal}`)
+    reasons.push(`Đồng điệu chi tiết ${candidateProfile.metal}`)
   }
 
-  const sharedMood = candidateProfile.mood.find((mood) => baseProfile.mood.includes(mood))
   if (sharedMood) {
-    reasons.push(`Cùng cảm giác ${sharedMood}`)
+    reasons.push(`Giữ cảm giác ${sharedMood}`)
   }
 
-  return reasons.slice(0, 2).join(' · ') || `Bổ sung ở ${getCategorySlotLabel(candidate.category).toLowerCase()}`
+  if (sharedOccasion) {
+    reasons.push(`Hợp ${sharedOccasion}`)
+  }
+
+  if (baseProfile.placement !== candidateProfile.placement) {
+    reasons.push(`Bổ sung ở ${getPlacementLabel(candidate).toLowerCase()}`)
+  }
+
+  return reasons.slice(0, 2).join(' · ') || `Tạo điểm nhấn ở ${getPlacementLabel(candidate).toLowerCase()}`
 }
 
 const getMatchScore = (baseProduct, candidate) => {
@@ -118,14 +135,23 @@ const getMatchScore = (baseProduct, candidate) => {
 
   const baseProfile = getProductProfile(baseProduct)
   const candidateProfile = getProductProfile(candidate)
-  const sharedMoodCount = candidateProfile.mood.filter((mood) => baseProfile.mood.includes(mood)).length
+  const sharedMoodCount = getSharedValues(candidateProfile.mood, baseProfile.mood).length
+  const sharedOccasionCount = getSharedValues(candidateProfile.occasion, baseProfile.occasion).length
+  const complementsPlacement = baseProfile.placement !== candidateProfile.placement
+  const balancesWeight = (
+    (baseProfile.weight === 'nổi' && candidateProfile.weight !== 'nổi') ||
+    (candidateProfile.weight === 'nổi' && baseProfile.weight !== 'nổi')
+  )
   let score = 0
 
   if (baseProduct.category !== candidate.category) score += 4
+  if (complementsPlacement) score += 3
   if (baseProfile.color === candidateProfile.color) score += 5
   if (baseProfile.metal !== 'không rõ' && baseProfile.metal === candidateProfile.metal) score += 3
   if (baseProfile.weight === candidateProfile.weight) score += 1
+  if (balancesWeight) score += 2
   score += sharedMoodCount * 2
+  score += sharedOccasionCount * 1.4
 
   return score
 }
@@ -173,6 +199,11 @@ const getOptimizedImageSrcSet = (src = '') => {
   return small && large ? `${small} 720w, ${large} 1200w` : ''
 }
 
+const toAbsoluteUrl = (path = '') => {
+  if (!path) return `${SITE_URL}/`
+  return path.startsWith('http') ? path : `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`
+}
+
 const getRoutePath = (route) => {
   if (route.name === 'home') return '/'
   if (route.name === 'collection') return '/collection'
@@ -190,6 +221,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Bộ sưu tập trang sức ngọc | Lama Beads',
       description: 'Khám phá bộ sưu tập hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc của Lama Beads.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Bộ sưu tập trang sức ngọc Lama Beads',
     }
   }
 
@@ -197,6 +230,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: `${product.name} | Lama Beads`,
       description: `${product.shortDescription} Xem ảnh thật, chất liệu, ý nghĩa, gợi ý phối món và cách bảo quản trước khi chọn.`,
+      image: product.previewImage,
+      imageAlt: product.name,
     }
   }
 
@@ -204,6 +239,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Tư vấn riêng | Lama Beads',
       description: 'Gửi yêu cầu tư vấn để Lama Beads gợi ý mẫu ngọc theo dáng đeo, phong cách và món muốn phối cùng.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Tư vấn chọn trang sức ngọc Lama Beads',
     }
   }
 
@@ -211,6 +248,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Phối món trang sức ngọc | Lama Beads',
       description: 'Xem gợi ý phối hoa tai, vòng cổ, vòng tay, nhẫn và vòng kiềng theo màu ngọc, chi tiết kim loại và cảm giác đeo.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Gợi ý phối món trang sức ngọc Lama Beads',
     }
   }
 
@@ -218,6 +257,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Chăm sóc và kiểm tra ngọc | Lama Beads',
       description: 'Cách Lama Beads kiểm tra ảnh, video, tình trạng mẫu, đóng gói và hướng dẫn bảo quản trang sức ngọc.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Kiểm tra và chăm sóc trang sức ngọc Lama Beads',
     }
   }
 
@@ -225,6 +266,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Câu chuyện Lama Beads | Chọn ngọc có cảm giác riêng',
       description: 'Tìm hiểu cách Lama Beads chọn trang sức ngọc theo màu sắc, dáng đeo, độ bóng và cảm giác khi sử dụng.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Câu chuyện Lama Beads',
     }
   }
 
@@ -232,6 +275,8 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Liên hệ tư vấn | Lama Beads',
       description: 'Liên hệ Lama Beads để xem thêm ảnh thật, hỏi chất liệu, kích thước, dáng đeo và tình trạng từng mẫu trước khi chọn.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Liên hệ Lama Beads',
     }
   }
 
@@ -239,12 +284,16 @@ const getRouteSeo = (route, product) => {
     return {
       title: 'Không tìm thấy trang | Lama Beads',
       description: 'Trang bạn đang tìm không tồn tại. Quay lại trang chủ hoặc xem bộ sưu tập hiện có của Lama Beads.',
+      image: DEFAULT_SOCIAL_IMAGE,
+      imageAlt: 'Lama Beads',
     }
   }
 
   return {
     title: 'Lama Beads | Trang sức ngọc chọn lọc',
     description: 'Lama Beads giới thiệu hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc với ảnh và video sản phẩm.',
+    image: DEFAULT_SOCIAL_IMAGE,
+    imageAlt: 'Trang sức ngọc Lama Beads',
   }
 }
 
@@ -258,9 +307,84 @@ const setMetaTag = (selector, attrName, attrValue, content) => {
   tag.setAttribute('content', content)
 }
 
+const setOptionalMetaTag = (selector, attrName, attrValue, content) => {
+  const existing = document.head.querySelector(selector)
+  if (!content) {
+    existing?.remove()
+    return
+  }
+  setMetaTag(selector, attrName, attrValue, content)
+}
+
+const updateStructuredData = (route, product, seo, canonicalHref) => {
+  let script = document.head.querySelector('#lama-structured-data')
+  if (!script) {
+    script = document.createElement('script')
+    script.id = 'lama-structured-data'
+    script.type = 'application/ld+json'
+    document.head.appendChild(script)
+  }
+
+  const organization = {
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    name: 'Lama Beads',
+    url: SITE_URL,
+    email: contact.email,
+  }
+  const website = {
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    name: 'Lama Beads',
+    url: SITE_URL,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    inLanguage: 'vi-VN',
+  }
+  const currentPage = {
+    '@type': 'WebPage',
+    '@id': `${canonicalHref}#webpage`,
+    url: canonicalHref,
+    name: seo.title,
+    description: seo.description,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    inLanguage: 'vi-VN',
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: toAbsoluteUrl(seo.image),
+    },
+  }
+
+  const graph = [organization, website, currentPage]
+
+  if (route.name === 'product' && product) {
+    graph.push({
+      '@type': 'Product',
+      '@id': `${canonicalHref}#product`,
+      name: product.name,
+      description: seo.description,
+      image: (product.galleryImages?.length ? product.galleryImages : [product.previewImage]).map(toAbsoluteUrl),
+      brand: { '@id': `${SITE_URL}/#organization` },
+      category: product.category,
+      material: product.materials,
+      url: canonicalHref,
+      additionalProperty: [
+        { '@type': 'PropertyValue', name: 'Tình trạng', value: product.availability },
+        { '@type': 'PropertyValue', name: 'Ý nghĩa', value: product.meaning },
+        { '@type': 'PropertyValue', name: 'Kiểm tra trước khi chọn', value: product.inspection },
+      ],
+    })
+  }
+
+  script.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': graph,
+  })
+}
+
 const updateDocumentSeo = (route, product) => {
   const seo = getRouteSeo(route, product)
   const canonicalHref = `https://lamabeads.com${getRoutePath(route)}`
+  const imageHref = toAbsoluteUrl(seo.image)
   let canonical = document.head.querySelector('link[rel="canonical"]')
 
   document.title = seo.title
@@ -269,6 +393,15 @@ const updateDocumentSeo = (route, product) => {
   setMetaTag('meta[property="og:description"]', 'property', 'og:description', seo.description)
   setMetaTag('meta[property="og:type"]', 'property', 'og:type', route.name === 'product' ? 'product' : 'website')
   setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalHref)
+  setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Lama Beads')
+  setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'vi_VN')
+  setMetaTag('meta[property="og:image"]', 'property', 'og:image', imageHref)
+  setMetaTag('meta[property="og:image:alt"]', 'property', 'og:image:alt', seo.imageAlt || seo.title)
+  setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
+  setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', seo.title)
+  setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', seo.description)
+  setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', imageHref)
+  setOptionalMetaTag('meta[property="product:category"]', 'property', 'product:category', route.name === 'product' ? product?.category : '')
 
   if (!canonical) {
     canonical = document.createElement('link')
@@ -277,6 +410,7 @@ const updateDocumentSeo = (route, product) => {
   }
 
   canonical.setAttribute('href', canonicalHref)
+  updateStructuredData(route, product, seo, canonicalHref)
 }
 
 const createProductMedia = (product) => [
@@ -1753,6 +1887,24 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
     })
   }, [activeMedia])
 
+  useEffect(() => {
+    const mediaElement = mainMediaRef.current
+    if (activeMedia?.type !== 'video' || !mediaElement) return undefined
+
+    mediaElement.muted = true
+    mediaElement.loop = true
+    mediaElement.playsInline = true
+
+    const playPromise = mediaElement.play()
+    if (playPromise?.catch) {
+      playPromise.catch(() => {})
+    }
+
+    return () => {
+      mediaElement.pause()
+    }
+  }, [activeMedia])
+
   const detailFacts = [
     [Gem, 'Chất liệu', product.materials],
     [BadgeCheck, 'Tình trạng', product.availability],
@@ -1793,7 +1945,7 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
                 className={index === activeMediaIndex ? 'thumb media-thumb is-active' : 'thumb media-thumb'}
                 onClick={() => setActiveMediaIndex(index)}
                 aria-pressed={index === activeMediaIndex}
-                aria-label={`${media.type === 'video' ? 'Xem video' : 'Xem trước hình'} ${product.name}: ${media.label}`}
+                aria-label={`${media.type === 'video' ? 'Xem video tự phát' : 'Xem trước hình'} ${product.name}: ${media.label}`}
                 type="button"
               >
                 <OptimizedImage
@@ -1834,9 +1986,12 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
                 src={activeMedia.src}
                 poster={activeMedia.poster}
                 key={getMediaKey(activeMedia)}
-                controls
+                autoPlay
+                loop
+                muted
                 playsInline
                 preload="metadata"
+                aria-label={`${product.name} - ${activeMedia.label}`}
               />
             ) : (
               <OptimizedImage
