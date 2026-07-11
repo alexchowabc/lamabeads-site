@@ -1,0 +1,110 @@
+[
+  {
+    "product_id": "cnp-001",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-001-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-001-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-002",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-002-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-002-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-003",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-003-01.jpg",
+      "/assets/product-gallery/images/cnp-products/cnp-003-02.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-003-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-004",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-004-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-004-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-005",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-005-01.jpg",
+      "/assets/product-gallery/images/cnp-products/cnp-005-02.jpg"
+    ],
+    "videos": []
+  },
+  {
+    "product_id": "cnp-006",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-006-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-006-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-007",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-007-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-007-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-008",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-008-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-008-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-009",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-009-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-009-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-010",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-010-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-010-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-011",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-011-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-011-video-01.mp4"
+    ]
+  },
+  {
+    "product_id": "cnp-012",
+    "images": [
+      "/assets/product-gallery/images/cnp-products/cnp-012-01.jpg"
+    ],
+    "videos": [
+      "/assets/product-gallery/videos/cnp-products/cnp-012-video-01.mp4"
+    ]
+  }
+]

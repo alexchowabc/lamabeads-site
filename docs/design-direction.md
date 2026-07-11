@@ -1,4 +1,4 @@
-# Châu Ngọc Phúc Website Direction
+# Chau Ngoc Phuc Website Direction
 
 ## Source Reference Review
 
@@ -6,7 +6,7 @@ The requested `awesome_design` folder was not present at `/Users/alexzhou/Downlo
 
 `/Users/alexzhou/Downloads/awesome-design-md-main/design-md`
 
-No Tiffany-specific Markdown file exists in that library. I reviewed the available references and selected the closest fit for Châu Ngọc Phúc:
+No Tiffany-specific Markdown file exists in that library. I reviewed the available references and selected the closest fit for Chau Ngoc Phuc:
 
 - Primary base: `apple/DESIGN.md`
 - Secondary influence: `bugatti/DESIGN.md`
@@ -18,9 +18,9 @@ No Tiffany-specific Markdown file exists in that library. I reviewed the availab
 
 The site should feel like a refined jewelry gallery, not a direct copy of Tiffany. The direction is:
 
-- White or very pale aqua canvas.
+- White or soft lavender canvas.
 - Quiet black/charcoal typography.
-- One restrained aqua accent for primary actions and selected states.
+- One restrained lavender accent for primary actions and selected states.
 - Product photography as the visual center.
 - Generous whitespace and museum-like product spacing.
 - No heavy decorative backgrounds, gradients, floating blobs, or busy card stacks.
@@ -31,7 +31,7 @@ The site should feel like a refined jewelry gallery, not a direct copy of Tiffan
 ### Layout
 
 - Header: minimal brand wordmark, product/category navigation, contact action.
-- Home first viewport: Châu Ngọc Phúc brand signal, short value statement, one product-led hero image, CTA to collection.
+- Home first viewport: Chau Ngoc Phuc brand signal, short value statement, one product-led hero image, CTA to collection.
 - Collection section: product preview grid, each item with image, name, material/origin, and short description.
 - Product detail: clicked item opens a dedicated detail view or modal with gallery, description, available videos, additional photos, care notes, and contact/buy action.
 - Story/craft sections: only where they support trust and product value.
@@ -39,10 +39,10 @@ The site should feel like a refined jewelry gallery, not a direct copy of Tiffan
 ### Palette
 
 - Canvas: pure white.
-- Alternate surface: very pale aqua or very light warm gray.
+- Alternate surface: soft lavender or very light warm gray.
 - Ink: near-black charcoal.
 - Muted text: soft gray.
-- Accent: aqua, used sparingly for CTAs, focus, and selected states.
+- Accent: lavender, used sparingly for CTAs, focus, and selected states.
 - Detail contrast: black-background product closeups can be used inside detail pages, not as the dominant whole-site color.
 
 ### Typography
@@ -83,7 +83,7 @@ Videos should be real media files or hosted embeds when available. Until those e
 
 Saved asset folder:
 
-`/Users/alexzhou/website_lama/assets/product-gallery/images`
+`<project-root>/assets/product-gallery/images`
 
 Current asset split:
 
@@ -93,7 +93,7 @@ Current asset split:
 
 Best next asset improvement:
 
-- Shoot or prepare clean jewelry photos on white, pale aqua, or neutral stone backgrounds.
+- Shoot or prepare clean jewelry photos on white, soft lavender, or neutral stone backgrounds.
 - Add short product videos for each item if the detail pages should include video.
 
 ## Implementation Notes

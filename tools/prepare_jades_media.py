@@ -515,7 +515,7 @@ def write_prepared_review_html(out_dir: Path, items: list[MediaItem]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare Chau Ngoc Phuc raw jade media without touching originals.")
     parser.add_argument("--raw", default="/Users/alexzhou/jades")
-    parser.add_argument("--out", default="/Users/alexzhou/website_lama/media_prepared/jades")
+    parser.add_argument("--out", default="media_prepared/jades")
     parser.add_argument("--skip-images", action="store_true")
     parser.add_argument("--skip-video-posters", action="store_true")
     parser.add_argument("--limit", type=int, default=0)

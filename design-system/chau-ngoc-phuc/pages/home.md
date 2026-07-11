@@ -2,7 +2,7 @@
 
 ## Page Job
 
-Home is the brand and mood page. It should make Châu Ngọc Phúc feel premium, calm, and material-focused before asking users to browse.
+Home is the brand and mood page. It should make Chau Ngoc Phuc feel premium, calm, and material-focused before asking users to browse.
 
 ## Structure
 

@@ -1,6 +1,6 @@
 # Domain And Brand Migration
 
-Use this for the Châu Ngọc Phúc domain migration.
+Use this for the Chau Ngoc Phuc domain migration.
 
 ## Update App Identity
 
@@ -19,7 +19,7 @@ Use this for the Châu Ngọc Phúc domain migration.
 3. Update `public/CNAME`.
 4. Deploy and verify:
    - Home page loads on the new domain.
-   - Direct routes such as `/collection/hoa-tai` and `/product/lama-003` render.
+   - Direct routes such as `/collection/hoa-tai` and `/product/cnp-003` render.
    - Canonical, Open Graph, and JSON-LD URLs use the new domain.
 5. Keep the old domain active until the new domain is fully verified.
 

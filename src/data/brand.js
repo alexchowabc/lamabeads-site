@@ -1,7 +1,7 @@
 const cleanUrl = (value) => String(value || '').replace(/\/+$/, '')
 
 export const brand = {
-  name: import.meta.env.VITE_BRAND_NAME || 'Châu Ngọc Phúc',
+  name: import.meta.env.VITE_BRAND_NAME || 'Chau Ngoc Phuc',
   siteUrl: cleanUrl(import.meta.env.VITE_SITE_URL || 'https://chaungocphuc.com'),
   locale: 'vi_VN',
   language: 'vi-VN',
@@ -10,7 +10,7 @@ export const brand = {
 }
 
 export const contact = {
-  email: import.meta.env.VITE_CONTACT_EMAIL || 'lamabeads@gmail.com',
+  email: import.meta.env.VITE_CONTACT_EMAIL || 'info@chaungocphuc.com',
   phone: import.meta.env.VITE_CONTACT_PHONE || '',
   zalo: import.meta.env.VITE_CONTACT_URL || '',
   regions: 'Hoa tai · Vòng tay · Vòng cổ · Vòng kiềng',

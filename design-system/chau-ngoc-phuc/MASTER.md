@@ -6,7 +6,7 @@
 
 ---
 
-**Project:** Châu Ngọc Phúc
+**Project:** Chau Ngoc Phuc
 **Generated:** 2026-07-01 19:56:52
 **Category:** E-commerce Luxury
 
@@ -21,15 +21,15 @@
 | Primary | `#111418` | `--color-primary` |
 | On Primary | `#FFFFFF` | `--color-on-primary` |
 | Secondary | `#3F4348` | `--color-secondary` |
-| Accent/CTA | `#7CAAB7` | `--color-accent` |
-| Background | `#FDFDFB` | `--color-background` |
+| Accent/CTA | `#7C659F` | `--color-accent` |
+| Background | `#FFFFFF` | `--color-background` |
 | Foreground | `#111418` | `--color-foreground` |
-| Muted | `#F3F1ED` | `--color-muted` |
-| Border | `#E2E2DE` | `--color-border` |
+| Muted | `#FAF7FF` | `--color-muted` |
+| Border | `#DED3EB` | `--color-border` |
 | Destructive | `#DC2626` | `--color-destructive` |
-| Ring | `#7CAAB7` | `--color-ring` |
+| Ring | `#7C659F` | `--color-ring` |
 
-**Color Notes:** Editorial black, Tiffany-like pale aqua, deep jade, warm gold micro-accents. Do not use pink or playful accents.
+**Color Notes:** Editorial black, soft lavender, deep jade, warm gold micro-accents. Do not use pink or playful accents.
 
 ### Typography
 
@@ -104,7 +104,7 @@
 
 ```css
 .card {
-  background: #FAFAFA;
+  background: #FAF7FF;
   border-radius: 8px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -123,16 +123,16 @@
 ```css
 .input {
   padding: 12px 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #DED3EB;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 200ms ease;
 }
 
 .input:focus {
-  border-color: #18181B;
+  border-color: #7C659F;
   outline: none;
-  box-shadow: 0 0 0 3px #18181B20;
+  box-shadow: 0 0 0 3px rgba(124, 101, 159, 0.18);
 }
 ```
 
@@ -166,7 +166,7 @@
 
 **Key Effects:** Morphing elements (SVG/CSS), fluid animations (400-600ms curves), dynamic blur (backdrop-filter), color transitions
 
-**Châu Ngọc Phúc Interpretation:** Use liquid/glass effects only where they support jewelry inspection: translucent header, subtle product media overlays, soft scroll video treatment. Avoid shiny app-like panels, large blur cards, chromatic effects, or anything that makes the jewelry feel fake.
+**Chau Ngoc Phuc Interpretation:** Use liquid/glass effects only where they support jewelry inspection: translucent header, subtle product media overlays, soft scroll video treatment. Avoid shiny app-like panels, large blur cards, chromatic effects, or anything that makes the jewelry feel fake.
 
 ### Page Pattern
 

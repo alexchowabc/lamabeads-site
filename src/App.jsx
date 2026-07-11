@@ -32,8 +32,8 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const SITE_URL = brand.siteUrl
 const BRAND_NAME = brand.name
-const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/lama-jade-depth-openart.mp4'
-const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/lama-jade-start-frame.avif'
+const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/cnp-jade-depth-openart.mp4'
+const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/cnp-jade-start-frame.avif'
 const DEFAULT_SOCIAL_IMAGE = featuredProduct.previewImage
 const ALL_FILTER = 'all'
 const VI_COLLATOR = new Intl.Collator('vi', { sensitivity: 'base' })
@@ -101,18 +101,18 @@ const TRUST_PROCESS_STEPS = [
   ['04', 'Xác nhận trước khi gửi', 'Chốt lại tình trạng, cách bảo quản và đóng gói riêng trước khi giao.'],
 ]
 const PRODUCT_PROFILES = {
-  'lama-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
-  'lama-002': { color: 'xanh', metal: 'bạc', mood: ['thanh lịch', 'mềm'], occasion: ['tiệc nhẹ', 'tư vấn'], placement: 'face', weight: 'nổi' },
-  'lama-003': { color: 'xanh', metal: 'bạc', mood: ['hiện đại', 'gọn'], occasion: ['đi làm', 'tiệc nhẹ'], placement: 'face', weight: 'nổi' },
-  'lama-004': { color: 'cam', metal: 'vàng', mood: ['ấm', 'trẻ'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
-  'lama-005': { color: 'xanh', metal: 'bạc', mood: ['nữ tính', 'tươi'], occasion: ['hằng ngày', 'quà tặng'], placement: 'hand', weight: 'vừa' },
-  'lama-006': { color: 'tím nhạt', metal: 'bạc', mood: ['dịu', 'dễ đeo'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
-  'lama-007': { color: 'xanh lam', metal: 'không rõ', mood: ['trong', 'tối giản'], occasion: ['hằng ngày', 'thiền tĩnh'], placement: 'wrist', weight: 'mềm' },
-  'lama-008': { color: 'xanh', metal: 'bạc', mood: ['gọn', 'dễ đeo'], occasion: ['hằng ngày', 'đi làm'], placement: 'face', weight: 'nhỏ' },
-  'lama-009': { color: 'xanh', metal: 'vàng', mood: ['trang trọng', 'trầm'], occasion: ['sự kiện', 'quà tặng'], placement: 'neck', weight: 'nổi' },
-  'lama-010': { color: 'tím nhạt', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
-  'lama-011': { color: 'xanh', metal: 'bạc', mood: ['tươi', 'tự nhiên'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
-  'lama-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], occasion: ['hằng ngày', 'tiệc nhẹ'], placement: 'face', weight: 'vừa' },
+  'cnp-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-002': { color: 'xanh', metal: 'bạc', mood: ['thanh lịch', 'mềm'], occasion: ['tiệc nhẹ', 'tư vấn'], placement: 'face', weight: 'nổi' },
+  'cnp-003': { color: 'xanh', metal: 'bạc', mood: ['hiện đại', 'gọn'], occasion: ['đi làm', 'tiệc nhẹ'], placement: 'face', weight: 'nổi' },
+  'cnp-004': { color: 'cam', metal: 'vàng', mood: ['ấm', 'trẻ'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
+  'cnp-005': { color: 'xanh', metal: 'bạc', mood: ['nữ tính', 'tươi'], occasion: ['hằng ngày', 'quà tặng'], placement: 'hand', weight: 'vừa' },
+  'cnp-006': { color: 'tím nhạt', metal: 'bạc', mood: ['dịu', 'dễ đeo'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-007': { color: 'xanh lam', metal: 'không rõ', mood: ['trong', 'tối giản'], occasion: ['hằng ngày', 'thiền tĩnh'], placement: 'wrist', weight: 'mềm' },
+  'cnp-008': { color: 'xanh', metal: 'bạc', mood: ['gọn', 'dễ đeo'], occasion: ['hằng ngày', 'đi làm'], placement: 'face', weight: 'nhỏ' },
+  'cnp-009': { color: 'xanh', metal: 'vàng', mood: ['trang trọng', 'trầm'], occasion: ['sự kiện', 'quà tặng'], placement: 'neck', weight: 'nổi' },
+  'cnp-010': { color: 'tím nhạt', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-011': { color: 'xanh', metal: 'bạc', mood: ['tươi', 'tự nhiên'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
+  'cnp-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], occasion: ['hằng ngày', 'tiệc nhẹ'], placement: 'face', weight: 'vừa' },
 }
 
 const slugifyVietnamese = (value = '') => value
@@ -427,10 +427,10 @@ const setOptionalMetaTag = (selector, attrName, attrValue, content) => {
 }
 
 const updateStructuredData = (route, product, seo, canonicalHref) => {
-  let script = document.head.querySelector('#lama-structured-data')
+  let script = document.head.querySelector('#cnp-structured-data')
   if (!script) {
     script = document.createElement('script')
-    script.id = 'lama-structured-data'
+    script.id = 'cnp-structured-data'
     script.type = 'application/ld+json'
     document.head.appendChild(script)
   }
@@ -1123,7 +1123,7 @@ function App() {
 }
 
 function HomePage({ products, onExplore, onSelect }) {
-  const heroProduct = getProductById('lama-009') || products[0]
+  const heroProduct = getProductById('cnp-009') || products[0]
   const signatureProducts = [heroProduct, ...products.filter((product) => product.id !== heroProduct.id)].slice(0, 5)
 
   return (
@@ -1252,7 +1252,7 @@ function ConciergePage({ onNavigate }) {
       </div>
       <div className="concierge-media-row reveal-up">
         <ProductImageFrame
-          src="/assets/product-gallery/images/lama-products/lama-002-01.jpg"
+          src="/assets/product-gallery/images/cnp-products/cnp-002-01.jpg"
           alt="Hoa tai ngọc xanh dáng rơi"
           className="concierge-media"
           sizes="(max-width: 860px) 100vw, 38vw"
@@ -1270,7 +1270,7 @@ function ConciergePage({ onNavigate }) {
 }
 
 function MatchingPage({ products, onSelect }) {
-  const [selectedId, setSelectedId] = useState('lama-003')
+  const [selectedId, setSelectedId] = useState('cnp-003')
   const selectedProduct = products.find((product) => product.id === selectedId) || products[0]
   const matchedSet = useMemo(() => getMatchedProducts(selectedProduct, 4), [selectedProduct])
   const selectedProfile = getProductProfile(selectedProduct)
@@ -1359,7 +1359,7 @@ function CarePage({ onNavigate }) {
           </button>
         </div>
         <ProductImageFrame
-          src="/assets/product-gallery/images/lama-products/lama-003-01.jpg"
+          src="/assets/product-gallery/images/cnp-products/cnp-003-01.jpg"
           alt="Hoa tai ngọc xanh được chụp cận chất liệu"
           className="care-hero-image"
           loading="eager"
@@ -1406,7 +1406,7 @@ function AboutPage({ onNavigate }) {
             </button>
           </div>
           <ProductImageFrame
-            src="/assets/product-gallery/images/lama-products/lama-009-01.jpg"
+            src="/assets/product-gallery/images/cnp-products/cnp-009-01.jpg"
             alt={`Chuỗi ngọc xanh phối mặt của ${BRAND_NAME}`}
             className="about-hero-image"
             loading="eager"
@@ -1675,7 +1675,7 @@ function Collection({
   const isEditorialView = products.length > 0 && activeFilterCount === 0 && sortMode === 'featured'
   const isCategoryView = selectedCategory !== ALL_FILTER
   const editorialLead = isEditorialView
-    ? products.find((product) => product.id === 'lama-003') || products[0]
+    ? products.find((product) => product.id === 'cnp-003') || products[0]
     : null
   const editorialGroups = useMemo(() => {
     if (!isEditorialView) return []
@@ -2007,7 +2007,7 @@ const OptimizedImage = forwardRef(function OptimizedImage({
 })
 
 function ProductImageFrame({ src, alt, className = 'product-image', loading = 'lazy', sizes = '(max-width: 860px) 45vw, 25vw' }) {
-  const mediaId = src?.match(/lama-\d{3}/)?.[0]
+  const mediaId = src?.match(/cnp-\d{3}/)?.[0]
   const frameClassName = mediaId ? `${className} media-${mediaId}` : className
 
   return (
@@ -2489,7 +2489,7 @@ function StoryBand() {
         onPointerLeave={storyTilt.onPointerLeave}
       >
         <OptimizedImage
-          src="/assets/product-gallery/images/lama-products/lama-003-01.jpg"
+          src="/assets/product-gallery/images/cnp-products/cnp-003-01.jpg"
           alt={`Cận cảnh trang sức ngọc của ${BRAND_NAME}`}
           loading="lazy"
           width="1200"
