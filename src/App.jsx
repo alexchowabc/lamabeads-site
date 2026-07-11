@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronLeft,
   CheckCircle2,
+  ClipboardCheck,
   Clock3,
   Filter,
   Gem,
@@ -15,7 +16,9 @@ import {
   MapPin,
   Menu,
   MessageCircle,
+  PackageCheck,
   Play,
+  Ruler,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -73,6 +76,30 @@ const CATEGORY_GUIDES = {
     points: ['Xem vân và vùng chuyển màu', 'Kiểm tra dáng vòng', 'Đeo đơn để giữ vẻ sạch'],
   },
 }
+const TRUST_VALUES = [
+  {
+    title: 'Ảnh và video theo từng mẫu',
+    description: 'Mỗi sản phẩm được trình bày bằng media riêng để bạn xem đúng mẫu, đúng màu và đúng dáng trước khi hỏi thêm.',
+  },
+  {
+    title: 'Kiểm tra điểm quan trọng',
+    description: 'Tập trung vào sắc ngọc, vân, bề mặt, khóa/móc, kích thước và cảm giác khi lên người, không chỉ nhìn ảnh đẹp.',
+  },
+  {
+    title: 'Tư vấn theo cách đeo',
+    description: 'Gợi ý theo gương mặt, cổ tay, phong cách và món muốn phối cùng để set trang sức không bị quá nhiều chi tiết.',
+  },
+  {
+    title: 'Xác nhận trước khi gửi',
+    description: 'Trước khi chốt, mẫu được xác nhận lại bằng ảnh hoặc video cận cùng ghi chú tình trạng và cách bảo quản.',
+  },
+]
+const TRUST_PROCESS_STEPS = [
+  ['01', 'Xem mẫu đang quan tâm', 'Chọn sản phẩm, xem ảnh chính, ảnh cận và video nếu mẫu có sẵn.'],
+  ['02', 'Hỏi đúng điểm cần kiểm tra', 'Có thể yêu cầu thêm góc vân, bề mặt, khóa/móc, kích thước hoặc ảnh đặt trên tay.'],
+  ['03', 'Nhận gợi ý phối cùng', 'Nếu muốn tạo set, mẫu phối được chọn theo tông ngọc, kim loại và vị trí đeo.'],
+  ['04', 'Xác nhận trước khi gửi', 'Chốt lại tình trạng, cách bảo quản và đóng gói riêng trước khi giao.'],
+]
 const PRODUCT_PROFILES = {
   'lama-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
   'lama-002': { color: 'xanh', metal: 'bạc', mood: ['thanh lịch', 'mềm'], occasion: ['tiệc nhẹ', 'tư vấn'], placement: 'face', weight: 'nổi' },
@@ -1091,43 +1118,7 @@ function App() {
         </main>
         <Footer onNavigate={navigate} />
       </div>
-      {route.name === 'product' && (
-        <MobileContactCta product={selectedProduct} />
-      )}
     </>
-  )
-}
-
-function MobileContactCta({ product }) {
-  const [isVisible, setIsVisible] = useState(false)
-  const href = getProductInquiryHref(product)
-
-  useEffect(() => {
-    const updateVisibility = () => {
-      const threshold = Math.min(620, window.innerHeight * 0.72)
-      setIsVisible(window.scrollY > threshold)
-    }
-
-    updateVisibility()
-    window.addEventListener('scroll', updateVisibility, { passive: true })
-    window.addEventListener('resize', updateVisibility)
-
-    return () => {
-      window.removeEventListener('scroll', updateVisibility)
-      window.removeEventListener('resize', updateVisibility)
-    }
-  }, [product?.id])
-
-  return (
-    <a
-      className={`mobile-sticky-cta ${isVisible ? 'is-visible' : ''}`}
-      href={href}
-      aria-label={`Gửi yêu cầu tư vấn về ${product?.name || `mẫu ${BRAND_NAME}`}`}
-      {...CONTACT_LINK_PROPS}
-    >
-      <ContactIcon size={18} />
-      <span>{CONTACT_ACTION_LABEL}</span>
-    </a>
   )
 }
 
@@ -1386,6 +1377,7 @@ function CarePage({ onNavigate }) {
           </article>
         ))}
       </div>
+      <AssuranceProcess />
       <div className="care-ritual reveal-up">
         <h2>Cách giữ độ bóng hằng ngày</h2>
         <ol>
@@ -1423,6 +1415,7 @@ function AboutPage({ onNavigate }) {
         </div>
       </section>
       <TrustBand />
+      <AssuranceProcess />
       <StoryBand />
     </>
   )
@@ -2157,9 +2150,10 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
   }, [activeMedia])
 
   const detailFacts = [
+    [BadgeCheck, 'Mã mẫu', product.id.toUpperCase()],
     [Gem, 'Chất liệu', product.materials],
-    [BadgeCheck, 'Tình trạng', product.availability],
     [Camera, 'Media', formatMediaCount(mediaItems)],
+    [Clock3, 'Tư vấn', product.availability],
   ]
   const detailSections = [
     ['Chất liệu', product.materials],
@@ -2173,6 +2167,17 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
   const mediaNoteCopy = hasProductVideos
     ? 'Bạn có thể xem ảnh cận, video xoay chậm và góc vân rõ hơn để cảm nhận bề mặt, độ bóng và dáng đeo.'
     : `Nếu bạn quan tâm một mẫu, ${BRAND_NAME} có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay để bạn yên tâm hơn trước khi quyết định.`
+  const assuranceItems = [
+    [Images, 'Media riêng của mẫu', mediaNoteCopy],
+    [ClipboardCheck, 'Điểm cần nhìn kỹ', product.inspection],
+    [Ruler, 'Kích thước & dáng đeo', product.sizeNote],
+    [PackageCheck, 'Trước khi gửi', product.shippingNote],
+  ]
+  const consultationSteps = [
+    `Gửi yêu cầu về ${product.name}.`,
+    'Nhận thêm ảnh/video cận nếu bạn cần kiểm tra kỹ hơn.',
+    'Xác nhận tình trạng, kích thước và món phối cùng trước khi chốt.',
+  ]
 
   return (
     <section className="detail section" id="detail" ref={detailSectionRef}>
@@ -2289,14 +2294,6 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
               </span>
             ))}
           </div>
-          <p className="detail-media-note compact-note">{mediaNoteCopy}</p>
-          <div className="detail-disclosures">
-            {detailSections.map(([title, value], index) => (
-              <DisclosureItem key={title} title={title} defaultOpen={index === 0}>
-                {value}
-              </DisclosureItem>
-            ))}
-          </div>
           <div className="detail-actions reveal-stagger">
             <a className="button primary wide" href={inquiryHref} {...CONTACT_LINK_PROPS}>
               {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
@@ -2304,6 +2301,43 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
           </div>
         </article>
       </div>
+      <div className="detail-information-grid reveal-stagger">
+        <div className="detail-assurance-panel">
+          <div className="detail-assurance-heading">
+            <p className="section-kicker">Trước khi chọn</p>
+            <h2>Nhìn kỹ những điểm đáng tiền.</h2>
+          </div>
+          <div className="detail-assurance-grid">
+            {assuranceItems.map(([Icon, title, text]) => (
+              <article className="detail-assurance-item" key={title}>
+                <Icon size={17} />
+                <div>
+                  <strong>{title}</strong>
+                  <p>{text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div className="detail-spec-panel">
+          <div className="detail-disclosures">
+            {detailSections.map(([title, value], index) => (
+              <DisclosureItem key={title} title={title} defaultOpen={index === 0}>
+                {value}
+              </DisclosureItem>
+            ))}
+          </div>
+          <div className="detail-consultation-mini">
+            <strong>Tư vấn riêng cho mẫu này</strong>
+            <ol>
+              {consultationSteps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+      <AssuranceProcess compact />
       <div
         className="media-related related-only parallax-layer"
         data-parallax-speed="0.12"
@@ -2375,39 +2409,24 @@ function MatchProductCard({ item, reason, signals = [], onSelect }) {
 }
 
 function TrustBand({ compact = false }) {
-  const values = [
-    {
-      title: 'Chọn hạt kỹ lưỡng',
-      description: 'Từng hạt được chọn theo độ sâu của vân, bề mặt, màu sắc và cảm giác khi cầm trên tay.',
-    },
-    {
-      title: 'Hoàn thiện thủ công',
-      description: 'Dây, móc và chi tiết phối được hoàn thiện cẩn thận để giữ dáng và bền hơn khi đeo.',
-    },
-    {
-      title: 'Tư vấn theo từng người',
-      description: 'Gợi ý mẫu, cách phối và cách bảo quản dựa trên phong cách, cổ tay và mục đích sử dụng.',
-    },
-  ]
-
   return (
     <section className={`trust-band section reveal-stagger ${compact ? 'is-compact' : ''}`} id="trust">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">Cách chúng tôi chọn ngọc</p>
-          <h1>Ít mẫu hơn. Chọn kỹ hơn.</h1>
+          <p className="section-kicker">Niềm tin khi chọn ngọc</p>
+          <h1>Ít mẫu hơn. Rõ thông tin hơn.</h1>
         </div>
       </div>
       <div className="trust-grid">
-        {values.map((value) => (
-          <TrustCard key={value.title} title={value.title} description={value.description} />
+        {TRUST_VALUES.map((value, index) => (
+          <TrustCard key={value.title} index={index + 1} title={value.title} description={value.description} />
         ))}
       </div>
     </section>
   )
 }
 
-function TrustCard({ title, description }) {
+function TrustCard({ index, title, description }) {
   const trustTilt = usePointerTilt({ intensity: 8, lift: 6 })
 
   return (
@@ -2416,9 +2435,32 @@ function TrustCard({ title, description }) {
       onPointerMove={trustTilt.onPointerMove}
       onPointerLeave={trustTilt.onPointerLeave}
     >
+      <span>{String(index).padStart(2, '0')}</span>
       <h3>{title}</h3>
       <p>{description}</p>
     </article>
+  )
+}
+
+function AssuranceProcess({ compact = false }) {
+  return (
+    <section className={`assurance-process reveal-stagger ${compact ? 'is-compact' : ''}`} aria-label="Quy trình kiểm tra và tư vấn">
+      <div className="assurance-process-heading">
+        <p className="section-kicker">Quy trình rõ ràng</p>
+        <h2>Từ xem mẫu đến xác nhận trước khi gửi.</h2>
+      </div>
+      <div className="assurance-process-steps">
+        {TRUST_PROCESS_STEPS.map(([number, title, text]) => (
+          <article key={number}>
+            <span>{number}</span>
+            <div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   )
 }
 

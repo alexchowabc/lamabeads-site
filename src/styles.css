@@ -347,10 +347,6 @@ main {
   margin-top: 2.1rem;
 }
 
-.mobile-sticky-cta {
-  display: none;
-}
-
 .button {
   display: inline-flex;
   min-height: 44px;
@@ -1862,8 +1858,7 @@ main {
 
 .detail-copy {
   padding-top: 0.8rem;
-  position: sticky;
-  top: 92px;
+  position: static;
 }
 
 .detail-copy h1,
@@ -2024,6 +2019,127 @@ main {
   flex: 0 0 auto;
   margin-top: 0.1rem;
   color: var(--aqua-deep);
+}
+
+.detail-assurance-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 0 1.1rem;
+  border-block: 1px solid var(--line);
+}
+
+.detail-information-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(320px, 0.58fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding-top: clamp(1.4rem, 3vw, 2.2rem);
+  border-top: 1px solid var(--line);
+}
+
+.detail-assurance-heading {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.detail-assurance-heading h2 {
+  max-width: 11ch;
+  font-size: clamp(2rem, 3vw, 3.25rem);
+  font-family: var(--display);
+  font-weight: 500;
+  line-height: 0.98;
+}
+
+.detail-assurance-grid {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.detail-spec-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-assurance-item {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 0.72rem;
+  padding: 0.78rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-assurance-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detail-assurance-item svg {
+  margin-top: 0.12rem;
+  color: var(--aqua-deep);
+}
+
+.detail-assurance-item strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.detail-assurance-item p {
+  margin: 0.22rem 0 0;
+  color: var(--body);
+  font-size: 0.86rem;
+  line-height: 1.58;
+}
+
+.detail-consultation-mini {
+  display: grid;
+  gap: 0.72rem;
+  margin: 1rem 0 1.2rem;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.detail-consultation-mini > strong {
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.detail-consultation-mini ol {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  counter-reset: product-consult;
+  list-style: none;
+}
+
+.detail-consultation-mini li {
+  counter-increment: product-consult;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+  color: var(--body);
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.detail-consultation-mini li::before {
+  content: counter(product-consult, decimal-leading-zero);
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  color: var(--aqua-deep);
+  font-size: 0.68rem;
+  font-weight: 600;
 }
 
 .spec-list {
@@ -2223,7 +2339,7 @@ main {
 .trust-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .trust-card {
@@ -2251,6 +2367,15 @@ main {
   box-shadow: var(--shadow);
 }
 
+.trust-card > span {
+  display: block;
+  margin-bottom: 1.1rem;
+  color: var(--champagne);
+  font-family: var(--display);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
 .trust-card h3 {
   margin: 0 0 0.8rem;
   font-family: var(--display);
@@ -2262,6 +2387,68 @@ main {
   margin: 0;
   line-height: 1.7;
   color: var(--body);
+}
+
+.assurance-process {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.34fr) minmax(0, 0.66fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: start;
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding: clamp(1.4rem, 3vw, 2.2rem) 0;
+  border-block: 1px solid var(--line);
+}
+
+.assurance-process.is-compact {
+  margin-top: clamp(1.6rem, 4vw, 3rem);
+}
+
+.assurance-process-heading h2 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2rem, 3.6vw, 4rem);
+  font-weight: 500;
+  line-height: 0.98;
+}
+
+.assurance-process-steps {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.assurance-process-steps article {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.assurance-process-steps article:last-child {
+  border-bottom: 0;
+}
+
+.assurance-process-steps span {
+  color: var(--champagne);
+  font-family: var(--display);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.assurance-process-steps h3 {
+  margin: 0 0 0.3rem;
+  color: var(--ink);
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+
+.assurance-process-steps p {
+  margin: 0;
+  color: var(--body);
+  font-size: 0.9rem;
+  line-height: 1.62;
 }
 
 .story-band {
@@ -2763,6 +2950,11 @@ main {
     min-height: 0;
   }
 
+  .assurance-process {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
   .luxury-page-hero h1 {
     max-width: 11ch;
     font-size: clamp(2.9rem, 14vw, 4.8rem);
@@ -2785,6 +2977,10 @@ main {
 
   .care-note:last-child {
     border-bottom: 0;
+  }
+
+  .assurance-process-heading h2 {
+    max-width: 12ch;
   }
 
   .match-selector {
@@ -2897,6 +3093,10 @@ main {
     position: static;
   }
 
+  .detail-information-grid {
+    grid-template-columns: 1fr;
+  }
+
   .media-context {
     grid-column: 1;
   }
@@ -2922,37 +3122,6 @@ main {
   .spec-row {
     grid-template-columns: 24px 96px minmax(0, 1fr);
     gap: 0.75rem;
-  }
-
-  .mobile-sticky-cta {
-    position: fixed;
-    left: 1rem;
-    right: 1rem;
-    bottom: calc(0.8rem + env(safe-area-inset-bottom));
-    z-index: 45;
-    display: inline-flex;
-    min-height: 52px;
-    align-items: center;
-    justify-content: center;
-    gap: 0.55rem;
-    border: 1px solid var(--ink);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--canvas) 94%, transparent);
-    backdrop-filter: blur(18px);
-    box-shadow: var(--shadow-depth);
-    color: var(--ink);
-    font-size: 0.94rem;
-    font-weight: 600;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(calc(100% + 1rem));
-    transition: opacity 220ms ease, transform 260ms ease;
-  }
-
-  .mobile-sticky-cta.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
   }
 
   .media-related {
@@ -3134,10 +3303,6 @@ main {
 
   .main-image-photo {
     animation: none !important;
-  }
-
-  .mobile-sticky-cta {
-    transition: none !important;
   }
 
   main {
