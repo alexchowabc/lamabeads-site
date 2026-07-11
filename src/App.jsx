@@ -51,54 +51,54 @@ const MATCH_SLOT_LABELS = {
 }
 const CATEGORY_GUIDES = {
   'Hoa tai': {
-    title: 'Hoa tai tôn đường nét gương mặt.',
-    text: 'Mẫu nhỏ gọn giữ vẻ tinh tế hằng ngày; dáng rơi hoặc dáng dài tạo điểm sáng rõ hơn ở đường cổ và gương mặt.',
-    points: ['Quan sát độ cân hai bên', 'Xem kỹ móc/chốt', 'Ưu tiên sắc ngọc làm sáng da'],
+    title: 'Tôn sáng gương mặt.',
+    text: 'Chọn dáng theo độ rơi, sắc ngọc và cảm giác khi đeo.',
+    points: ['Độ cân hai bên', 'Móc/chốt', 'Sắc ngọc lên da'],
   },
   'Vòng cổ': {
-    title: 'Vòng cổ tạo điểm nhìn ở đường cổ.',
-    text: 'Chuỗi ngọc nên hài hòa với cổ áo, độ dài và mặt treo. Một món đủ rõ thường sang hơn nhiều lớp quá nặng.',
-    points: ['Quan sát chiều dài chuỗi', 'Xem tỷ lệ mặt treo', 'Phối cùng hoa tai gọn'],
+    title: 'Một điểm nhìn ở đường cổ.',
+    text: 'Ưu tiên độ rơi, tỷ lệ mặt treo và sự hài hòa với cổ áo.',
+    points: ['Chiều dài chuỗi', 'Tỷ lệ mặt treo', 'Hoa tai đi cùng'],
   },
   'Vòng tay': {
-    title: 'Vòng tay giữ ánh nhìn ở cổ tay.',
-    text: 'Hạt mềm hợp dùng hằng ngày; sắc nổi hoặc khóa sáng phù hợp khi muốn cổ tay có một điểm nhấn thanh lịch.',
-    points: ['Quan sát độ đều của hạt', 'Xem kỹ khóa/dây', 'Chọn tông hợp nhẫn hoặc hoa tai'],
+    title: 'Ánh ngọc ở cổ tay.',
+    text: 'Xem độ đều hạt, sắc ngọc và chi tiết khóa trước khi chọn.',
+    points: ['Độ đều của hạt', 'Khóa/dây', 'Tông phối cùng'],
   },
   'Nhẫn': {
-    title: 'Nhẫn tạo dấu ấn trên bàn tay.',
-    text: 'Nhẫn nên đủ nổi khi cử động tay, nhưng vẫn giữ sự cân bằng với vòng tay hoặc hoa tai đi cùng.',
-    points: ['Đối chiếu kích thước', 'Quan sát độ cao mặt nhẫn', 'Phối cùng chi tiết kim loại tương đồng'],
+    title: 'Dấu ấn trên bàn tay.',
+    text: 'Giữ tỷ lệ vừa đủ nổi, không lấn át vòng tay hoặc hoa tai.',
+    points: ['Kích thước', 'Độ cao mặt nhẫn', 'Chi tiết kim loại'],
   },
   'Vòng kiềng': {
-    title: 'Vòng kiềng làm rõ sắc ngọc trên cổ tay.',
-    text: 'Vòng kiềng cần được xem kỹ độ trong, vân chuyển màu và dáng tròn vì đây là món hiện diện rất rõ trên cổ tay.',
-    points: ['Quan sát vân và vùng chuyển màu', 'Xem dáng vòng', 'Đeo đơn để giữ vẻ thanh'],
+    title: 'Sắc ngọc hiện rõ.',
+    text: 'Vòng kiềng cần xem kỹ dáng tròn, độ trong và vùng chuyển màu.',
+    points: ['Vân ngọc', 'Dáng vòng', 'Đeo đơn'],
   },
 }
 const TRUST_VALUES = [
   {
-    title: 'Góc nhìn riêng cho từng thiết kế',
-    description: 'Mỗi thiết kế có ảnh và video riêng để bạn cảm nhận đúng sắc ngọc, dáng đeo và ánh sáng trước khi yêu cầu tư vấn.',
+    title: 'Ảnh thật',
+    description: 'Xem đúng thiết kế, đúng sắc ngọc.',
   },
   {
-    title: 'Nhìn kỹ những chi tiết đáng giá',
-    description: 'Tập trung vào sắc ngọc, vân, bề mặt, khóa/móc, kích thước và cảm giác khi lên người, không chỉ một khung hình đẹp.',
+    title: 'Video tự phát',
+    description: 'Cảm nhận độ bóng và chuyển động.',
   },
   {
-    title: 'Tư vấn theo dáng đeo',
-    description: 'Gợi ý theo gương mặt, cổ tay, phong cách và món muốn phối cùng để tổng thể trang sức vẫn thanh, không quá nhiều chi tiết.',
+    title: 'Phối có chủ ý',
+    description: 'Gợi ý theo dáng đeo và tông ngọc.',
   },
   {
-    title: 'Xác nhận chi tiết trước khi gửi',
-    description: 'Trước khi hoàn tất, thiết kế được xác nhận lại bằng ảnh hoặc video cận cùng ghi chú tình trạng, kích thước và cách bảo quản.',
+    title: 'Xác nhận riêng',
+    description: 'Ảnh cận trước khi gửi.',
   },
 ]
 const TRUST_PROCESS_STEPS = [
-  ['01', 'Khám phá thiết kế', 'Xem ảnh chính, ảnh cận và video tự phát để cảm nhận sắc ngọc ở nhiều góc sáng.'],
-  ['02', 'Yêu cầu góc nhìn riêng', 'Có thể yêu cầu thêm góc vân, bề mặt, khóa/móc, kích thước hoặc ảnh đặt trên tay.'],
-  ['03', 'Hoàn thiện set phối', 'Món phối được gợi ý theo tông ngọc, chi tiết kim loại và vị trí đeo để tổng thể hài hòa.'],
-  ['04', 'Xác nhận trước khi gửi', 'Xác nhận tình trạng, kích thước, bảo quản và đóng gói riêng trước khi giao.'],
+  ['01', 'Xem', 'Ảnh thật và video tự phát.'],
+  ['02', 'Chọn', 'Theo sắc ngọc, dáng đeo, phong cách.'],
+  ['03', 'Phối', 'Gợi ý món đi cùng nếu cần.'],
+  ['04', 'Xác nhận', 'Ảnh cận trước khi gửi.'],
 ]
 const PRODUCT_PROFILES = {
   'cnp-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
@@ -1139,9 +1139,9 @@ function HomeSignature({ products, onExplore, onSelect }) {
   return (
     <section className="home-signature section">
       <div className="home-signature-heading reveal-up">
-        <h2>Dấu ấn ngọc cho những khoảnh khắc riêng</h2>
+        <h2>Thiết kế nổi bật</h2>
         <button className="text-link collection-link" onClick={onExplore}>
-          Khám phá bộ sưu tập
+          Xem tất cả
           <ArrowRight className="motion-cue" size={16} />
         </button>
       </div>
@@ -1203,10 +1203,9 @@ function ConciergePage({ onNavigate }) {
     <section className="luxury-page section concierge-page">
       <div className="luxury-page-hero reveal-up">
         <div>
-          <h1>Tư vấn riêng cho một lựa chọn thật hợp.</h1>
+          <h1>Chọn ít, chọn đúng.</h1>
           <p>
-            Khi một món trang sức nằm đúng dáng đeo, sắc ngọc và phong cách, nó trở thành dấu ấn rất riêng.
-            {BRAND_NAME} tư vấn bằng ảnh thật, video và ghi chú chi tiết trước khi bạn quyết định.
+            Chia sẻ phong cách bạn thích. {BRAND_NAME} gợi ý thiết kế và góc nhìn cần xem thêm.
           </p>
           <div className="luxury-hero-actions">
             <a className="button primary" href={getProductInquiryHref()} {...CONTACT_LINK_PROPS}>
@@ -1239,9 +1238,9 @@ function ConciergePage({ onNavigate }) {
       </div>
       <div className="concierge-flow reveal-stagger">
         {[
-          ['01', 'Chia sẻ phong cách', 'Một thiết kế đang yêu thích, dịp cần đeo hoặc cảm giác bạn muốn giữ lại.'],
-          ['02', 'Nhận góc nhìn cận', `${BRAND_NAME} gửi góc vân, dáng đeo, tình trạng thiết kế và chi tiết cần quan sát.`],
-          ['03', 'Hoàn thiện lựa chọn', 'Chọn món chính và món phối cùng để tạo một set nhỏ, thanh và có chủ ý.'],
+          ['01', 'Chia sẻ', 'Thiết kế, dịp đeo hoặc cảm giác bạn muốn.'],
+          ['02', 'Xem cận', 'Góc vân, dáng đeo và chi tiết cần quan sát.'],
+          ['03', 'Hoàn thiện', 'Một lựa chọn gọn, thanh và có chủ ý.'],
         ].map(([number, title, text]) => (
           <article className="numbered-note" key={number}>
             <span>{number}</span>
@@ -1260,8 +1259,7 @@ function ConciergePage({ onNavigate }) {
         <div>
           <h2>Không cần chọn vội.</h2>
           <p>
-            Với trang sức ngọc, khác biệt nằm ở sắc ngọc, độ bóng, kích thước và cảm giác khi lên người.
-            Một phiên tư vấn tốt giúp bạn nhìn rõ những điểm đó trước khi sở hữu.
+            Sắc ngọc, độ bóng và tỷ lệ khi lên người nên được nhìn kỹ trước khi quyết định.
           </p>
         </div>
       </div>
@@ -1279,10 +1277,9 @@ function MatchingPage({ products, onSelect }) {
     <section className="luxury-page section matching-page">
       <div className="luxury-page-hero matching-hero reveal-up">
         <div>
-          <h1>Phối món theo sắc ngọc, không theo may rủi.</h1>
+          <h1>Phối theo sắc ngọc.</h1>
           <p>
-            Bắt đầu từ một món chính, rồi hoàn thiện set bằng những thiết kế cùng tông màu,
-            chi tiết kim loại và vị trí đeo hài hòa.
+            Bắt đầu từ một thiết kế chính, rồi thêm món đi cùng khi thật hợp.
           </p>
           <a className="button secondary" href="#match-builder">
             Khám phá cách phối
@@ -1340,19 +1337,18 @@ function MatchingPage({ products, onSelect }) {
 
 function CarePage({ onNavigate }) {
   const careNotes = [
-    ['Xác nhận chi tiết', 'Cung cấp ảnh và video cận để bạn xem lại sắc ngọc, bề mặt, khóa/móc và tình trạng thiết kế.'],
-    ['Đóng gói riêng', 'Mỗi món được giữ riêng để hạn chế ma sát, trầy mặt ngọc hoặc cong móc trong quá trình vận chuyển.'],
-    ['Bảo quản sau khi đeo', 'Lau khô bằng khăn mềm, tránh va đập mạnh, nước hoa và mỹ phẩm bám trực tiếp lên chi tiết kim loại.'],
+    ['Xác nhận', 'Ảnh và video cận trước khi gửi.'],
+    ['Đóng gói', 'Giữ riêng để hạn chế ma sát.'],
+    ['Bảo quản', 'Lau khô, cất riêng, tránh va đập.'],
   ]
 
   return (
     <section className="luxury-page section care-page">
       <div className="luxury-page-hero care-hero reveal-up">
         <div>
-          <h1>Niềm tin nằm ở từng góc cận.</h1>
+          <h1>Xem kỹ trước khi chọn.</h1>
           <p>
-            Trang sức ngọc xứng đáng được xem kỹ trước khi chọn: sắc, vân, độ bóng, khóa/móc,
-            kích thước và cách đóng gói đều cần rõ ràng.
+            Sắc, vân, độ bóng và khóa/móc cần rõ ràng trước khi sở hữu.
           </p>
           <button className="button secondary" onClick={() => onNavigate('/concierge')}>
             Yêu cầu tư vấn riêng
@@ -1377,9 +1373,8 @@ function CarePage({ onNavigate }) {
           </article>
         ))}
       </div>
-      <AssuranceProcess />
       <div className="care-ritual reveal-up">
-        <h2>Cách giữ độ bóng hằng ngày</h2>
+        <h2>Giữ độ bóng</h2>
         <ol>
           <li>Đeo sau khi đã dùng nước hoa hoặc mỹ phẩm.</li>
           <li>Tháo khi rửa tay, tắm, ngủ hoặc làm việc dễ va chạm.</li>
@@ -1396,10 +1391,9 @@ function AboutPage({ onNavigate }) {
       <section className="luxury-page section about-page">
         <div className="luxury-page-hero about-hero reveal-up">
           <div>
-          <h1>{BRAND_NAME} chọn ngọc theo cảm giác khi lên người.</h1>
+          <h1>Ngọc có cảm giác riêng.</h1>
           <p>
-              Một món trang sức đẹp không chỉ nằm ở màu sắc. Nó còn nằm ở dáng đeo,
-              độ sáng, sự cân bằng với gương mặt, cổ tay và cách bạn muốn xuất hiện.
+              {BRAND_NAME} chọn thiết kế theo sắc ngọc, dáng đeo và sự hài hòa khi lên người.
             </p>
             <button className="text-link" onClick={() => onNavigate('/concierge')}>
               Bắt đầu phiên tư vấn riêng <ArrowRight className="motion-cue" size={16} />
@@ -1414,8 +1408,6 @@ function AboutPage({ onNavigate }) {
           />
         </div>
       </section>
-      <TrustBand />
-      <AssuranceProcess />
       <StoryBand />
     </>
   )
@@ -1496,11 +1488,11 @@ function ProductDepthScene({ product, onExplore, onSelect }) {
           </span>
         </div>
         <div className="depth-copy">
-          <h1>Sắc ngọc, từng lớp vân</h1>
-          <p>Những thiết kế được chọn theo sắc, vân và cảm giác khi lên người.</p>
+          <h1>Sắc ngọc</h1>
+          <p>Ảnh thật. Video tự phát. Tư vấn riêng.</p>
           <div className="hero-actions reveal-stagger">
             <button className="button primary" onClick={onExplore}>
-              Khám phá bộ sưu tập
+              Bộ sưu tập
             </button>
           </div>
         </div>
@@ -1688,15 +1680,15 @@ function Collection({
       .filter((group) => group.items.length > 0)
   }, [categories, editorialLead?.id, isEditorialView, products])
   const collectionStats = [
-    ['Thiết kế', `${totalCount} lựa chọn`],
-    ['Đang hiển thị', `${products.length} thiết kế`],
-    ['Bộ lọc', activeFilterCount ? `${activeFilterCount} lựa chọn` : 'Tất cả'],
+    ['Thiết kế', `${totalCount}`],
+    ['Hiển thị', `${products.length}`],
+    ['Bộ lọc', activeFilterCount ? `${activeFilterCount}` : 'Tất cả'],
     ['Góc nhìn', 'Ảnh & video'],
   ]
-  const collectionTitle = isCategoryView ? selectedCategory : 'Bộ sưu tập trang sức ngọc'
+  const collectionTitle = isCategoryView ? selectedCategory : 'Bộ sưu tập'
   const collectionCopy = isCategoryView
-    ? `Khám phá các thiết kế ${selectedCategory.toLowerCase()} với ảnh thật, video tự phát và gợi ý phối cùng theo sắc ngọc.`
-    : 'Mỗi thiết kế được trình bày bằng ảnh thật, video và ghi chú riêng để bạn cảm nhận dáng đeo trước khi yêu cầu tư vấn.'
+    ? `Ảnh thật, video tự phát và gợi ý phối theo sắc ngọc.`
+    : 'Ảnh thật. Video tự phát. Tư vấn riêng.'
   const categoryGuide = isCategoryView ? CATEGORY_GUIDES[selectedCategory] : null
 
   useEffect(() => {
@@ -1723,7 +1715,7 @@ function Collection({
           <h1>{collectionTitle}</h1>
         </div>
         <button className="text-link" onClick={onClearSearch} disabled={!activeFilterCount}>
-          {activeFilterCount ? 'Trở về toàn bộ' : 'Toàn bộ thiết kế'} <ArrowRight className="motion-cue" size={16} />
+          {activeFilterCount ? 'Tất cả' : 'Toàn bộ'} <ArrowRight className="motion-cue" size={16} />
         </button>
       </div>
       <p className="collection-note reveal-up">
@@ -1821,7 +1813,7 @@ function Collection({
         </label>
       </div>
       <p className="collection-result-count">
-        Đang giới thiệu {products.length} / {totalCount} thiết kế
+        {products.length} / {totalCount} thiết kế
       </p>
       {categoryGuide && (
         <CategoryGuide category={selectedCategory} guide={categoryGuide} />
@@ -1830,7 +1822,7 @@ function Collection({
         <div className="empty-state">
           <p>Chưa có thiết kế nào khớp với lựa chọn này.</p>
           <button className="button secondary" onClick={onClearSearch}>
-            Xem lại toàn bộ bộ sưu tập
+            Xem tất cả
           </button>
         </div>
       ) : isEditorialView ? (
@@ -1947,7 +1939,7 @@ function CategoryProductRow({ category, products, onSelect }) {
     <section className="category-section" aria-label={category}>
       <div className="category-section-heading">
         <h2>{category}</h2>
-        <span>{products.length} thiết kế</span>
+        <span>{products.length}</span>
       </div>
       <div className="category-product-row">
         {products.map((product) => (
@@ -2048,15 +2040,6 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
       <span className="product-copy">
         <span className="product-kicker">{product.category}</span>
         <strong>{product.name}</strong>
-        <span className="product-description">{product.shortDescription}</span>
-        <span className="product-card-meta">
-          <span>{product.origin}</span>
-          <span>{product.availability}</span>
-        </span>
-      </span>
-      <span className="product-card-action">
-        Xem thiết kế
-        <ArrowRight className="motion-cue" size={16} />
       </span>
     </button>
   )
@@ -2165,18 +2148,18 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
   const hasProductVideos = mediaStats.videoCount > 0
   const inquiryHref = getProductInquiryHref(product)
   const mediaNoteCopy = hasProductVideos
-    ? 'Ảnh cận và video ánh sáng giúp bạn cảm nhận bề mặt, độ bóng, vân ngọc và dáng đeo trước khi tư vấn.'
-    : `Nếu bạn quan tâm thiết kế này, ${BRAND_NAME} có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay.`
+    ? 'Xem bề mặt, độ bóng và dáng đeo.'
+    : 'Có thể yêu cầu thêm góc cận.'
   const assuranceItems = [
-    [Images, 'Góc nhìn riêng của thiết kế', mediaNoteCopy],
-    [ClipboardCheck, 'Điểm cần nhìn kỹ', product.inspection],
+    [Images, 'Góc nhìn', mediaNoteCopy],
+    [ClipboardCheck, 'Quan sát', product.inspection],
     [Ruler, 'Kích thước & dáng đeo', product.sizeNote],
-    [PackageCheck, 'Trước khi gửi', product.shippingNote],
+    [PackageCheck, 'Đóng gói', product.shippingNote],
   ]
   const consultationSteps = [
-    `Yêu cầu tư vấn riêng cho ${product.name}.`,
-    'Nhận thêm ảnh và video cận nếu bạn muốn quan sát kỹ hơn.',
-    'Xác nhận tình trạng, kích thước và món phối cùng trước khi hoàn tất.',
+    'Yêu cầu tư vấn riêng.',
+    'Xem thêm góc cận nếu cần.',
+    'Xác nhận trước khi gửi.',
   ]
 
   return (
@@ -2305,7 +2288,7 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
         <div className="detail-assurance-panel">
           <div className="detail-assurance-heading">
             <p className="section-kicker">Chi tiết đáng chú ý</p>
-            <h2>Nhìn kỹ những điểm tạo nên giá trị.</h2>
+            <h2>Nhìn kỹ trước khi chọn.</h2>
           </div>
           <div className="detail-assurance-grid">
             {assuranceItems.map(([Icon, title, text]) => (
@@ -2337,7 +2320,6 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
           </div>
         </div>
       </div>
-      <AssuranceProcess compact />
       <div
         className="media-related related-only parallax-layer"
         data-parallax-speed="0.12"
@@ -2349,9 +2331,6 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
       >
         <div className="related">
           <h3>Phối cùng thiết kế này</h3>
-          <p className="related-note">
-            Gợi ý dựa trên tông ngọc, chi tiết kim loại và vị trí đeo để tạo một set gọn, thanh và có chủ ý.
-          </p>
           <div className="match-set detail-match-set">
             {matchedProducts.map((match) => (
               <MatchProductCard
@@ -2414,7 +2393,7 @@ function TrustBand({ compact = false }) {
       <div className="section-heading">
         <div>
           <p className="section-kicker">Cam kết khi chọn ngọc</p>
-          <h1>Ít thiết kế hơn. Rõ giá trị hơn.</h1>
+          <h1>Rõ từ ảnh thật.</h1>
         </div>
       </div>
       <div className="trust-grid">
@@ -2447,7 +2426,7 @@ function AssuranceProcess({ compact = false }) {
     <section className={`assurance-process reveal-stagger ${compact ? 'is-compact' : ''}`} aria-label="Quy trình tư vấn và xác nhận">
       <div className="assurance-process-heading">
         <p className="section-kicker">Quy trình tinh gọn</p>
-        <h2>Từ khám phá thiết kế đến xác nhận trước khi gửi.</h2>
+        <h2>Xem. Chọn. Xác nhận.</h2>
       </div>
       <div className="assurance-process-steps">
         {TRUST_PROCESS_STEPS.map(([number, title, text]) => (
@@ -2507,20 +2486,19 @@ function StoryBand() {
         data-parallax-rotate-axis="y"
       >
         <p className="section-kicker">Câu chuyện & tuyển chọn</p>
-        <h2>Tôn trọng chất liệu. Giữ lại dấu ấn riêng.</h2>
+        <h2>Chọn ngọc có cảm giác.</h2>
         <p>
-          {BRAND_NAME} chọn từng thiết kế ngọc theo màu sắc, dáng đeo, độ bóng và sự hài hòa khi lên người.
-          Mỗi thiết kế hướng đến vẻ đẹp tinh tế, dễ phối và có thể đồng hành lâu dài.
+          {BRAND_NAME} chọn từng thiết kế theo sắc ngọc, dáng đeo và độ hài hòa khi lên người.
         </p>
         <div className="story-highlights">
           <p>
-            <span>Dòng sản phẩm</span> Hoa tai, vòng tay, vòng cổ, nhẫn, vòng kiềng
+            <span>Dòng</span> Hoa tai, vòng tay, vòng cổ, nhẫn, vòng kiềng
           </p>
           <p>
-            <span>Quy trình</span> Khám phá thiết kế, quan sát ảnh và video, xác nhận chi tiết trước khi gửi
+            <span>Góc nhìn</span> Ảnh thật và video tự phát
           </p>
           <p>
-            <span>Tư vấn</span> Gợi ý theo phong cách, dáng đeo và món muốn phối cùng
+            <span>Tư vấn</span> Theo dáng đeo và món phối cùng
           </p>
         </div>
         <a className="button secondary" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
@@ -2539,19 +2517,18 @@ function ContactBand() {
     [Clock3, 'Giờ làm việc', '09:00 - 18:00', null],
   ]
   const consultationSteps = [
-    'Chia sẻ thiết kế bạn yêu thích hoặc phong cách đang tìm.',
-    `${BRAND_NAME} gợi ý dáng đeo, kích thước và món phối cùng phù hợp.`,
-    'Xem thêm ảnh cận, tình trạng thiết kế và hướng dẫn bảo quản trước khi hoàn tất.',
+    'Chia sẻ thiết kế bạn thích.',
+    'Nhận gợi ý dáng đeo.',
+    'Xác nhận ảnh cận trước khi gửi.',
   ]
 
   return (
     <section className="contact-page section reveal-up" id="contact">
       <div className="contact-hero">
         <p className="section-kicker">Liên hệ</p>
-        <h1>Xem kỹ bằng ảnh thật trước khi sở hữu.</h1>
+        <h1>Tư vấn riêng.</h1>
         <p>
-          Nếu bạn chưa chắc thiết kế nào hợp cổ tay, phong cách hoặc món muốn phối cùng,
-          hãy yêu cầu tư vấn riêng để {BRAND_NAME} gợi ý theo chất liệu, kích thước và dáng đeo.
+          Chọn thiết kế, xem thêm góc cận, rồi quyết định khi đã rõ.
         </p>
         <a className="button primary contact-cta" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
           {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
@@ -2583,7 +2560,7 @@ function ContactBand() {
       <div className="consultation-flow">
         <div>
           <p className="section-kicker">Phiên tư vấn</p>
-          <h3>Từ thiết kế bạn yêu thích đến lựa chọn phù hợp</h3>
+          <h3>Ba bước ngắn.</h3>
         </div>
         <ol>
           {consultationSteps.map((step) => (
@@ -2593,8 +2570,8 @@ function ContactBand() {
       </div>
       <div className="conversion-strip">
         <div>
-          <p>Đang cân nhắc giữa vài thiết kế?</p>
-          <small>Chia sẻ phong cách bạn thích, {BRAND_NAME} sẽ gợi ý thiết kế phù hợp và những chi tiết nên quan sát.</small>
+          <p>Đang phân vân?</p>
+          <small>Gửi thiết kế bạn thích để được gợi ý nhanh.</small>
         </div>
       </div>
     </section>

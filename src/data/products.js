@@ -6,7 +6,7 @@ const productVideo = (name, poster, label = 'Góc ánh sáng') => ({
   poster,
   label,
   duration: 'Tự phát nhẹ',
-  description: 'Quan sát sắc ngọc, độ bóng và chuyển động của món trang sức dưới ánh sáng mềm.',
+  description: 'Xem sắc ngọc và độ bóng dưới ánh sáng mềm.',
 })
 
 const common = {
@@ -14,7 +14,7 @@ const common = {
   availability: 'Dịch vụ riêng theo thiết kế',
   priceNote: 'Báo giá riêng theo tình trạng thiết kế',
   sizeNote: 'Đối chiếu kích thước và dáng đeo trước khi xác nhận',
-  shippingNote: 'Đóng gói trong hộp riêng, gửi ảnh xác nhận chi tiết trước khi giao.',
+  shippingNote: 'Đóng gói riêng, gửi ảnh xác nhận trước khi giao.',
 }
 
 export const products = [
@@ -27,7 +27,7 @@ export const products = [
     videos: [productVideo('cnp-001-video-01.mp4', imageAsset('cnp-001-01.jpg'))],
     shortDescription: 'Sắc tím nhạt trong trẻo, dáng kiềng thanh thoát.',
     fullDescription:
-      'Sắc tím nhạt mở ra vẻ dịu và sáng, hợp những phong cách tinh giản nhưng vẫn có điểm nhấn. Ảnh và video giúp cảm nhận độ trong, dáng vòng và ánh sáng lướt trên bề mặt ngọc.',
+      'Sắc tím nhạt dịu sáng, hợp phong cách tinh giản có điểm nhấn.',
     materials: 'Cẩm thạch / jade tông tím nhạt',
     meaning: 'Thanh nhã · Dịu sáng · Tối giản',
     care: 'Tránh va đập mạnh, cất riêng trong túi mềm và lau bằng khăn khô sau khi đeo.',
@@ -45,7 +45,7 @@ export const products = [
     videos: [productVideo('cnp-002-video-01.mp4', imageAsset('cnp-002-01.jpg'), 'Dáng đeo thực tế')],
     shortDescription: 'Dáng rơi thanh lịch, sắc xanh tôn sáng gương mặt.',
     fullDescription:
-      'Dáng rơi đặt sắc xanh gần gương mặt như một điểm sáng nhẹ. Mẫu này hợp trang phục tối giản, những buổi gặp gỡ trang trọng vừa phải và phong cách nữ tính có tiết chế.',
+      'Dáng rơi đặt sắc xanh gần gương mặt như một điểm sáng nhẹ.',
     materials: 'Ngọc xanh, chi tiết kim loại màu bạc',
     meaning: 'Thanh lịch · Nổi bật · Mềm mại',
     care: 'Tránh nước hoa và mỹ phẩm bám trực tiếp vào phần kim loại. Lau nhẹ sau khi dùng.',
@@ -63,7 +63,7 @@ export const products = [
     videos: [productVideo('cnp-003-video-01.mp4', imageAsset('cnp-003-01.jpg'))],
     shortDescription: 'Dáng thang gọn, xanh đậm và hiện đại.',
     fullDescription:
-      'Dáng thang tạo đường nét rõ ràng và hiện đại, trong khi sắc xanh đậm giữ lại cảm giác sang. Ảnh và video cho thấy bề mặt ngọc, dáng móc và độ cân xứng giữa hai bên.',
+      'Dáng thang sắc nét, xanh đậm và hiện đại.',
     materials: 'Ngọc xanh, móc và chi tiết kim loại màu bạc',
     meaning: 'Hiện đại · Sang nhẹ · Dễ nhận diện',
     care: 'Cất trong hộp riêng để tránh trầy mặt ngọc và cong móc tai.',
@@ -81,7 +81,7 @@ export const products = [
     videos: [productVideo('cnp-004-video-01.mp4', imageAsset('cnp-004-01.jpg'))],
     shortDescription: 'Tông cam ấm, dáng chữ nhật gọn và sáng.',
     fullDescription:
-      'Sắc cam ấm tạo cảm giác rạng rỡ mà không quá phô. Dáng chữ nhật nhỏ gọn giúp thiết kế hoa tai dễ đi cùng trang phục sáng màu hoặc những bộ đồ tối giản.',
+      'Sắc cam ấm, dáng chữ nhật gọn và sáng.',
     materials: 'Ngọc tông cam, chi tiết kim loại màu vàng',
     meaning: 'Ấm áp · Rạng rỡ · Thanh gọn',
     care: 'Tránh ngâm nước lâu và giữ phần móc tai khô sau khi sử dụng.',
@@ -99,7 +99,7 @@ export const products = [
     videos: [],
     shortDescription: 'Nhẫn ngọc xanh phối hoa bạc, mềm mại và nữ tính.',
     fullDescription:
-      'Viên ngọc xanh là điểm sáng chính, đi cùng chi tiết hoa bạc để tạo cảm giác mềm mại trên bàn tay. Ảnh sản phẩm và ảnh đeo giúp nhìn rõ tỷ lệ khi lên tay.',
+      'Viên ngọc xanh phối chi tiết hoa bạc, mềm mại trên bàn tay.',
     materials: 'Ngọc xanh, chi tiết hoa màu bạc',
     meaning: 'Nữ tính · Tươi sáng · Điểm nhấn bàn tay',
     care: 'Tháo nhẫn khi rửa tay, dùng mỹ phẩm hoặc làm việc dễ va chạm.',
@@ -117,7 +117,7 @@ export const products = [
     videos: [productVideo('cnp-006-video-01.mp4', imageAsset('cnp-006-01.jpg'))],
     shortDescription: 'Hạt tím nhạt đều tay, sắc dịu và thanh.',
     fullDescription:
-      'Dải hạt tím nhạt đem lại cảm giác nhẹ và nữ tính. Ảnh và video giúp xem rõ kích thước hạt, độ đều tay và sắc tím dưới ánh sáng mềm.',
+      'Dải hạt tím nhạt đều tay, dịu và thanh.',
     materials: 'Hạt ngọc tím nhạt, phụ kiện nối màu bạc',
     meaning: 'Dịu dàng · Cân bằng · Thanh nhã',
     care: 'Tránh kéo mạnh dây và tránh để chung với vật sắc cạnh.',
@@ -135,7 +135,7 @@ export const products = [
     videos: [productVideo('cnp-007-video-01.mp4', imageAsset('cnp-007-01.jpg'))],
     shortDescription: 'Xanh lam nhạt, mát mắt và trong trẻo.',
     fullDescription:
-      'Sắc xanh lam nhạt tạo cảm giác mát và sạch. Bối cảnh nước làm nổi rõ độ trong, vân chuyển màu và ánh sáng trên bề mặt vòng.',
+      'Sắc xanh lam nhạt, mát mắt và trong trẻo.',
     materials: 'Cẩm thạch / jade tông xanh lam nhạt',
     meaning: 'Trong trẻo · Mát lành · Thanh tĩnh',
     care: 'Cất riêng, tránh va đập cạnh bàn hoặc vật cứng.',
@@ -153,7 +153,7 @@ export const products = [
     videos: [productVideo('cnp-008-video-01.mp4', imageAsset('cnp-008-01.jpg'))],
     shortDescription: 'Dáng nụ nhỏ gọn, sắc xanh vừa đủ nổi bật.',
     fullDescription:
-      'Dáng nụ nhỏ giúp hoa tai dễ đeo hằng ngày, trong khi sắc xanh tạo điểm nhấn vừa đủ gần gương mặt. Tổng thể gọn, sạch và không nặng thị giác.',
+      'Dáng nụ nhỏ gọn, sắc xanh vừa đủ gần gương mặt.',
     materials: 'Ngọc xanh, chi tiết kim loại màu bạc',
     meaning: 'Gọn nhẹ · Tinh tế · Thanh lịch',
     care: 'Giữ khô phần kim loại, cất trong hộp riêng sau khi tháo.',
@@ -171,7 +171,7 @@ export const products = [
     videos: [productVideo('cnp-009-video-01.mp4', imageAsset('cnp-009-01.jpg'))],
     shortDescription: 'Chuỗi ngọc xanh đậm với mặt treo trung tâm.',
     fullDescription:
-      'Chuỗi hạt xanh đậm phối mặt treo tạo một điểm nhấn trang trọng ở đường cổ. Ảnh và video giúp xem dáng chuỗi, độ rơi và tỷ lệ của mặt treo.',
+      'Chuỗi hạt xanh đậm với mặt treo trung tâm.',
     materials: 'Hạt ngọc xanh, mặt phối và chi tiết kim loại',
     meaning: 'Trang trọng · Trầm tĩnh · Dấu ấn riêng',
     care: 'Không kéo mạnh phần mặt treo; treo hoặc đặt phẳng khi cất để giữ dáng chuỗi.',
@@ -189,7 +189,7 @@ export const products = [
     videos: [productVideo('cnp-010-video-01.mp4', imageAsset('cnp-010-01.jpg'))],
     shortDescription: 'Tím nhạt ánh trăng, dịu và nữ tính.',
     fullDescription:
-      'Dải hạt tím nhạt có cảm giác mềm, trong và yên. Phù hợp với người thích tông dịu nhưng vẫn muốn cổ tay có ánh sáng riêng.',
+      'Dải hạt tím nhạt, mềm và yên trên cổ tay.',
     materials: 'Hạt ngọc tím nhạt, khóa màu vàng',
     meaning: 'Dịu sáng · Nữ tính · An nhiên',
     care: 'Tránh kéo mạnh khóa và lau khô trước khi cất.',
@@ -207,7 +207,7 @@ export const products = [
     videos: [productVideo('cnp-011-video-01.mp4', imageAsset('cnp-011-01.jpg'))],
     shortDescription: 'Ngọc xanh dáng tròn, khóa bạc sáng nhẹ.',
     fullDescription:
-      'Sắc xanh nổi rõ trên dáng tròn, giúp viên ngọc bắt sáng mềm khi chuyển động. Thiết kế này hợp phong cách tươi, tự nhiên và có điểm nhấn vừa đủ.',
+      'Ngọc xanh dáng tròn, bắt sáng mềm khi chuyển động.',
     materials: 'Ngọc xanh, khóa và chi tiết màu bạc',
     meaning: 'Tươi mát · Nổi bật · Tự nhiên',
     care: 'Tránh để nước bám lâu trên phần kim loại; lau nhẹ sau khi dùng.',
@@ -225,7 +225,7 @@ export const products = [
     videos: [productVideo('cnp-012-video-01.mp4', imageAsset('cnp-012-01.jpg'))],
     shortDescription: 'Dáng tròn xanh ngọc, mềm và sáng da.',
     fullDescription:
-      'Sắc xanh ngọc tạo điểm sáng gần gương mặt, trong khi dáng tròn giữ tổng thể mềm và nữ tính. Phù hợp khi muốn nổi bật nhẹ mà vẫn thanh lịch.',
+      'Dáng tròn xanh ngọc, mềm và sáng gần gương mặt.',
     materials: 'Ngọc xanh, chi tiết màu bạc',
     meaning: 'Mềm mại · Sáng da · Thanh lịch',
     care: 'Cất riêng trong hộp mềm để tránh xước mặt ngọc và chi tiết kim loại.',
