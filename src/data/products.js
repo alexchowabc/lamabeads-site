@@ -17,13 +17,6 @@ const common = {
   shippingNote: 'Đóng gói riêng, gửi ảnh xác nhận trước khi giao.',
 }
 
-export const contact = {
-  email: 'lamabeads@gmail.com',
-  phone: '',
-  zalo: '',
-  regions: 'Hoa tai · Vòng tay · Vòng cổ · Vòng kiềng',
-}
-
 export const products = [
   {
     id: 'lama-001',

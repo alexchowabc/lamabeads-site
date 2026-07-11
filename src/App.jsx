@@ -22,11 +22,13 @@ import {
   Video,
   X,
 } from 'lucide-react'
-import { contact, featuredProduct, products } from './data/products'
+import { brand, contact } from './data/brand'
+import { featuredProduct, products } from './data/products'
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
-const SITE_URL = 'https://lamabeads.com'
+const SITE_URL = brand.siteUrl
+const BRAND_NAME = brand.name
 const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/lama-jade-depth-openart.mp4'
 const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/lama-jade-start-frame.avif'
 const DEFAULT_SOCIAL_IMAGE = featuredProduct.previewImage
@@ -43,6 +45,33 @@ const MATCH_SLOT_LABELS = {
   'Vòng tay': 'Cổ tay mềm',
   'Nhẫn': 'Điểm nhấn bàn tay',
   'Vòng kiềng': 'Cổ tay rõ nét',
+}
+const CATEGORY_GUIDES = {
+  'Hoa tai': {
+    title: 'Chọn hoa tai theo đường nét gương mặt.',
+    text: 'Mẫu nhỏ gọn hợp dùng hằng ngày; dáng rơi hoặc dáng dài sẽ tạo điểm nhấn rõ hơn gần gương mặt.',
+    points: ['Xem độ cân hai bên', 'Kiểm tra móc/chốt', 'Ưu tiên sắc ngọc làm sáng da'],
+  },
+  'Vòng cổ': {
+    title: 'Chọn vòng cổ theo cổ áo và điểm nhìn.',
+    text: 'Chuỗi ngọc nên cân với cổ áo, độ dài và mặt treo. Một món đủ rõ sẽ đẹp hơn nhiều lớp quá nặng.',
+    points: ['Xem chiều dài chuỗi', 'Kiểm tra mặt treo', 'Phối cùng hoa tai gọn'],
+  },
+  'Vòng tay': {
+    title: 'Chọn vòng tay theo cổ tay và nhịp đeo.',
+    text: 'Hạt mềm hợp dùng hằng ngày; sắc nổi hoặc khóa sáng phù hợp khi muốn cổ tay có điểm nhấn.',
+    points: ['Xem độ đều của hạt', 'Kiểm tra khóa/dây', 'Chọn tông hợp nhẫn hoặc hoa tai'],
+  },
+  'Nhẫn': {
+    title: 'Chọn nhẫn theo bàn tay và độ nổi của viên ngọc.',
+    text: 'Nhẫn nên vừa đủ nổi khi cử động tay, nhưng vẫn giữ sự cân bằng với vòng tay hoặc hoa tai đi cùng.',
+    points: ['Kiểm tra kích thước', 'Xem độ cao mặt nhẫn', 'Phối cùng chi tiết kim loại tương đồng'],
+  },
+  'Vòng kiềng': {
+    title: 'Chọn vòng kiềng theo dáng cổ tay và sắc ngọc.',
+    text: 'Vòng kiềng cần xem kỹ độ trong, vân chuyển màu và dáng tròn vì đây là món nằm rất rõ trên cổ tay.',
+    points: ['Xem vân và vùng chuyển màu', 'Kiểm tra dáng vòng', 'Đeo đơn để giữ vẻ sạch'],
+  },
 }
 const PRODUCT_PROFILES = {
   'lama-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
@@ -109,18 +138,18 @@ const getProductInquiryHref = (product) => {
   if (contact.zalo) return contact.zalo
 
   const subject = product?.name
-    ? `Tư vấn Lama Beads - ${product.name}`
-    : 'Tư vấn Lama Beads'
+    ? `Tư vấn ${BRAND_NAME} - ${product.name}`
+    : `Tư vấn ${BRAND_NAME}`
   const body = product?.name
     ? [
-      `Chào Lama Beads,`,
+      `Chào ${BRAND_NAME},`,
       '',
       `Mình muốn hỏi thêm về mẫu: ${product.name}`,
       `Mã mẫu: ${product.id}`,
       '',
       'Mình muốn xem thêm ảnh/video, tình trạng mẫu và gợi ý phối cùng.',
     ].join('\n')
-    : 'Chào Lama Beads, mình muốn được tư vấn mẫu trang sức ngọc phù hợp.'
+    : `Chào ${BRAND_NAME}, mình muốn được tư vấn mẫu trang sức ngọc phù hợp.`
 
   return `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
@@ -271,18 +300,18 @@ const getRouteSeo = (route, product) => {
   if (route.name === 'collection') {
     const category = route.category
     return {
-      title: category ? `${category} ngọc | Lama Beads` : 'Bộ sưu tập trang sức ngọc | Lama Beads',
+      title: category ? `${category} ngọc | ${BRAND_NAME}` : `Bộ sưu tập trang sức ngọc | ${BRAND_NAME}`,
       description: category
-        ? `Xem các mẫu ${category.toLowerCase()} ngọc của Lama Beads với ảnh thật, video, chất liệu và gợi ý phối món phù hợp.`
-        : 'Khám phá bộ sưu tập hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc của Lama Beads.',
+        ? `Xem các mẫu ${category.toLowerCase()} ngọc của ${BRAND_NAME} với ảnh thật, video, chất liệu và gợi ý phối món phù hợp.`
+        : `Khám phá bộ sưu tập hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc của ${BRAND_NAME}.`,
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: category ? `${category} ngọc Lama Beads` : 'Bộ sưu tập trang sức ngọc Lama Beads',
+      imageAlt: category ? `${category} ngọc ${BRAND_NAME}` : `Bộ sưu tập trang sức ngọc ${BRAND_NAME}`,
     }
   }
 
   if (route.name === 'product' && product) {
     return {
-      title: `${product.name} | Lama Beads`,
+      title: `${product.name} | ${BRAND_NAME}`,
       description: `${product.shortDescription} Xem ảnh thật, chất liệu, ý nghĩa, gợi ý phối món và cách bảo quản trước khi chọn.`,
       image: product.previewImage,
       imageAlt: product.name,
@@ -291,63 +320,63 @@ const getRouteSeo = (route, product) => {
 
   if (route.name === 'concierge') {
     return {
-      title: 'Tư vấn riêng | Lama Beads',
-      description: 'Gửi yêu cầu tư vấn để Lama Beads gợi ý mẫu ngọc theo dáng đeo, phong cách và món muốn phối cùng.',
+      title: `Tư vấn riêng | ${BRAND_NAME}`,
+      description: `Gửi yêu cầu tư vấn để ${BRAND_NAME} gợi ý mẫu ngọc theo dáng đeo, phong cách và món muốn phối cùng.`,
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Tư vấn chọn trang sức ngọc Lama Beads',
+      imageAlt: `Tư vấn chọn trang sức ngọc ${BRAND_NAME}`,
     }
   }
 
   if (route.name === 'matching') {
     return {
-      title: 'Phối món trang sức ngọc | Lama Beads',
+      title: `Phối món trang sức ngọc | ${BRAND_NAME}`,
       description: 'Xem gợi ý phối hoa tai, vòng cổ, vòng tay, nhẫn và vòng kiềng theo màu ngọc, chi tiết kim loại và cảm giác đeo.',
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Gợi ý phối món trang sức ngọc Lama Beads',
+      imageAlt: `Gợi ý phối món trang sức ngọc ${BRAND_NAME}`,
     }
   }
 
   if (route.name === 'care') {
     return {
-      title: 'Chăm sóc và kiểm tra ngọc | Lama Beads',
-      description: 'Cách Lama Beads kiểm tra ảnh, video, tình trạng mẫu, đóng gói và hướng dẫn bảo quản trang sức ngọc.',
+      title: `Chăm sóc và kiểm tra ngọc | ${BRAND_NAME}`,
+      description: `Cách ${BRAND_NAME} kiểm tra ảnh, video, tình trạng mẫu, đóng gói và hướng dẫn bảo quản trang sức ngọc.`,
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Kiểm tra và chăm sóc trang sức ngọc Lama Beads',
+      imageAlt: `Kiểm tra và chăm sóc trang sức ngọc ${BRAND_NAME}`,
     }
   }
 
   if (route.name === 'about') {
     return {
-      title: 'Câu chuyện Lama Beads | Chọn ngọc có cảm giác riêng',
-      description: 'Tìm hiểu cách Lama Beads chọn trang sức ngọc theo màu sắc, dáng đeo, độ bóng và cảm giác khi sử dụng.',
+      title: `Câu chuyện ${BRAND_NAME} | Chọn ngọc có cảm giác riêng`,
+      description: `Tìm hiểu cách ${BRAND_NAME} chọn trang sức ngọc theo màu sắc, dáng đeo, độ bóng và cảm giác khi sử dụng.`,
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Câu chuyện Lama Beads',
+      imageAlt: `Câu chuyện ${BRAND_NAME}`,
     }
   }
 
   if (route.name === 'contact') {
     return {
-      title: 'Liên hệ tư vấn | Lama Beads',
-      description: 'Liên hệ Lama Beads để xem thêm ảnh thật, hỏi chất liệu, kích thước, dáng đeo và tình trạng từng mẫu trước khi chọn.',
+      title: `Liên hệ tư vấn | ${BRAND_NAME}`,
+      description: `Liên hệ ${BRAND_NAME} để xem thêm ảnh thật, hỏi chất liệu, kích thước, dáng đeo và tình trạng từng mẫu trước khi chọn.`,
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Liên hệ Lama Beads',
+      imageAlt: `Liên hệ ${BRAND_NAME}`,
     }
   }
 
   if (route.name === 'notfound') {
     return {
-      title: 'Không tìm thấy trang | Lama Beads',
-      description: 'Trang bạn đang tìm không tồn tại. Quay lại trang chủ hoặc xem bộ sưu tập hiện có của Lama Beads.',
+      title: `Không tìm thấy trang | ${BRAND_NAME}`,
+      description: `Trang bạn đang tìm không tồn tại. Quay lại trang chủ hoặc xem bộ sưu tập hiện có của ${BRAND_NAME}.`,
       image: DEFAULT_SOCIAL_IMAGE,
-      imageAlt: 'Lama Beads',
+      imageAlt: BRAND_NAME,
     }
   }
 
   return {
-    title: 'Lama Beads | Trang sức ngọc chọn lọc',
-    description: 'Lama Beads giới thiệu hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc với ảnh và video sản phẩm.',
+    title: `${BRAND_NAME} | Trang sức ngọc chọn lọc`,
+    description: `${BRAND_NAME} giới thiệu hoa tai, vòng tay, vòng cổ, nhẫn và vòng kiềng ngọc với ảnh và video sản phẩm.`,
     image: DEFAULT_SOCIAL_IMAGE,
-    imageAlt: 'Trang sức ngọc Lama Beads',
+    imageAlt: `Trang sức ngọc ${BRAND_NAME}`,
   }
 }
 
@@ -382,14 +411,14 @@ const updateStructuredData = (route, product, seo, canonicalHref) => {
   const organization = {
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
-    name: 'Lama Beads',
+    name: BRAND_NAME,
     url: SITE_URL,
     email: contact.email,
   }
   const website = {
     '@type': 'WebSite',
     '@id': `${SITE_URL}/#website`,
-    name: 'Lama Beads',
+    name: BRAND_NAME,
     url: SITE_URL,
     publisher: { '@id': `${SITE_URL}/#organization` },
     inLanguage: 'vi-VN',
@@ -437,7 +466,7 @@ const updateStructuredData = (route, product, seo, canonicalHref) => {
 
 const updateDocumentSeo = (route, product) => {
   const seo = getRouteSeo(route, product)
-  const canonicalHref = `https://lamabeads.com${getRoutePath(route)}`
+  const canonicalHref = `${SITE_URL}${getRoutePath(route)}`
   const imageHref = toAbsoluteUrl(seo.image)
   let canonical = document.head.querySelector('link[rel="canonical"]')
 
@@ -447,8 +476,8 @@ const updateDocumentSeo = (route, product) => {
   setMetaTag('meta[property="og:description"]', 'property', 'og:description', seo.description)
   setMetaTag('meta[property="og:type"]', 'property', 'og:type', route.name === 'product' ? 'product' : 'website')
   setMetaTag('meta[property="og:url"]', 'property', 'og:url', canonicalHref)
-  setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Lama Beads')
-  setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', 'vi_VN')
+  setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', BRAND_NAME)
+  setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', brand.locale)
   setMetaTag('meta[property="og:image"]', 'property', 'og:image', imageHref)
   setMetaTag('meta[property="og:image:alt"]', 'property', 'og:image:alt', seo.imageAlt || seo.title)
   setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
@@ -1093,7 +1122,7 @@ function MobileContactCta({ product }) {
     <a
       className={`mobile-sticky-cta ${isVisible ? 'is-visible' : ''}`}
       href={href}
-      aria-label={`Gửi yêu cầu tư vấn về ${product?.name || 'mẫu Lama Beads'}`}
+      aria-label={`Gửi yêu cầu tư vấn về ${product?.name || `mẫu ${BRAND_NAME}`}`}
       {...CONTACT_LINK_PROPS}
     >
       <ContactIcon size={18} />
@@ -1186,7 +1215,7 @@ function ConciergePage({ onNavigate }) {
           <h1>Tư vấn riêng, chọn ít nhưng đúng.</h1>
           <p>
             Nếu bạn chưa chắc mẫu nào hợp dáng đeo, màu da hoặc món muốn phối cùng,
-            Lama Beads sẽ gợi ý bằng ảnh thật, video và ghi chú ngắn gọn.
+            {BRAND_NAME} sẽ gợi ý bằng ảnh thật, video và ghi chú ngắn gọn.
           </p>
           <div className="luxury-hero-actions">
             <a className="button primary" href={getProductInquiryHref()} {...CONTACT_LINK_PROPS}>
@@ -1220,7 +1249,7 @@ function ConciergePage({ onNavigate }) {
       <div className="concierge-flow reveal-stagger">
         {[
           ['01', 'Gửi cảm giác bạn muốn', 'Một mẫu đang thích, dịp cần đeo hoặc phong cách bạn muốn giữ.'],
-          ['02', 'Xem ảnh/video thật', 'Lama Beads gửi góc cận, dáng đeo, tình trạng mẫu và điểm cần kiểm tra.'],
+          ['02', 'Xem ảnh/video thật', `${BRAND_NAME} gửi góc cận, dáng đeo, tình trạng mẫu và điểm cần kiểm tra.`],
           ['03', 'Chốt mẫu phù hợp', 'Chọn món chính và món phối cùng nếu bạn muốn hoàn thiện một set nhỏ.'],
         ].map(([number, title, text]) => (
           <article className="numbered-note" key={number}>
@@ -1375,7 +1404,7 @@ function AboutPage({ onNavigate }) {
       <section className="luxury-page section about-page">
         <div className="luxury-page-hero about-hero reveal-up">
           <div>
-            <h1>Lama Beads chọn ngọc theo cảm giác khi lên người.</h1>
+            <h1>{BRAND_NAME} chọn ngọc theo cảm giác khi lên người.</h1>
             <p>
               Một món trang sức đẹp không chỉ nằm ở màu sắc. Nó còn nằm ở dáng đeo,
               độ sáng, sự cân bằng với gương mặt, cổ tay và cách bạn muốn xuất hiện.
@@ -1386,7 +1415,7 @@ function AboutPage({ onNavigate }) {
           </div>
           <ProductImageFrame
             src="/assets/product-gallery/images/lama-products/lama-009-01.jpg"
-            alt="Chuỗi ngọc xanh phối mặt của Lama Beads"
+            alt={`Chuỗi ngọc xanh phối mặt của ${BRAND_NAME}`}
             className="about-hero-image"
             loading="eager"
             sizes="(max-width: 860px) 100vw, 38vw"
@@ -1457,7 +1486,7 @@ function ProductDepthScene({ product, onExplore, onSelect }) {
   }, [])
 
   return (
-    <section className="depth-scene cinematic-hero" id="top" ref={sceneRef} aria-label="Lama Beads">
+    <section className="depth-scene cinematic-hero" id="top" ref={sceneRef} aria-label={BRAND_NAME}>
       <div className="depth-stage">
         <div className="depth-video-frame" aria-hidden="true">
           <video
@@ -1549,8 +1578,8 @@ function Header({
       <button className="icon-button mobile-only" aria-label="Mở menu" onClick={() => setMenuOpen(true)}>
         <Menu size={24} />
       </button>
-      <button className="brand" onClick={() => onNavigate('/')} aria-label="Lama Beads home">
-        Lama Beads
+      <button className="brand" onClick={() => onNavigate('/')} aria-label={`${BRAND_NAME} home`}>
+        {BRAND_NAME}
       </button>
       <nav className="desktop-nav" aria-label="Chính">
         {nav.map(([label, target, routeName]) => (
@@ -1591,7 +1620,7 @@ function Header({
       {menuOpen && (
         <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="mobile-menu-top">
-            <span className="brand mobile-brand">Lama Beads</span>
+            <span className="brand mobile-brand">{BRAND_NAME}</span>
             <button className="icon-button" aria-label="Đóng menu" onClick={() => setMenuOpen(false)}>
               <X size={22} />
             </button>
@@ -1675,6 +1704,7 @@ function Collection({
   const collectionCopy = isCategoryView
     ? `Xem riêng các mẫu ${selectedCategory.toLowerCase()} với ảnh thật, video và gợi ý phối cùng theo sắc ngọc.`
     : 'Chọn dáng ngọc hợp với phong cách của bạn. Mỗi mẫu có ảnh thật, video và ghi chú riêng.'
+  const categoryGuide = isCategoryView ? CATEGORY_GUIDES[selectedCategory] : null
 
   useEffect(() => {
     const root = collectionRef.current
@@ -1800,6 +1830,9 @@ function Collection({
       <p className="collection-result-count">
         Đang hiển thị {products.length} / {totalCount} mẫu
       </p>
+      {categoryGuide && (
+        <CategoryGuide category={selectedCategory} guide={categoryGuide} />
+      )}
       {products.length === 0 ? (
         <div className="empty-state">
           <p>Chưa có mẫu nào khớp với bộ lọc này.</p>
@@ -1846,6 +1879,26 @@ function Collection({
 }
 
 const visibleProductsKey = (items) => items.map((product) => product.id).join('|')
+
+function CategoryGuide({ category, guide }) {
+  return (
+    <aside className="category-guide reveal-up" aria-label={`Gợi ý chọn ${category.toLowerCase()}`}>
+      <div>
+        <p className="section-kicker">{category}</p>
+        <h2>{guide.title}</h2>
+        <p>{guide.text}</p>
+      </div>
+      <ul>
+        {guide.points.map((point) => (
+          <li key={point}>
+            <CheckCircle2 size={16} />
+            <span>{point}</span>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
 
 function FilterChipGroup({ icon, label, options, value, onChange, allLabel = 'Tất cả' }) {
   if (!options?.length) return null
@@ -2119,7 +2172,7 @@ function DetailSection({ product, matchedProducts, onSelect, onBack }) {
   const inquiryHref = getProductInquiryHref(product)
   const mediaNoteCopy = hasProductVideos
     ? 'Bạn có thể xem ảnh cận, video xoay chậm và góc vân rõ hơn để cảm nhận bề mặt, độ bóng và dáng đeo.'
-    : 'Nếu bạn quan tâm một mẫu, Lama Beads có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay để bạn yên tâm hơn trước khi quyết định.'
+    : `Nếu bạn quan tâm một mẫu, ${BRAND_NAME} có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay để bạn yên tâm hơn trước khi quyết định.`
 
   return (
     <section className="detail section" id="detail" ref={detailSectionRef}>
@@ -2395,7 +2448,7 @@ function StoryBand() {
       >
         <OptimizedImage
           src="/assets/product-gallery/images/lama-products/lama-003-01.jpg"
-          alt="Cận cảnh trang sức ngọc của Lama Beads"
+          alt={`Cận cảnh trang sức ngọc của ${BRAND_NAME}`}
           loading="lazy"
           width="1200"
           height="840"
@@ -2414,7 +2467,7 @@ function StoryBand() {
         <p className="section-kicker">Câu chuyện & chế tác</p>
         <h2>Tôn trọng chất liệu. Giữ lại cảm giác riêng.</h2>
         <p>
-          Lama Beads chọn từng mẫu ngọc theo màu sắc, dáng đeo, độ bóng và sự hài hòa khi lên người.
+          {BRAND_NAME} chọn từng mẫu ngọc theo màu sắc, dáng đeo, độ bóng và sự hài hòa khi lên người.
           Mỗi món hướng đến vẻ đẹp tinh tế, dễ phối và có thể đồng hành lâu dài.
         </p>
         <div className="story-highlights">
@@ -2445,7 +2498,7 @@ function ContactBand() {
   ]
   const consultationSteps = [
     'Gửi ảnh mẫu bạn thích hoặc mô tả phong cách đang tìm.',
-    'Lama Beads gợi ý mẫu, kích thước và ý nghĩa hợp với bạn.',
+    `${BRAND_NAME} gợi ý mẫu, kích thước và ý nghĩa hợp với bạn.`,
     'Xem thêm ảnh cận, tình trạng mẫu và cách bảo quản trước khi quyết định.',
   ]
 
@@ -2456,7 +2509,7 @@ function ContactBand() {
         <h1>Xem kỹ bằng ảnh thật trước khi chọn.</h1>
         <p>
           Nếu bạn chưa chắc mẫu nào hợp cổ tay, phong cách hoặc món muốn phối cùng,
-          cứ gửi yêu cầu để Lama Beads gợi ý theo chất liệu, kích thước và cách đeo.
+          cứ gửi yêu cầu để {BRAND_NAME} gợi ý theo chất liệu, kích thước và cách đeo.
         </p>
         <a className="button primary contact-cta" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
           {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
@@ -2499,7 +2552,7 @@ function ContactBand() {
       <div className="conversion-strip">
         <div>
           <p>Bạn chưa rõ mẫu nào hợp với mình?</p>
-          <small>Gửi ảnh phong cách bạn thích hoặc nhu cầu đang tìm, Lama Beads sẽ gợi ý mẫu phù hợp.</small>
+          <small>Gửi ảnh phong cách bạn thích hoặc nhu cầu đang tìm, {BRAND_NAME} sẽ gợi ý mẫu phù hợp.</small>
         </div>
       </div>
     </section>
@@ -2510,7 +2563,7 @@ function Footer({ onNavigate }) {
   return (
     <footer className="footer">
       <div>
-        <strong>Lama Beads</strong>
+        <strong>{BRAND_NAME}</strong>
         <p>Trang sức ngọc được chọn theo màu sắc, dáng đeo và cảm giác khi sử dụng.</p>
       </div>
       <div className="footer-links">
