@@ -34,12 +34,131 @@ const CONTACT_HREF = contact.zalo || `mailto:${contact.email}`
 const CONTACT_LINK_PROPS = contact.zalo ? { target: '_blank', rel: 'noreferrer' } : {}
 const CONTACT_ACTION_LABEL = contact.zalo ? 'Liên hệ tư vấn' : 'Gửi yêu cầu qua email'
 const ContactIcon = contact.zalo ? MessageCircle : Mail
+const COMPLEMENT_CATEGORY_ORDER = ['Hoa tai', 'Vòng cổ', 'Vòng tay', 'Nhẫn', 'Vòng kiềng']
+const MATCH_SLOT_LABELS = {
+  'Hoa tai': 'Gần gương mặt',
+  'Vòng cổ': 'Đường cổ',
+  'Vòng tay': 'Cổ tay mềm',
+  'Nhẫn': 'Điểm nhấn bàn tay',
+  'Vòng kiềng': 'Cổ tay rõ nét',
+}
+const PRODUCT_PROFILES = {
+  'lama-001': { color: 'tím nhạt', metal: 'không rõ', mood: ['dịu', 'tối giản'], weight: 'mềm' },
+  'lama-002': { color: 'xanh', metal: 'bạc', mood: ['thanh lịch', 'mềm'], weight: 'nổi' },
+  'lama-003': { color: 'xanh', metal: 'bạc', mood: ['hiện đại', 'gọn'], weight: 'nổi' },
+  'lama-004': { color: 'cam', metal: 'vàng', mood: ['ấm', 'trẻ'], weight: 'vừa' },
+  'lama-005': { color: 'xanh', metal: 'bạc', mood: ['nữ tính', 'tươi'], weight: 'vừa' },
+  'lama-006': { color: 'tím nhạt', metal: 'bạc', mood: ['dịu', 'dễ đeo'], weight: 'mềm' },
+  'lama-007': { color: 'xanh lam', metal: 'không rõ', mood: ['trong', 'tối giản'], weight: 'mềm' },
+  'lama-008': { color: 'xanh', metal: 'bạc', mood: ['gọn', 'dễ đeo'], weight: 'nhỏ' },
+  'lama-009': { color: 'xanh', metal: 'vàng', mood: ['trang trọng', 'trầm'], weight: 'nổi' },
+  'lama-010': { color: 'tím nhạt', metal: 'vàng', mood: ['dịu', 'nữ tính'], weight: 'mềm' },
+  'lama-011': { color: 'xanh', metal: 'bạc', mood: ['tươi', 'tự nhiên'], weight: 'vừa' },
+  'lama-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], weight: 'vừa' },
+}
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const getMediaKey = (media) => `${media.type}:${media.src}`
 
 const getProductById = (id) => products.find((product) => product.id === id)
+
+const getProductInquiryHref = (product) => {
+  if (contact.zalo) return contact.zalo
+
+  const subject = product?.name
+    ? `Tư vấn Lama Beads - ${product.name}`
+    : 'Tư vấn Lama Beads'
+  const body = product?.name
+    ? [
+      `Chào Lama Beads,`,
+      '',
+      `Mình muốn hỏi thêm về mẫu: ${product.name}`,
+      `Mã mẫu: ${product.id}`,
+      '',
+      'Mình muốn xem thêm ảnh/video, tình trạng mẫu và gợi ý phối cùng.',
+    ].join('\n')
+    : 'Chào Lama Beads, mình muốn được tư vấn mẫu trang sức ngọc phù hợp.'
+
+  return `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
+const getProductProfile = (product) => PRODUCT_PROFILES[product?.id] || {
+  color: product?.category || 'ngọc',
+  metal: 'không rõ',
+  mood: [],
+  weight: 'vừa',
+}
+
+const getCategorySlotLabel = (category) => MATCH_SLOT_LABELS[category] || category
+
+const getMatchReason = (baseProduct, candidate) => {
+  const baseProfile = getProductProfile(baseProduct)
+  const candidateProfile = getProductProfile(candidate)
+  const reasons = []
+
+  if (baseProfile.color === candidateProfile.color) {
+    reasons.push(`Cùng tông ${candidateProfile.color}`)
+  }
+
+  if (baseProfile.metal !== 'không rõ' && baseProfile.metal === candidateProfile.metal) {
+    reasons.push(`Hợp chi tiết màu ${candidateProfile.metal}`)
+  }
+
+  const sharedMood = candidateProfile.mood.find((mood) => baseProfile.mood.includes(mood))
+  if (sharedMood) {
+    reasons.push(`Cùng cảm giác ${sharedMood}`)
+  }
+
+  return reasons.slice(0, 2).join(' · ') || `Bổ sung ở ${getCategorySlotLabel(candidate.category).toLowerCase()}`
+}
+
+const getMatchScore = (baseProduct, candidate) => {
+  if (!baseProduct || !candidate || baseProduct.id === candidate.id) return -1
+
+  const baseProfile = getProductProfile(baseProduct)
+  const candidateProfile = getProductProfile(candidate)
+  const sharedMoodCount = candidateProfile.mood.filter((mood) => baseProfile.mood.includes(mood)).length
+  let score = 0
+
+  if (baseProduct.category !== candidate.category) score += 4
+  if (baseProfile.color === candidateProfile.color) score += 5
+  if (baseProfile.metal !== 'không rõ' && baseProfile.metal === candidateProfile.metal) score += 3
+  if (baseProfile.weight === candidateProfile.weight) score += 1
+  score += sharedMoodCount * 2
+
+  return score
+}
+
+const getMatchedProducts = (baseProduct, limit = 4) => {
+  const usedCategories = new Set()
+  const candidates = products
+    .filter((candidate) => candidate.id !== baseProduct?.id)
+    .map((candidate) => ({
+      product: candidate,
+      score: getMatchScore(baseProduct, candidate),
+      reason: getMatchReason(baseProduct, candidate),
+    }))
+    .sort((a, b) => (
+      b.score - a.score ||
+      COMPLEMENT_CATEGORY_ORDER.indexOf(a.product.category) - COMPLEMENT_CATEGORY_ORDER.indexOf(b.product.category) ||
+      VI_COLLATOR.compare(a.product.name, b.product.name)
+    ))
+
+  const picked = candidates.filter((item) => {
+    if (item.product.category === baseProduct?.category) return false
+    if (usedCategories.has(item.product.category)) return false
+    usedCategories.add(item.product.category)
+    return true
+  })
+
+  if (picked.length >= limit) return picked.slice(0, limit)
+
+  return [
+    ...picked,
+    ...candidates.filter((item) => !picked.some((pickedItem) => pickedItem.product.id === item.product.id)),
+  ].slice(0, limit)
+}
 
 const getOptimizedImageSrc = (src = '', width = 1200) => {
   if (!src.includes('/assets/product-gallery/images/')) return ''
@@ -57,6 +176,9 @@ const getOptimizedImageSrcSet = (src = '') => {
 const getRoutePath = (route) => {
   if (route.name === 'home') return '/'
   if (route.name === 'collection') return '/collection'
+  if (route.name === 'concierge') return '/concierge'
+  if (route.name === 'matching') return '/matching'
+  if (route.name === 'care') return '/care'
   if (route.name === 'about') return '/about'
   if (route.name === 'contact') return '/contact'
   if (route.name === 'product' && route.id) return `/product/${route.id}`
@@ -74,13 +196,34 @@ const getRouteSeo = (route, product) => {
   if (route.name === 'product' && product) {
     return {
       title: `${product.name} | Lama Beads`,
-      description: `${product.shortDescription} Xem ảnh thật, chất liệu, ý nghĩa và gợi ý bảo quản trước khi chọn.`,
+      description: `${product.shortDescription} Xem ảnh thật, chất liệu, ý nghĩa, gợi ý phối món và cách bảo quản trước khi chọn.`,
+    }
+  }
+
+  if (route.name === 'concierge') {
+    return {
+      title: 'Tư vấn riêng | Lama Beads',
+      description: 'Gửi yêu cầu tư vấn để Lama Beads gợi ý mẫu ngọc theo dáng đeo, phong cách và món muốn phối cùng.',
+    }
+  }
+
+  if (route.name === 'matching') {
+    return {
+      title: 'Phối món trang sức ngọc | Lama Beads',
+      description: 'Xem gợi ý phối hoa tai, vòng cổ, vòng tay, nhẫn và vòng kiềng theo màu ngọc, chi tiết kim loại và cảm giác đeo.',
+    }
+  }
+
+  if (route.name === 'care') {
+    return {
+      title: 'Chăm sóc và kiểm tra ngọc | Lama Beads',
+      description: 'Cách Lama Beads kiểm tra ảnh, video, tình trạng mẫu, đóng gói và hướng dẫn bảo quản trang sức ngọc.',
     }
   }
 
   if (route.name === 'about') {
     return {
-      title: 'Về Lama Beads | Chọn hạt và hoàn thiện thủ công',
+      title: 'Câu chuyện Lama Beads | Chọn ngọc có cảm giác riêng',
       description: 'Tìm hiểu cách Lama Beads chọn trang sức ngọc theo màu sắc, dáng đeo, độ bóng và cảm giác khi sử dụng.',
     }
   }
@@ -212,6 +355,18 @@ function parseRoute(pathname = window.location.pathname) {
 
   if (path === '/collection') {
     return { name: 'collection' }
+  }
+
+  if (path === '/concierge') {
+    return { name: 'concierge' }
+  }
+
+  if (path === '/matching') {
+    return { name: 'matching' }
+  }
+
+  if (path === '/care') {
+    return { name: 'care' }
   }
 
   if (path === '/about') {
@@ -508,24 +663,7 @@ function App() {
       ? products.find((item) => item.id === route.id) || featuredProduct
       : featuredProduct
   const visibleProductKey = filteredProducts.map((product) => product.id).join('|')
-  const relatedProducts = useMemo(() => {
-    const preferred = (selectedProduct.relatedIds || [])
-      .map((id) => products.find((item) => item.id === id))
-      .filter(Boolean)
-    const fallback = products.filter(
-      (item) => item.id !== selectedProduct.id && item.category === selectedProduct.category,
-    )
-    const broaderFallback = products.filter((item) => item.id !== selectedProduct.id)
-    const seen = new Set([selectedProduct.id])
-
-    return [...preferred, ...fallback, ...broaderFallback]
-      .filter((item) => {
-        if (!item || seen.has(item.id)) return false
-        seen.add(item.id)
-        return true
-      })
-      .slice(0, 3)
-  }, [selectedProduct])
+  const matchedProducts = useMemo(() => getMatchedProducts(selectedProduct, 4), [selectedProduct])
 
   useEffect(() => {
     updateDocumentSeo(route, selectedProduct)
@@ -650,17 +788,20 @@ function App() {
               onSelect={openProduct}
               onClearSearch={clearCollectionControls}
             />
+          ) : route.name === 'concierge' ? (
+            <ConciergePage onNavigate={navigate} />
+          ) : route.name === 'matching' ? (
+            <MatchingPage products={products} onSelect={openProduct} />
+          ) : route.name === 'care' ? (
+            <CarePage onNavigate={navigate} />
           ) : route.name === 'about' ? (
-            <>
-              <TrustBand />
-              <StoryBand />
-            </>
+            <AboutPage onNavigate={navigate} />
           ) : route.name === 'contact' ? (
             <ContactBand />
           ) : route.name === 'product' ? (
             <DetailSection
               product={selectedProduct}
-              relatedProducts={relatedProducts}
+              matchedProducts={matchedProducts}
               onSelect={openProduct}
               onBack={() => navigate('/collection')}
             />
@@ -671,14 +812,15 @@ function App() {
         <Footer onNavigate={navigate} />
       </div>
       {route.name === 'product' && (
-        <MobileContactCta productName={selectedProduct.name} />
+        <MobileContactCta product={selectedProduct} />
       )}
     </>
   )
 }
 
-function MobileContactCta({ productName }) {
+function MobileContactCta({ product }) {
   const [isVisible, setIsVisible] = useState(false)
+  const href = getProductInquiryHref(product)
 
   useEffect(() => {
     const updateVisibility = () => {
@@ -694,13 +836,13 @@ function MobileContactCta({ productName }) {
       window.removeEventListener('scroll', updateVisibility)
       window.removeEventListener('resize', updateVisibility)
     }
-  }, [productName])
+  }, [product?.id])
 
   return (
     <a
       className={`mobile-sticky-cta ${isVisible ? 'is-visible' : ''}`}
-      href={CONTACT_HREF}
-      aria-label={`Gửi yêu cầu tư vấn về ${productName}`}
+      href={href}
+      aria-label={`Gửi yêu cầu tư vấn về ${product?.name || 'mẫu Lama Beads'}`}
       {...CONTACT_LINK_PROPS}
     >
       <ContactIcon size={18} />
@@ -755,6 +897,247 @@ function HomeSignature({ products, onExplore, onSelect }) {
         ))}
       </div>
     </section>
+  )
+}
+
+function ConciergePage({ onNavigate }) {
+  const preferenceGroups = [
+    {
+      label: 'Mình muốn tìm',
+      options: ['Hoa tai', 'Vòng tay', 'Vòng cổ', 'Nhẫn'],
+    },
+    {
+      label: 'Phong cách',
+      options: ['Thanh lịch', 'Dịu nhẹ', 'Nổi bật', 'Dễ đeo mỗi ngày'],
+    },
+    {
+      label: 'Cần thêm',
+      options: ['Ảnh cận', 'Video xoay', 'Gợi ý phối', 'Kiểm tra kích thước'],
+    },
+  ]
+  const [selectedPreferences, setSelectedPreferences] = useState(() => ({
+    'Mình muốn tìm': 'Hoa tai',
+    'Phong cách': 'Thanh lịch',
+    'Cần thêm': 'Ảnh cận',
+  }))
+
+  const selectPreference = (groupLabel, option) => {
+    setSelectedPreferences((current) => ({
+      ...current,
+      [groupLabel]: option,
+    }))
+  }
+
+  return (
+    <section className="luxury-page section concierge-page">
+      <div className="luxury-page-hero reveal-up">
+        <div>
+          <h1>Tư vấn riêng, chọn ít nhưng đúng.</h1>
+          <p>
+            Nếu bạn chưa chắc mẫu nào hợp dáng đeo, màu da hoặc món muốn phối cùng,
+            Lama Beads sẽ gợi ý bằng ảnh thật, video và ghi chú ngắn gọn.
+          </p>
+          <div className="luxury-hero-actions">
+            <a className="button primary" href={getProductInquiryHref()} {...CONTACT_LINK_PROPS}>
+              Gửi yêu cầu tư vấn <ContactIcon size={18} />
+            </a>
+            <button className="text-link" onClick={() => onNavigate('/collection')}>
+              Xem bộ sưu tập <ArrowRight className="motion-cue" size={16} />
+            </button>
+          </div>
+        </div>
+        <div className="consult-panel" aria-label="Gợi ý thông tin tư vấn">
+          {preferenceGroups.map((group) => (
+            <div className="preference-row" key={group.label}>
+              <span>{group.label}</span>
+              <div>
+                {group.options.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className={selectedPreferences[group.label] === option ? 'is-selected' : ''}
+                    onClick={() => selectPreference(group.label, option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="concierge-flow reveal-stagger">
+        {[
+          ['01', 'Gửi cảm giác bạn muốn', 'Một mẫu đang thích, dịp cần đeo hoặc phong cách bạn muốn giữ.'],
+          ['02', 'Xem ảnh/video thật', 'Lama Beads gửi góc cận, dáng đeo, tình trạng mẫu và điểm cần kiểm tra.'],
+          ['03', 'Chốt mẫu phù hợp', 'Chọn món chính và món phối cùng nếu bạn muốn hoàn thiện một set nhỏ.'],
+        ].map(([number, title, text]) => (
+          <article className="numbered-note" key={number}>
+            <span>{number}</span>
+            <h2>{title}</h2>
+            <p>{text}</p>
+          </article>
+        ))}
+      </div>
+      <div className="concierge-media-row reveal-up">
+        <ProductImageFrame
+          src="/assets/product-gallery/images/lama-products/lama-002-01.jpg"
+          alt="Hoa tai ngọc xanh dáng rơi"
+          className="concierge-media"
+          sizes="(max-width: 860px) 100vw, 38vw"
+        />
+        <div>
+          <h2>Không cần chọn vội.</h2>
+          <p>
+            Với trang sức ngọc, khác biệt thường nằm ở sắc ngọc, độ bóng, kích thước và cảm giác khi lên người.
+            Tư vấn tốt nên giúp bạn nhìn rõ những điểm đó trước khi quyết định.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function MatchingPage({ products, onSelect }) {
+  const [selectedId, setSelectedId] = useState('lama-003')
+  const selectedProduct = products.find((product) => product.id === selectedId) || products[0]
+  const matchedSet = useMemo(() => getMatchedProducts(selectedProduct, 4), [selectedProduct])
+
+  return (
+    <section className="luxury-page section matching-page">
+      <div className="luxury-page-hero matching-hero reveal-up">
+        <div>
+          <h1>Phối món theo sắc ngọc, không theo may rủi.</h1>
+          <p>
+            Chọn một món chính, hệ thống sẽ gợi ý món phối cùng dựa trên tông màu,
+            chi tiết kim loại, cảm giác đeo và vị trí trên cơ thể.
+          </p>
+          <a className="button secondary" href="#match-builder">
+            Tìm món phối cùng
+          </a>
+        </div>
+        <div className="match-selector" aria-label="Chọn mẫu chính để phối">
+          {products.map((product) => (
+            <button
+              key={product.id}
+              type="button"
+              className={product.id === selectedProduct.id ? 'is-selected' : ''}
+              onClick={() => setSelectedId(product.id)}
+            >
+              <span>{product.category}</span>
+              <strong>{product.name}</strong>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="match-builder reveal-stagger" id="match-builder">
+        <button className="match-base-card" type="button" onClick={() => onSelect(selectedProduct)}>
+          <ProductImageFrame
+            src={selectedProduct.previewImage}
+            alt={selectedProduct.name}
+            className="match-base-image"
+            loading="eager"
+            sizes="(max-width: 860px) 100vw, 34vw"
+          />
+          <span>
+            <small>Món chính</small>
+            <strong>{selectedProduct.name}</strong>
+            <em>{selectedProduct.shortDescription}</em>
+          </span>
+        </button>
+        <div className="match-set">
+          {matchedSet.map((match) => (
+            <MatchProductCard
+              key={match.product.id}
+              item={match.product}
+              reason={match.reason}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function CarePage({ onNavigate }) {
+  const careNotes = [
+    ['Kiểm tra trước khi gửi', 'Gửi ảnh/video xác nhận để bạn xem lại sắc ngọc, bề mặt, khóa/móc và tình trạng mẫu.'],
+    ['Đóng gói riêng', 'Mỗi món được giữ riêng để hạn chế ma sát, trầy mặt ngọc hoặc cong móc trong quá trình vận chuyển.'],
+    ['Bảo quản sau khi đeo', 'Lau khô bằng khăn mềm, tránh va đập mạnh, nước hoa và mỹ phẩm bám trực tiếp lên chi tiết kim loại.'],
+  ]
+
+  return (
+    <section className="luxury-page section care-page">
+      <div className="luxury-page-hero care-hero reveal-up">
+        <div>
+          <h1>Niềm tin nằm ở những góc cận.</h1>
+          <p>
+            Trang sức ngọc nên được xem kỹ trước khi chọn: sắc, vân, độ bóng, khóa/móc,
+            kích thước và cách đóng gói đều cần rõ ràng.
+          </p>
+          <button className="button secondary" onClick={() => onNavigate('/concierge')}>
+            Hỏi thêm về một mẫu
+          </button>
+        </div>
+        <ProductImageFrame
+          src="/assets/product-gallery/images/lama-products/lama-003-01.jpg"
+          alt="Hoa tai ngọc xanh được chụp cận chất liệu"
+          className="care-hero-image"
+          loading="eager"
+          sizes="(max-width: 860px) 100vw, 38vw"
+        />
+      </div>
+      <div className="care-checklist reveal-stagger">
+        {careNotes.map(([title, text]) => (
+          <article className="care-note" key={title}>
+            <CheckCircle2 size={18} />
+            <div>
+              <h2>{title}</h2>
+              <p>{text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="care-ritual reveal-up">
+        <h2>Cách giữ độ bóng hằng ngày</h2>
+        <ol>
+          <li>Đeo sau khi đã dùng nước hoa hoặc mỹ phẩm.</li>
+          <li>Tháo khi rửa tay, tắm, ngủ hoặc làm việc dễ va chạm.</li>
+          <li>Cất riêng trong túi mềm hoặc hộp riêng, tránh để chung với vật sắc cạnh.</li>
+        </ol>
+      </div>
+    </section>
+  )
+}
+
+function AboutPage({ onNavigate }) {
+  return (
+    <>
+      <section className="luxury-page section about-page">
+        <div className="luxury-page-hero about-hero reveal-up">
+          <div>
+            <h1>Lama Beads chọn ngọc theo cảm giác khi lên người.</h1>
+            <p>
+              Một món trang sức đẹp không chỉ nằm ở màu sắc. Nó còn nằm ở dáng đeo,
+              độ sáng, sự cân bằng với gương mặt, cổ tay và cách bạn muốn xuất hiện.
+            </p>
+            <button className="text-link" onClick={() => onNavigate('/concierge')}>
+              Bắt đầu tư vấn riêng <ArrowRight className="motion-cue" size={16} />
+            </button>
+          </div>
+          <ProductImageFrame
+            src="/assets/product-gallery/images/lama-products/lama-009-01.jpg"
+            alt="Chuỗi ngọc xanh phối mặt của Lama Beads"
+            className="about-hero-image"
+            loading="eager"
+            sizes="(max-width: 860px) 100vw, 38vw"
+          />
+        </div>
+      </section>
+      <TrustBand />
+      <StoryBand />
+    </>
   )
 }
 
@@ -897,8 +1280,10 @@ function Header({
   const nav = [
     ['Trang chủ', '/', 'home'],
     ['Bộ sưu tập', '/collection', 'collection'],
-    ['Về chúng tôi', '/about', 'about'],
-    ['Liên hệ', '/contact', 'contact'],
+    ['Tư vấn', '/concierge', 'concierge'],
+    ['Phối món', '/matching', 'matching'],
+    ['Chăm sóc', '/care', 'care'],
+    ['Câu chuyện', '/about', 'about'],
   ]
 
   return (
@@ -1244,8 +1629,11 @@ const OptimizedImage = forwardRef(function OptimizedImage({
 })
 
 function ProductImageFrame({ src, alt, className = 'product-image', loading = 'lazy', sizes = '(max-width: 860px) 45vw, 25vw' }) {
+  const mediaId = src?.match(/lama-\d{3}/)?.[0]
+  const frameClassName = mediaId ? `${className} media-${mediaId}` : className
+
   return (
-    <span className={className}>
+    <span className={frameClassName}>
       <OptimizedImage
         src={src}
         alt={alt}
@@ -1296,7 +1684,7 @@ function ProductCard({ product, active = false, onSelect, depthIndex = 0 }) {
   )
 }
 
-function DetailSection({ product, relatedProducts, onSelect, onBack }) {
+function DetailSection({ product, matchedProducts, onSelect, onBack }) {
   const mediaItems = useMemo(() => createProductMedia(product), [product])
   const mediaStats = useMemo(() => getProductMediaStats(product), [product])
   const [activeMediaIndex, setActiveMediaIndex] = useState(0)
@@ -1378,6 +1766,7 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
     ['Bảo quản', `${product.care} ${product.shippingNote}`],
   ]
   const hasProductVideos = mediaStats.videoCount > 0
+  const inquiryHref = getProductInquiryHref(product)
   const mediaNoteCopy = hasProductVideos
     ? 'Bạn có thể xem ảnh cận, video xoay chậm và góc vân rõ hơn để cảm nhận bề mặt, độ bóng và dáng đeo.'
     : 'Nếu bạn quan tâm một mẫu, Lama Beads có thể gửi thêm ảnh dưới ánh sáng tự nhiên, góc cận vân và ảnh đặt trên tay để bạn yên tâm hơn trước khi quyết định.'
@@ -1503,14 +1892,14 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
             ))}
           </div>
           <div className="detail-actions reveal-stagger">
-            <a className="button primary wide" href={CONTACT_HREF} {...CONTACT_LINK_PROPS}>
+            <a className="button primary wide" href={inquiryHref} {...CONTACT_LINK_PROPS}>
               {CONTACT_ACTION_LABEL} <ContactIcon size={18} />
             </a>
           </div>
         </article>
       </div>
       <div
-        className="media-related related-only reveal-stagger parallax-layer"
+        className="media-related related-only parallax-layer"
         data-parallax-speed="0.12"
         data-parallax-axis="y"
         data-parallax-direction="reverse"
@@ -1520,9 +1909,17 @@ function DetailSection({ product, relatedProducts, onSelect, onBack }) {
       >
         <div className="related">
           <h3>Phối cùng món này</h3>
-          <div className="related-grid">
-            {relatedProducts.map((item, index) => (
-              <RelatedCard key={item.id} item={item} onSelect={onSelect} depthIndex={index} />
+          <p className="related-note">
+            Gợi ý dựa trên tông ngọc, chi tiết kim loại và vị trí đeo để tạo một set gọn, không quá nhiều món.
+          </p>
+          <div className="match-set detail-match-set">
+            {matchedProducts.map((match) => (
+              <MatchProductCard
+                key={match.product.id}
+                item={match.product}
+                reason={match.reason}
+                onSelect={onSelect}
+              />
             ))}
           </div>
         </div>
@@ -1543,29 +1940,20 @@ function DisclosureItem({ title, children, defaultOpen = false }) {
   )
 }
 
-function RelatedCard({ item, onSelect, depthIndex = 0 }) {
-  const relatedTilt = usePointerTilt({ intensity: 10, lift: 8 })
-  const cardDepth = `${6 + (depthIndex % 3) * 7}px`
-  const mediaStats = getProductMediaStats(item)
-
+function MatchProductCard({ item, reason, onSelect }) {
   return (
-    <button
-      className="related-card"
-      data-testid={`related-card-${item.id}`}
-      style={{ '--card-depth': cardDepth, '--card-angle': `${((depthIndex % 2) ? '-1.15deg' : '0.85deg')}` }}
-      onClick={() => onSelect(item)}
-      onPointerMove={relatedTilt.onPointerMove}
-      onPointerLeave={relatedTilt.onPointerLeave}
-    >
+    <button className="match-product-card" type="button" onClick={() => onSelect(item)}>
       <ProductImageFrame
         src={item.previewImage}
         alt={item.name}
-        className="related-image"
-        sizes="(max-width: 860px) 100vw, 20vw"
+        className="match-product-image"
+        sizes="(max-width: 860px) 44vw, 16vw"
       />
-      <span>{item.name}</span>
-      <small>{item.origin} · {mediaStats.summary}</small>
-      <ArrowRight className="motion-cue" size={15} />
+      <span>
+        <small>{getCategorySlotLabel(item.category)}</small>
+        <strong>{item.name}</strong>
+        <em>{reason}</em>
+      </span>
     </button>
   )
 }
