@@ -40,6 +40,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: clip;
   background: var(--canvas);
   color: var(--ink);
 }
@@ -2809,7 +2810,7 @@ main {
 
 @media (max-width: 860px) {
   .site-header {
-    grid-template-columns: 44px 1fr 44px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
     padding-inline: 1.1rem;
   }
 
@@ -2827,12 +2828,17 @@ main {
 
   .brand {
     justify-self: center;
-    font-size: clamp(1.38rem, 7vw, 2rem);
-    letter-spacing: 0.13em;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 1.35rem;
+    letter-spacing: 0.12em;
   }
 
   .header-actions {
     justify-self: end;
+    width: 44px;
+    justify-content: center;
   }
 
   .search-field {
@@ -3172,6 +3178,11 @@ main {
 }
 
 @media (max-width: 520px) {
+  .brand {
+    font-size: 1.16rem;
+    letter-spacing: 0.1em;
+  }
+
   .section-heading {
     flex-direction: column;
     gap: 0.75rem;
@@ -3260,6 +3271,13 @@ main {
 
   .trust-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand {
+    font-size: 1.02rem;
+    letter-spacing: 0.08em;
   }
 }
 
