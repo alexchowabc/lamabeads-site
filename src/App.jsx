@@ -113,6 +113,14 @@ const PRODUCT_PROFILES = {
   'cnp-010': { color: 'tím nhạt', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
   'cnp-011': { color: 'xanh', metal: 'bạc', mood: ['tươi', 'tự nhiên'], occasion: ['hằng ngày', 'đi chơi'], placement: 'face', weight: 'vừa' },
   'cnp-012': { color: 'xanh', metal: 'bạc', mood: ['mềm', 'nữ tính'], occasion: ['hằng ngày', 'tiệc nhẹ'], placement: 'face', weight: 'vừa' },
+  'cnp-013': { color: 'xanh nhạt', metal: 'bạc', mood: ['dịu', 'đồng bộ'], occasion: ['hằng ngày', 'quà tặng'], placement: 'neck', weight: 'mềm' },
+  'cnp-014': { color: 'xanh rêu', metal: 'không rõ', mood: ['trầm', 'tự nhiên'], occasion: ['thiền tĩnh', 'quà tặng'], placement: 'wrist', weight: 'vừa' },
+  'cnp-015': { color: 'trắng trong', metal: 'không rõ', mood: ['trong', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-016': { color: 'xanh loang', metal: 'không rõ', mood: ['dịu', 'tự nhiên'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'vừa' },
+  'cnp-017': { color: 'tím lam', metal: 'không rõ', mood: ['nữ tính', 'nổi bật'], occasion: ['quà tặng', 'tiệc nhẹ'], placement: 'wrist', weight: 'nổi' },
+  'cnp-018': { color: 'trắng trong', metal: 'không rõ', mood: ['thanh khiết', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-019': { color: 'trắng trong', metal: 'không rõ', mood: ['sang nhẹ', 'tối giản'], occasion: ['tiệc nhẹ', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-020': { color: 'xanh', metal: 'vàng', mood: ['trầm', 'riêng biệt'], occasion: ['thiền tĩnh', 'quà tặng'], placement: 'wrist', weight: 'nổi' },
 }
 
 const slugifyVietnamese = (value = '') => value
