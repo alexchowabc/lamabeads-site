@@ -432,6 +432,24 @@ export const products = [
     relatedIds: ['cnp-021', 'cnp-010', 'cnp-022'],
     ...common,
   },
+  {
+    id: 'cnp-024',
+    name: 'Vòng tay xanh lam phối thiên châu Dzi',
+    category: 'Vòng tay',
+    previewImage: imageAsset('cnp-024-01.jpg'),
+    galleryImages: [imageAsset('cnp-024-01.jpg')],
+    videos: [productVideo('cnp-024-video-01.mp4', imageAsset('cnp-024-01.jpg'), 'Ánh hạt trên nền cát')],
+    shortDescription: 'Hạt xanh lam dịu, phối thiên châu Dzi và chi tiết vàng nhỏ.',
+    fullDescription:
+      'Vòng tay hạt xanh lam có sắc dịu, phối thiên châu Dzi làm điểm nhấn trung tâm và các chi tiết vàng nhỏ để tạo độ ấm.',
+    materials: 'Hạt tông xanh lam, thiên châu Dzi, chi tiết màu vàng',
+    meaning: 'An tĩnh · Riêng biệt · Ấm sáng',
+    care: 'Tránh kéo mạnh dây, tránh va đập vào mặt thiên châu và lau khô trước khi cất.',
+    highlights: ['Tông xanh lam mềm', 'Thiên châu Dzi nổi bật', 'Video giúp xem độ bóng và nhịp hạt'],
+    inspection: 'Nên quan sát độ đều hạt, bề mặt thiên châu và các chi tiết vàng dưới ánh sáng trong video.',
+    relatedIds: ['cnp-020', 'cnp-022', 'cnp-023'],
+    ...common,
+  },
 ]
 
 export const featuredProduct = products[0]

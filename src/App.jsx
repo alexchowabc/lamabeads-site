@@ -126,6 +126,7 @@ const PRODUCT_PROFILES = {
   'cnp-021': { color: 'tím lam', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'neck', weight: 'mềm' },
   'cnp-022': { color: 'vàng mật ong', metal: 'vàng', mood: ['ấm', 'nổi bật'], occasion: ['quà tặng', 'đi chơi'], placement: 'neck', weight: 'vừa' },
   'cnp-023': { color: 'tím lavender', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
+  'cnp-024': { color: 'xanh lam', metal: 'vàng', mood: ['trầm', 'riêng biệt'], occasion: ['thiền tĩnh', 'quà tặng'], placement: 'wrist', weight: 'vừa' },
 }
 
 const slugifyVietnamese = (value = '') => value
