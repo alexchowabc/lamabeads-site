@@ -450,6 +450,42 @@ export const products = [
     relatedIds: ['cnp-020', 'cnp-022', 'cnp-023'],
     ...common,
   },
+  {
+    id: 'cnp-025',
+    name: 'Vòng tay hạt lavender ánh nguyệt',
+    category: 'Vòng tay',
+    previewImage: imageAsset('cnp-025-01.jpg'),
+    galleryImages: [imageAsset('cnp-025-01.jpg')],
+    videos: [productVideo('cnp-025-video-01.mp4', imageAsset('cnp-025-01.jpg'), 'Ánh hạt dưới trăng')],
+    shortDescription: 'Hạt lavender nhỏ, sắc dịu và phản chiếu mềm dưới ánh trăng.',
+    fullDescription:
+      'Vòng tay hạt lavender có sắc tím lam dịu, dáng hạt nhỏ thanh và điểm kim loại tạo cảm giác sáng nhẹ khi lên cổ tay.',
+    materials: 'Hạt tông lavender, chi tiết kim loại nhỏ',
+    meaning: 'Dịu sáng · Thanh nữ tính · An yên',
+    care: 'Tránh kéo mạnh dây, tránh nước hoa bám trực tiếp và lau khô bằng khăn mềm sau khi đeo.',
+    highlights: ['Hạt nhỏ thanh tay', 'Tông lavender dịu', 'Video giúp xem ánh hạt và độ phản chiếu'],
+    inspection: 'Nên quan sát độ đều hạt, sắc lavender và chi tiết nối dưới ánh sáng trong video.',
+    relatedIds: ['cnp-023', 'cnp-021', 'cnp-010'],
+    ...common,
+  },
+  {
+    id: 'cnp-026',
+    name: 'Vòng kiềng cẩm thạch xanh rêu ánh rừng',
+    category: 'Vòng kiềng',
+    previewImage: imageAsset('cnp-026-01.jpg'),
+    galleryImages: [imageAsset('cnp-026-01.jpg')],
+    videos: [productVideo('cnp-026-video-01.mp4', imageAsset('cnp-026-01.jpg'), 'Vân ngọc trong rêu')],
+    shortDescription: 'Xanh rêu pha vùng sáng, dáng kiềng tròn và trầm.',
+    fullDescription:
+      'Vòng kiềng cẩm thạch có nền xanh rêu pha vùng sáng vàng nhẹ, bề mặt bóng và vân tự nhiên tạo chiều sâu khi đặt dưới ánh rừng.',
+    materials: 'Cẩm thạch / jade tông xanh rêu pha sáng',
+    meaning: 'Tự nhiên · Trầm tĩnh · Vững chãi',
+    care: 'Cất riêng trong túi mềm, tránh rơi va và lau khô trước khi cất để giữ bề mặt bóng.',
+    highlights: ['Vân xanh rêu có chiều sâu', 'Vùng sáng tạo điểm nhìn', 'Video hỗ trợ xem độ bóng và mặt vòng'],
+    inspection: 'Nên quan sát vùng chuyển màu, độ trong và bề mặt vòng ở cả ảnh và video trước khi chọn.',
+    relatedIds: ['cnp-014', 'cnp-018', 'cnp-016'],
+    ...common,
+  },
 ]
 
 export const featuredProduct = products[0]
