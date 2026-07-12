@@ -396,6 +396,42 @@ export const products = [
     relatedIds: ['cnp-010', 'cnp-017', 'cnp-013'],
     ...common,
   },
+  {
+    id: 'cnp-022',
+    name: 'Chuỗi hạt vàng mật ong phối thiên châu',
+    category: 'Vòng cổ',
+    previewImage: imageAsset('cnp-022-01.jpg'),
+    galleryImages: [imageAsset('cnp-022-01.jpg')],
+    videos: [productVideo('cnp-022-video-01.mp4', imageAsset('cnp-022-01.jpg'), 'Sắc hạt dưới nắng')],
+    shortDescription: 'Tông vàng mật ong ấm, điểm thiên châu nổi bật trên dáng chuỗi thanh.',
+    fullDescription:
+      'Chuỗi hạt tông vàng mật ong có độ ấm rõ, phối một điểm thiên châu ở thân chuỗi để tạo dấu nhấn riêng mà vẫn giữ dáng đeo nhẹ.',
+    materials: 'Hạt tông vàng mật ong, thiên châu phối, chi tiết màu vàng',
+    meaning: 'Ấm sáng · Riêng biệt · Duyên dáng',
+    care: 'Đặt chuỗi nằm phẳng khi cất, tránh kéo mạnh phần dây và lau khô bằng khăn mềm sau khi đeo.',
+    highlights: ['Tông vàng mật ong bắt sáng', 'Thiên châu làm điểm nhấn', 'Video giúp xem độ trong và chuyển sắc hạt'],
+    inspection: 'Nên quan sát độ đều hạt, điểm thiên châu và sắc vàng khi chuỗi chuyển động dưới ánh sáng.',
+    relatedIds: ['cnp-020', 'cnp-023', 'cnp-004'],
+    ...common,
+  },
+  {
+    id: 'cnp-023',
+    name: 'Vòng tay lavender phối hạt trong',
+    category: 'Vòng tay',
+    previewImage: imageAsset('cnp-023-01.jpg'),
+    galleryImages: [imageAsset('cnp-023-01.jpg')],
+    videos: [productVideo('cnp-023-video-01.mp4', imageAsset('cnp-023-01.jpg'), 'Ánh nước lavender')],
+    shortDescription: 'Sắc lavender mềm, hạt trong nhỏ và khóa vàng thanh nhẹ.',
+    fullDescription:
+      'Vòng tay phối hạt lavender tròn với dải hạt trong nhỏ, tạo cảm giác mát, sáng và nữ tính trên cổ tay.',
+    materials: 'Hạt tông lavender, hạt trong nhỏ, chi tiết khóa màu vàng',
+    meaning: 'Dịu sáng · Nữ tính · Thanh nhẹ',
+    care: 'Tránh kéo căng dây, tránh nước hoa bám vào khóa và cất riêng để giữ bề mặt hạt sáng.',
+    highlights: ['Sắc lavender hợp chủ đề mới', 'Phối hạt trong tạo độ nhẹ', 'Có video xem ánh hạt trên nền nước'],
+    inspection: 'Nên quan sát độ đều của hạt lavender, phần khóa và cách hạt trong bắt sáng ở video.',
+    relatedIds: ['cnp-021', 'cnp-010', 'cnp-022'],
+    ...common,
+  },
 ]
 
 export const featuredProduct = products[0]

@@ -32,6 +32,8 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const SITE_URL = brand.siteUrl
 const BRAND_NAME = brand.name
+const BRAND_LOGO = '/assets/brand/cnp-logo-lockup-v2.png'
+const BRAND_SYMBOL = '/assets/brand/cnp-symbol-v2.png'
 const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/cnp-jade-depth-openart.mp4'
 const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/cnp-jade-start-frame.avif'
 const DEFAULT_SOCIAL_IMAGE = featuredProduct.previewImage
@@ -122,6 +124,8 @@ const PRODUCT_PROFILES = {
   'cnp-019': { color: 'trắng trong', metal: 'không rõ', mood: ['sang nhẹ', 'tối giản'], occasion: ['tiệc nhẹ', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
   'cnp-020': { color: 'xanh', metal: 'vàng', mood: ['trầm', 'riêng biệt'], occasion: ['thiền tĩnh', 'quà tặng'], placement: 'wrist', weight: 'nổi' },
   'cnp-021': { color: 'tím lam', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'neck', weight: 'mềm' },
+  'cnp-022': { color: 'vàng mật ong', metal: 'vàng', mood: ['ấm', 'nổi bật'], occasion: ['quà tặng', 'đi chơi'], placement: 'neck', weight: 'vừa' },
+  'cnp-023': { color: 'tím lavender', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
 }
 
 const slugifyVietnamese = (value = '') => value
@@ -1572,8 +1576,8 @@ function Header({
       <button className="icon-button mobile-only" aria-label="Mở menu" onClick={() => setMenuOpen(true)}>
         <Menu size={24} />
       </button>
-      <button className="brand" onClick={() => onNavigate('/')} aria-label={`${BRAND_NAME} home`}>
-        {BRAND_NAME}
+      <button className="brand brand-image-link" onClick={() => onNavigate('/')} aria-label={`${BRAND_NAME} home`}>
+        <img className="brand-logo" src={BRAND_LOGO} alt="" aria-hidden="true" />
       </button>
       <nav className="desktop-nav" aria-label="Chính">
         {nav.map(([label, target, routeName]) => (
@@ -1614,7 +1618,9 @@ function Header({
       {menuOpen && (
         <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="mobile-menu-top">
-            <span className="brand mobile-brand">{BRAND_NAME}</span>
+            <span className="brand mobile-brand">
+              <img className="brand-logo" src={BRAND_LOGO} alt={BRAND_NAME} />
+            </span>
             <button className="icon-button" aria-label="Đóng menu" onClick={() => setMenuOpen(false)}>
               <X size={22} />
             </button>
@@ -2591,7 +2597,10 @@ function Footer({ onNavigate }) {
   return (
     <footer className="footer">
       <div>
-        <strong>{BRAND_NAME}</strong>
+        <div className="footer-brand-lockup">
+          <img src={BRAND_SYMBOL} alt="" aria-hidden="true" />
+          <strong>{BRAND_NAME}</strong>
+        </div>
         <p>Trang sức ngọc được tuyển chọn theo sắc, dáng đeo và cảm giác khi lên người.</p>
       </div>
       <div className="footer-links">
