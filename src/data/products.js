@@ -195,7 +195,7 @@ export const products = [
     care: 'Tránh kéo mạnh khóa và lau khô trước khi cất.',
     highlights: ['Tông tím nhạt', 'Khóa màu vàng làm điểm nhấn', 'Video cho thấy ánh hạt'],
     inspection: 'Nên quan sát màu hạt, độ đều và phần khóa trong ảnh và video.',
-    relatedIds: ['cnp-006', 'cnp-001', 'cnp-007'],
+    relatedIds: ['cnp-021', 'cnp-006', 'cnp-001'],
     ...common,
   },
   {
@@ -321,7 +321,7 @@ export const products = [
     care: 'Tránh va đập mạnh và cất trong hộp riêng để giữ bề mặt bóng.',
     highlights: ['Tông tím lam lạ mắt', 'Dáng kiềng nữ tính', 'Có video xem độ bắt sáng'],
     inspection: 'Nên quan sát độ đều màu, vùng chuyển sắc và bề mặt vòng trong video.',
-    relatedIds: ['cnp-001', 'cnp-010', 'cnp-006'],
+    relatedIds: ['cnp-021', 'cnp-010', 'cnp-001'],
     ...common,
   },
   {
@@ -376,6 +376,24 @@ export const products = [
     highlights: ['Phối thiên châu Dzi', 'Hạt xanh đều tay', 'Chi tiết màu vàng làm điểm nhấn'],
     inspection: 'Nên quan sát độ đều của hạt, bề mặt thiên châu và phần dây nối trong video.',
     relatedIds: ['cnp-014', 'cnp-016', 'cnp-009'],
+    ...common,
+  },
+  {
+    id: 'cnp-021',
+    name: 'Chuỗi hạt tím lam phối hạt vàng',
+    category: 'Vòng cổ',
+    previewImage: imageAsset('cnp-021-01.jpg'),
+    galleryImages: [imageAsset('cnp-021-01.jpg')],
+    videos: [productVideo('cnp-021-video-01.mp4', imageAsset('cnp-021-01.jpg'), 'Ánh hạt trong hộp')],
+    shortDescription: 'Sắc tím lam dịu, điểm vàng nhỏ và dáng chuỗi thanh.',
+    fullDescription:
+      'Chuỗi hạt tím lam được đặt trong hộp sáng, nổi bật nhờ sắc ngọc dịu và hai điểm vàng nhỏ vừa đủ sang.',
+    materials: 'Hạt ngọc tông tím lam, chi tiết hạt màu vàng',
+    meaning: 'Dịu sáng · Thanh lịch · Tinh giản',
+    care: 'Cất chuỗi nằm phẳng trong hộp, tránh kéo mạnh dây và lau khô sau khi dùng.',
+    highlights: ['Sắc tím lam hợp nền lavender', 'Chi tiết vàng làm điểm sáng', 'Có video xem độ bóng từng hạt'],
+    inspection: 'Nên quan sát độ đều hạt, sắc tím lam và phần điểm vàng dưới ánh sáng trong video.',
+    relatedIds: ['cnp-010', 'cnp-017', 'cnp-013'],
     ...common,
   },
 ]

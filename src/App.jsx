@@ -32,6 +32,7 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const SITE_URL = brand.siteUrl
 const BRAND_NAME = brand.name
+const BRAND_MARK = '/assets/brand/cnp-mark.png'
 const HOMEPAGE_DEPTH_VIDEO = '/assets/videos/optimized/cnp-jade-depth-openart.mp4'
 const HOMEPAGE_DEPTH_POSTER = '/assets/video-frames/optimized/cnp-jade-start-frame.avif'
 const DEFAULT_SOCIAL_IMAGE = featuredProduct.previewImage
@@ -121,6 +122,7 @@ const PRODUCT_PROFILES = {
   'cnp-018': { color: 'trắng trong', metal: 'không rõ', mood: ['thanh khiết', 'tối giản'], occasion: ['hằng ngày', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
   'cnp-019': { color: 'trắng trong', metal: 'không rõ', mood: ['sang nhẹ', 'tối giản'], occasion: ['tiệc nhẹ', 'quà tặng'], placement: 'wrist', weight: 'mềm' },
   'cnp-020': { color: 'xanh', metal: 'vàng', mood: ['trầm', 'riêng biệt'], occasion: ['thiền tĩnh', 'quà tặng'], placement: 'wrist', weight: 'nổi' },
+  'cnp-021': { color: 'tím lam', metal: 'vàng', mood: ['dịu', 'nữ tính'], occasion: ['hằng ngày', 'quà tặng'], placement: 'neck', weight: 'mềm' },
 }
 
 const slugifyVietnamese = (value = '') => value
@@ -1571,8 +1573,11 @@ function Header({
       <button className="icon-button mobile-only" aria-label="Mở menu" onClick={() => setMenuOpen(true)}>
         <Menu size={24} />
       </button>
-      <button className="brand" onClick={() => onNavigate('/')} aria-label={`${BRAND_NAME} home`}>
-        {BRAND_NAME}
+      <button className="brand brand-lockup" onClick={() => onNavigate('/')} aria-label={`${BRAND_NAME} home`}>
+        <span className="brand-mark-shell" aria-hidden="true">
+          <img className="brand-mark" src={BRAND_MARK} alt="" />
+        </span>
+        <span className="brand-wordmark">{BRAND_NAME}</span>
       </button>
       <nav className="desktop-nav" aria-label="Chính">
         {nav.map(([label, target, routeName]) => (
@@ -1613,7 +1618,12 @@ function Header({
       {menuOpen && (
         <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="mobile-menu-top">
-            <span className="brand mobile-brand">{BRAND_NAME}</span>
+            <span className="brand brand-lockup mobile-brand">
+              <span className="brand-mark-shell" aria-hidden="true">
+                <img className="brand-mark" src={BRAND_MARK} alt="" />
+              </span>
+              <span className="brand-wordmark">{BRAND_NAME}</span>
+            </span>
             <button className="icon-button" aria-label="Đóng menu" onClick={() => setMenuOpen(false)}>
               <X size={22} />
             </button>
