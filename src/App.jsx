@@ -1576,9 +1576,6 @@ function Header({
 
   return (
     <header className="site-header">
-      <button className="icon-button mobile-only" aria-label="Mở menu" onClick={() => setMenuOpen(true)}>
-        <Menu size={24} />
-      </button>
       <button className="brand brand-image-link" onClick={() => onNavigate('/')} aria-label={`${BRAND_NAME} home`}>
         <img className="brand-logo" src={BRAND_LOGO} alt="" aria-hidden="true" />
       </button>
@@ -1618,6 +1615,9 @@ function Header({
           </>
         )}
       </div>
+      <button className="icon-button mobile-only menu-trigger" aria-label="Mở menu" onClick={() => setMenuOpen(true)}>
+        <Menu size={24} />
+      </button>
       {menuOpen && (
         <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="mobile-menu-top">

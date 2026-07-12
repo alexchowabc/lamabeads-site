@@ -2876,8 +2876,9 @@ main {
 
 @media (max-width: 860px) {
   .site-header {
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
-    column-gap: 0;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    column-gap: 0.75rem;
+    min-height: 64px;
     padding-inline: 1.1rem;
   }
 
@@ -2893,8 +2894,16 @@ main {
     display: inline-grid;
   }
 
+  .menu-trigger {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
   .brand {
-    justify-self: center;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
@@ -2908,12 +2917,11 @@ main {
 
   .brand-logo {
     height: 50px;
+    object-position: left center;
   }
 
   .header-actions {
-    justify-self: end;
-    width: 44px;
-    justify-content: center;
+    display: none;
   }
 
   .search-field {
